@@ -101,7 +101,7 @@
     <Content Include="Client\karma.conf.js" />
     <Content Include="Client\src\app\app.component.css" />
     <Content Include="Client\src\app\app.component.html" />
-    <Content Include="Client\src\app\student\form\form.component.html" />
+    <Content Include="Client\src\app\student\student-form\student-form.component.html" />
     <Content Include="Client\src\app\student\student.component.html" />
     <Content Include="Client\src\favicon.ico" />
     <Content Include="Client\src\index.html" />
@@ -229,8 +229,8 @@
     <TypeScriptCompile Include="Client\src\app\app.component.spec.ts" />
     <TypeScriptCompile Include="Client\src\app\app.component.ts" />
     <TypeScriptCompile Include="Client\src\app\app.module.ts" />
-    <TypeScriptCompile Include="Client\src\app\student\form\form.component.spec.ts" />
-    <TypeScriptCompile Include="Client\src\app\student\form\form.component.ts" />
+    <TypeScriptCompile Include="Client\src\app\student\student-form\student-form.component.spec.ts" />
+    <TypeScriptCompile Include="Client\src\app\student\student-form\student-form.component.ts" />
     <TypeScriptCompile Include="Client\src\app\student\student.component.spec.ts" />
     <TypeScriptCompile Include="Client\src\app\student\student.component.ts" />
     <TypeScriptCompile Include="Client\src\environments\environment.prod.ts" />
