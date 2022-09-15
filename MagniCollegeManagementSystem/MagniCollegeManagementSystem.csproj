@@ -229,6 +229,8 @@
     <TypeScriptCompile Include="Client\src\app\app.component.spec.ts" />
     <TypeScriptCompile Include="Client\src\app\app.component.ts" />
     <TypeScriptCompile Include="Client\src\app\app.module.ts" />
+    <TypeScriptCompile Include="Client\src\app\shared\student.service.spec.ts" />
+    <TypeScriptCompile Include="Client\src\app\shared\student.service.ts" />
     <TypeScriptCompile Include="Client\src\app\student\student-form\student-form.component.spec.ts" />
     <TypeScriptCompile Include="Client\src\app\student\student-form\student-form.component.ts" />
     <TypeScriptCompile Include="Client\src\app\student\student.component.spec.ts" />
