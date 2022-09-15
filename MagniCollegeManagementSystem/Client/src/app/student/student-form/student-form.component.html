@@ -1,10 +1,9 @@
-<p>student-form works!</p>
-<form>
+<form novalidate>
   <input type="hidden" name="studentId" [value]="service.formData.studentId"/>
 
   <div class="form-group">
     <label>Student Name</label>
     <input class="form-control form-control-lg" placeholder="Student Name"
-           name="studentName" #studentName="ngModel"[(ngModel)]="service.formData.StudentId" />
+           name="studentName" #studentName="ngModel"[(ngModel)]="service.formData.studentName" />
   </div>
 </form>
