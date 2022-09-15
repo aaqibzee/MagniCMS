@@ -10,9 +10,9 @@ export class StudentService {
   constructor(private http:HttpClient) { }
 
   formData: Student = new Student();
-  readonly baseUrl='localhost'
+  readonly baseUrl='/api/'
 
   postStudentDetails() {
-    return this.http.post(this.baseUrl, this.formData);
+    return this.http.post(this.baseUrl+'students', this.formData);
   }
 }
