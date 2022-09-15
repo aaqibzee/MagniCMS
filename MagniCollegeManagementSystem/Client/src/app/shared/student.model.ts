@@ -1,4 +1,4 @@
 export class Student {
-  studentId: number=0;
-  studentName:string='';
+  Id: number=0;
+  Name:string='';
 }
