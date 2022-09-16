@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Student } from '../shared/student.model';
 import { StudentService } from '../shared/student.service';
 
 @Component({
@@ -13,6 +14,10 @@ export class StudentComponent implements OnInit {
 
   ngOnInit(): void {
     this.service.refreshList();
+  }
+  PopulateForm(record: Student) {
+    //assign the object copy and not the original object
+    this.service.formData =  Object.assign({}, record);
   }
 
 }

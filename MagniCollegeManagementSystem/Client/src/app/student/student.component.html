@@ -1,11 +1,9 @@
 
 <div class="jumbotron py-3">
-
   <h1 class="display-4 text-center"> Student details</h1>
 </div>
 
 <div class="row">
-
   <div class="col-md-6">
     <app-student-form></app-student-form>
   </div>
@@ -21,13 +19,13 @@
           <th>
             Student Name
           </th>
-           <th></th>
+           <th>Some head</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let student of service.studentsList">
-          <td>{{student.Id}}</td>
-          <td>{{student.Name}}</td>
+        <tr *ngFor="let std of service.studentsList">
+          <td (click)="populateForm(std)">{{std.Id}}</td>
+          <td (click)="PopulateForm(std)">{{std.Name}}</td>
           <td>
             <i class="far fa-trash-alt fa-lg text-danger"></i>
           </td>
