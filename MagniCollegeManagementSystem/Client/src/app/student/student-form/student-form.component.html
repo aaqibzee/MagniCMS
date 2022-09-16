@@ -7,6 +7,6 @@
            name="name" #studentName="ngModel"[(ngModel)]="service.formData.Name" required maxlength="100"/>
   </div>
   <div class="form-group">
-    <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid">Add Student</button>
+    <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid"> {{ service.formData.Id != 0 ? 'Update' : 'Add' }} </button>
   </div>
 </form>

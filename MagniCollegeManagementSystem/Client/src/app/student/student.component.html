@@ -19,15 +19,16 @@
           <th>
             Student Name
           </th>
-           <th>Some head</th>
+           <th>Action</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let std of service.studentsList">
-          <td (click)="PopulateForm(std)">{{std.Id}}</td>
-          <td (click)="PopulateForm(std)">{{std.Name}}</td>
-          <td (click)="DeleteStudent(std)"> Delete
-            <i class="far fa-trash-alt fa-lg text-danger"></i>
+          <td>{{std.Id}}</td>
+          <td>{{std.Name}}</td>
+          <td (click)="PopulateForm(std)"> <button type="button" class="btn btn-info">Update</button>
+          <td (click)="DeleteStudent(std)"> <button type="button" class="btn btn-danger">Delete</button>
           </td>
         </tr>
       </tbody>  
