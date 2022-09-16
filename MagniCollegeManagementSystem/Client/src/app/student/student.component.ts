@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { StudentService } from '../shared/student.service';
 
 @Component({
   selector: 'app-student',
@@ -8,9 +9,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class StudentComponent implements OnInit {
 
-  constructor() { }
+  constructor(public service: StudentService) { }
 
   ngOnInit(): void {
+    this.service.refreshList();
   }
 
 }
