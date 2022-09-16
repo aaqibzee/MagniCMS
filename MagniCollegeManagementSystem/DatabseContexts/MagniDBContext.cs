@@ -10,5 +10,6 @@ namespace MagniCollegeManagementSystem.DatabseContexts
     public class MagniDBContext : DbContext
     {
         public DbSet<Student> Students { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
     }
 }

@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Student } from 'src/app/shared/student.model';
-import { StudentService } from "../../shared/student.service";
+import { Teacher } from 'src/app/shared/teacher.model';
+import { TeacherService } from "../../shared/teacher.service";
 
 @Component({
-  selector: 'app-student-form',
-  templateUrl: './student-form.component.html',
+  selector: 'app-teacher-form',
+  templateUrl: './teacher-form.component.html',
   styles: [
   ]
 })
-export class StudentFormComponent implements OnInit {
+export class TeacherFormComponent implements OnInit {
 
-  constructor(public service:StudentService) { }
+  constructor(public service:TeacherService) { }
 
   ngOnInit(): void {
   }
@@ -26,9 +26,9 @@ export class StudentFormComponent implements OnInit {
      
   }
 
-  inserRecord(form: NgForm)
+ inserRecord(form: NgForm)
   {
-     this.service.postStudent().subscribe(
+     this.service.postTeacher().subscribe(
       result =>{
          this.resetForm(form);
          this.service.refreshList();
@@ -40,7 +40,7 @@ export class StudentFormComponent implements OnInit {
 
   updateRecord(form: NgForm)
   {
-     this.service.putStudent().subscribe(
+     this.service.putTeacher().subscribe(
       result =>{
          this.resetForm(form);
          this.service.refreshList();
@@ -52,6 +52,6 @@ export class StudentFormComponent implements OnInit {
 
    resetForm(form: NgForm) {
      form.form.reset();
-     this.service.formData = new Student();
+     this.service.formData = new Teacher();
    }
 }

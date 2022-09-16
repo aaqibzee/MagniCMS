@@ -1,1 +1,38 @@
-<p>teacher works!</p>
+<div class="jumbotron py-3">
+    <h1 class="display-4 text-center"> Teacher details</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <app-teacher-form></app-teacher-form>
+    </div>
+
+    <div class="col-md-6">
+        <span> List of Teachers</span>
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th>
+                        Teacher Id
+                    </th>
+                    <th>
+                        Teacher Name
+                    </th>
+                    <th>Action</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let std of service.teacherList">
+                    <td>{{std.Id}}</td>
+                    <td>{{std.Name}}</td>
+                    <td (click)="PopulateForm(std)"> <button type="button" class="btn btn-info">Update</button>
+                    <td (click)="DeleteStudent(std)"> <button type="button" class="btn btn-danger">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</div>

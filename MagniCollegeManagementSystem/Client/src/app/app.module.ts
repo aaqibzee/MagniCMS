@@ -8,13 +8,15 @@ import { AppComponent } from './app.component';
 import { StudentComponent } from './student/student.component';
 import { StudentFormComponent } from './student/student-form/student-form.component';
 import { TeacherComponent } from './teacher/teacher.component';
+import { TeacherFormComponent } from './teacher/teacher-form/teacher-form.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     StudentComponent,
     StudentFormComponent,
-    TeacherComponent
+    TeacherComponent,
+    TeacherFormComponent
   ],
   imports: [
     BrowserModule,
