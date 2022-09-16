@@ -13,8 +13,16 @@ export class StudentService {
   studentsList: Student[];
   readonly baseUrl='/api/'
 
-  postStudentDetails() {
+  postStudent() {
     return this.http.post(this.baseUrl+'students', this.formData);
+  }
+
+  putStudent() {
+    return this.http.put(this.baseUrl + 'students/' + this.formData.Id, this.formData);
+  }
+
+  deleteStudent(id:number) {
+    return this.http.delete(this.baseUrl + 'students/' + id);
   }
 
   refreshList() {

@@ -17,14 +17,39 @@ export class StudentFormComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    this.service.postStudentDetails().subscribe(
+    if (this.service.formData.Id == 0) {
+      this.inserRecord(form);
+    }
+    else {
+      this.updateRecord(form);
+    }
+     
+  }
+
+  inserRecord(form: NgForm)
+  {
+     this.service.postStudent().subscribe(
       result =>{
-        this.resetForm(form);
+         this.resetForm(form);
+         this.service.refreshList();
       }, error =>{
         console.log(error);
       }
     );
   }
+
+  updateRecord(form: NgForm)
+  {
+     this.service.putStudent().subscribe(
+      result =>{
+         this.resetForm(form);
+         this.service.refreshList();
+      }, error =>{
+        console.log(error);
+      }
+    );
+  }
+
    resetForm(form: NgForm) {
      form.form.reset();
      this.service.formData = new Student();

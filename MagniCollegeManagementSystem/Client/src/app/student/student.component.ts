@@ -20,4 +20,12 @@ export class StudentComponent implements OnInit {
     this.service.formData =  Object.assign({}, record);
   }
 
+   DeleteStudent(record: Student) {
+     this.service.deleteStudent(record.Id).subscribe(
+       result => {
+        this.service.refreshList();
+       }, error => {
+         console.log(error);
+       });
+  }
 }

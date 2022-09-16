@@ -24,9 +24,9 @@
       </thead>
       <tbody>
         <tr *ngFor="let std of service.studentsList">
-          <td (click)="populateForm(std)">{{std.Id}}</td>
+          <td (click)="PopulateForm(std)">{{std.Id}}</td>
           <td (click)="PopulateForm(std)">{{std.Name}}</td>
-          <td>
+          <td (click)="DeleteStudent(std)"> Delete
             <i class="far fa-trash-alt fa-lg text-danger"></i>
           </td>
         </tr>
