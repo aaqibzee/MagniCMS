@@ -7,12 +7,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { StudentComponent } from './student/student.component';
 import { StudentFormComponent } from './student/student-form/student-form.component';
+import { TeacherComponent } from './teacher/teacher.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     StudentComponent,
-    StudentFormComponent
+    StudentFormComponent,
+    TeacherComponent
   ],
   imports: [
     BrowserModule,

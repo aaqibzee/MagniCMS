@@ -2,9 +2,19 @@
   <input type="hidden" name="id" [value]="service.formData.Id"/>
 
   <div class="form-group">
-    <label>Student Name</label>
+    <label>Name</label>
     <input class="form-control form-control-lg" placeholder="Student Name"
            name="name" #studentName="ngModel"[(ngModel)]="service.formData.Name" required maxlength="100"/>
+  </div>
+  <div class="form-group">
+    <label>Course</label>
+    <input class="form-control form-control-lg" placeholder="Student Course" name="name" #studentName="ngModel"
+      [(ngModel)]="service.formData.Name" required maxlength="100" />
+  </div>
+  <div class="form-group">
+    <label>CGPA</label>
+    <input class="form-control form-control-lg" placeholder="Student CGPA" name="name" #studentName="ngModel"
+      [(ngModel)]="service.formData.Name" required maxlength="100" />
   </div>
   <div class="form-group">
     <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid"> {{ service.formData.Id != 0 ? 'Update' : 'Add' }} </button>

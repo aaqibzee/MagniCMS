@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Student } from 'src/app/shared/student.model';
 import { StudentService } from "../../shared/student.service";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-student-form',
@@ -11,7 +12,7 @@ import { StudentService } from "../../shared/student.service";
 })
 export class StudentFormComponent implements OnInit {
 
-  constructor(public service:StudentService) { }
+  constructor(public service:StudentService,private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -53,6 +54,10 @@ export class StudentFormComponent implements OnInit {
    resetForm(form: NgForm) {
      form.form.reset();
      this.service.formData = new Student();
+   }
+  
+  gotoTeacherModule() {
+    this.router.navigate(['/teacher']);
   }
 
 }

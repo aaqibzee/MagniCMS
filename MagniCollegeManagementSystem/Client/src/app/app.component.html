@@ -1,3 +1,16 @@
 <div class="container">
-  <app-student></app-student>
+  <nav class="navbar navbar-light bg-light">
+    <form class="form-inline">
+      <button class="btn btn-outline-success" type="button"  routerLink="student">
+        Load Student Module
+      </button>
+    <button class="btn btn-outline-success" type="button" routerLink="teacher">
+       Load Teacher Module
+    </button>
+    </form>
+  </nav>
+
+  
+  <router-outlet></router-outlet>
+
 </div>
