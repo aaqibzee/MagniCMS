@@ -154,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="APIController\StudentsController.cs" />
+    <Compile Include="APIController\SubjectsController.cs" />
     <Compile Include="APIController\TeachersController.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
@@ -170,8 +171,13 @@
     <Compile Include="Migrations\202209161414106_Add_Teacher_Table.Designer.cs">
       <DependentUpon>202209161414106_Add_Teacher_Table.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202209161652425_Add_Subject_Table.cs" />
+    <Compile Include="Migrations\202209161652425_Add_Subject_Table.Designer.cs">
+      <DependentUpon>202209161652425_Add_Subject_Table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Student.cs" />
+    <Compile Include="Models\Subject.cs" />
     <Compile Include="Models\Teacher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -235,6 +241,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202209161414106_Add_Teacher_Table.resx">
       <DependentUpon>202209161414106_Add_Teacher_Table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209161652425_Add_Subject_Table.resx">
+      <DependentUpon>202209161652425_Add_Subject_Table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

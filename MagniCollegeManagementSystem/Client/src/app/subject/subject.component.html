@@ -1,0 +1,40 @@
+<div class="jumbotron py-3">
+    <h1 class="display-4 text-center"> Subject details</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <app-subject-form></app-subject-form>
+    </div>
+
+    <div class="col-md-6">
+        <span> List of subjects</span>
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th>
+                        Subject Id
+                    </th>
+                    <th>
+                        Subject Name
+                    </th>
+                    <th>
+                        Code
+                    </th>
+                    <th>Action</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let subj of service.subjectList">
+                    <td>{{subj.Id}}</td>
+                    <td>{{subj.Name}}</td>
+                    <td>{{subj.Code}}</td>
+                    <td (click)="PopulateForm(subj)"> <button type="button" class="btn btn-info">Update</button>
+                    <td (click)="DeleteSubject(subj)"> <button type="button" class="btn btn-danger">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

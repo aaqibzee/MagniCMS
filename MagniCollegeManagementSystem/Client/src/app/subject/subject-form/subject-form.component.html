@@ -1,0 +1,18 @@
+<form novalidate #form="ngForm" (submit)="onSubmit(form)">
+    <input type="hidden" name="id" [value]="service.formData.Id" />
+
+    <div class="form-group">
+        <label>Name</label>
+        <input class="form-control form-control-lg" placeholder="Subject Name" name="name" #subjectName="ngModel"
+            [(ngModel)]="service.formData.Name" required maxlength="100" />
+    </div>
+    <div class="form-group">
+        <label>Code</label>
+        <input class="form-control form-control-lg" placeholder="Subject Code" name="code" #subjectCode="ngModel"
+            [(ngModel)]="service.formData.Code" required maxlength="100" />
+    </div>
+    <div class="form-group">
+        <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid"> {{ service.formData.Id !=
+            0 ? 'Update' : 'Add' }} </button>
+    </div>
+</form>
