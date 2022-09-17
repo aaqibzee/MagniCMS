@@ -1,0 +1,24 @@
+<form novalidate #form="ngForm" (submit)="onSubmit(form)">
+    <input type="hidden" name="id" [value]="service.formData.Id" />
+
+    <div class="form-group">
+        <label>Title</label>
+        <input class="form-control form-control-lg" placeholder="Grade Title" name="title" #Title="ngModel"
+            [(ngModel)]="service.formData.Title" required />
+    </div>
+    <div class="form-group">
+        <label>Marks</label>
+        <input class="form-control form-control-lg" placeholder="Marks" name="marks" #Marks="ngModel"
+            [(ngModel)]="service.formData.Marks" required />
+    </div>
+    <div class="form-group">
+        <label>Subject</label>
+        <input class="form-control form-control-lg" placeholder="Subject" name="name" #Subject="ngModel"
+            [(ngModel)]="service.formData.SubjectId" required />
+    </div>
+
+    <div class="form-group">
+        <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid"> {{ service.formData.Id !=
+            0 ? 'Update' : 'Add' }} </button>
+    </div>
+</form>

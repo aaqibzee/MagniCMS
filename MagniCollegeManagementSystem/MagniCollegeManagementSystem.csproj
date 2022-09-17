@@ -154,6 +154,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="APIController\CoursesController.cs" />
+    <Compile Include="APIController\GradesController.cs" />
     <Compile Include="APIController\StudentsController.cs" />
     <Compile Include="APIController\SubjectsController.cs" />
     <Compile Include="APIController\TeachersController.cs" />
@@ -180,7 +181,12 @@
     <Compile Include="Migrations\202209161751358_Add_Course_Table.Designer.cs">
       <DependentUpon>202209161751358_Add_Course_Table.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202209170622455_Add_Grade_Table.cs" />
+    <Compile Include="Migrations\202209170622455_Add_Grade_Table.Designer.cs">
+      <DependentUpon>202209170622455_Add_Grade_Table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\Grade.cs" />
     <Compile Include="Models\Student.cs" />
     <Compile Include="Models\Subject.cs" />
     <Compile Include="Models\Course.cs" />
@@ -253,6 +259,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202209161751358_Add_Course_Table.resx">
       <DependentUpon>202209161751358_Add_Course_Table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209170622455_Add_Grade_Table.resx">
+      <DependentUpon>202209170622455_Add_Grade_Table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -13,6 +13,8 @@ import { SubjectComponent } from './subject/subject.component';
 import { SubjectFormComponent } from './subject/subject-form/subject-form.component';
 import { CourseComponent } from './course/course.component';
 import { CourseFormComponent } from './course/course-form/course-form.component';
+import { GradeFormComponent } from './grade/grade-form/grade-form.component';
+import { GradeComponent } from './grade/grade.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +26,9 @@ import { CourseFormComponent } from './course/course-form/course-form.component'
     SubjectComponent,
     SubjectFormComponent,
     CourseComponent,
-    CourseFormComponent
+    CourseFormComponent,
+    GradeFormComponent,
+    GradeComponent
   ],
   imports: [
     BrowserModule,

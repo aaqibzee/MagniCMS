@@ -13,5 +13,6 @@ namespace MagniCollegeManagementSystem.DatabseContexts
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Course> Courses { get; set; }
+        public DbSet<Grade> Grades { get; set; }
     }
 }

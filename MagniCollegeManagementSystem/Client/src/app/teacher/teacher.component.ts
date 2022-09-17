@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Student } from '../shared/student.model';
+import { Teacher } from '../shared/teacher.model';
 import { TeacherService } from '../shared/teacher.service'
 
 @Component({
@@ -15,12 +15,12 @@ export class TeacherComponent implements OnInit {
     this.service.refreshList();
   }
 
-   PopulateForm(record: Student) {
+   PopulateForm(record: Teacher) {
     //assign the object copy and not the original object
     this.service.formData =  Object.assign({}, record);
   }
 
-   DeleteStudent(record: Student) {
+   DeleteTeacher(record: Teacher) {
      this.service.deleteTeacher(record.Id).subscribe(
        result => {
         this.service.refreshList();

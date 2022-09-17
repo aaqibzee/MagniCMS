@@ -1,0 +1,47 @@
+<div class="jumbotron py-3">
+    <h1 class="display-4 text-center"> Grade details</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <app-grade-form></app-grade-form>
+    </div>
+
+    <div class="col-md-6">
+        <span> List of Grades</span>
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th>
+                        Grade Id
+                    </th>
+                    <th>
+                        Grade Title
+                    </th>
+                    <th>
+                        Marks Required 
+                    </th>
+                    <th>
+                        Subject
+                    </th>
+                    <th>Action</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let grade of service.gradesList">
+                    <td>{{grade.Id}}</td>
+                    <td>{{grade.Title}}</td>
+                    <td>{{grade.Marks}}</td>
+                     <td>{{grade.SubjectId}}</td>
+                    
+                    <td (click)="PopulateForm(grade)"> <button type="button" class="btn btn-info">Update</button>
+                    <td (click)="DeleteGrade(grade)"> <button type="button" class="btn btn-danger">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+</div>
