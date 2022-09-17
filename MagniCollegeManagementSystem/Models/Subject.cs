@@ -11,5 +11,9 @@ namespace MagniCollegeManagementSystem.Models
         public string Name { get; set; }
         public string Code { get; set; }
 
+        public virtual ICollection<Student> Students { get; set; }
+        public Teacher Teacher { get; set; }
+        public Course Course { get; set; }
+        public virtual ICollection<Grade> Grades { get; set; }
     }
 }
