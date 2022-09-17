@@ -11,7 +11,7 @@ namespace MagniCollegeManagementSystem
             GlobalConfiguration.Configure(WebApiConfig.Register);
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            
+            //BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
     }
 }

@@ -10,6 +10,14 @@ import { StudentService } from "../../shared/student.service";
   ]
 })
 export class StudentFormComponent implements OnInit {
+   selectedValue: string = 'Select Student';
+  selectedId: number;
+  
+  // On-Click Method on dropdown control
+   selectValue(student: Student) {
+     this.selectedValue = student.Name;
+     this.selectedId = student.Id;
+   }
 
   constructor(public service:StudentService) { }
 
