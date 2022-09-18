@@ -11,7 +11,6 @@ namespace MagniCollegeManagementSystem.Models
         public string Title { get; set; }
         public int Marks { get; set; }
         public int SubjectId { get; set; }
-        public ICollection<Student> Student { get; set; }
-        public Subject Subject { get; set; }
+        public ICollection<Student> Students { get; set; }
     }
 }
