@@ -1,17 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Student } from "./student.model";
 import { HttpClient } from '@angular/common/http';
+import { CourseService } from "./course.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class StudentService {
 
-  constructor(private http:HttpClient) { }
+  constructor(private http: HttpClient, public courseService: CourseService) {
+    courseService.refreshList();
+   }
 
   formData: Student = new Student();
   studentsList: Student[];
-  readonly baseUrl='/api/'
+  readonly baseUrl = '/api/'
+ 
 
   postStudent() {
     return this.http.post(this.baseUrl+'students', this.formData);
