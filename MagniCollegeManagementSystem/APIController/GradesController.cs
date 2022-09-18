@@ -18,9 +18,11 @@ namespace MagniCollegeManagementSystem.APIController
         private MagniDBContext db = new MagniDBContext();
 
         // GET: api/Grades
-        public IQueryable<Grade> GetGrades()
+        public List<Grade> GetGrades()
         {
-            return db.Grades;
+            return db.Grades.
+                Include(x => x.Students)
+                .ToList();
         }
 
         // GET: api/Grades/5

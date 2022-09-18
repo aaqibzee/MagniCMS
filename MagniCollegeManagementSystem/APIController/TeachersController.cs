@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
@@ -14,9 +15,13 @@ namespace MagniCollegeManagementSystem.APIController
         private MagniDBContext db = new MagniDBContext();
 
         // GET: api/Teachers
-        public IQueryable<Teacher> GetTeachers()
+        public List<Teacher> GetTeachers()
         {
-            return db.Teachers;
+            return db.Teachers
+                .Include(x => x.Students)
+                .Include(x=>x.Students)
+                .Include(x => x.Subjects)
+                .ToList();
         }
 
         // GET: api/Teachers/5
