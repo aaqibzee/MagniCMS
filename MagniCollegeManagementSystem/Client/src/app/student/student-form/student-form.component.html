@@ -4,20 +4,22 @@
   <div class="form-group">
     <label>Name</label>
     <input class="form-control form-control-lg" placeholder="Student Name"
-           name="name" #studentName="ngModel"[(ngModel)]="service.formData.Name" required maxlength="100"/>
+           name="name" #studentName="ngModel" [(ngModel)]="service.formData.Name" required/>
   </div>
+  
   <div class="form-group">
     <div class="dropdown">
       <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="true"> {{selectedValue}} </button>
-  
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <button type="button" class="dropdown-item" *ngFor="let std of service.studentsList" value="{{std.Name}}"
-          (click)="selectValue(std)">{{std.Name}}</button>
+        aria-haspopup="true" aria-expanded="true"> {{courseDropDownCelectedValue}} </button>
+
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"  #dropDownSelection>
+        <button type="button" class="dropdown-item" *ngFor="let course of service.courseService.courseList"
+           (click)="selectValue(course);" on-click="dropDownSelection.value=course">{{course.Name +' '+ course.Code }}</button>
       </div>
     </div>
   </div>
+
   <div class="form-group">
-    <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid"> {{ service.formData.Id != 0 ? 'Update' : 'Add' }} </button>
+    <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid || !dropDownSelection.value"> {{ service.formData.Id != 0 ? 'Update' : 'Add' }} </button>
   </div>
 </form>

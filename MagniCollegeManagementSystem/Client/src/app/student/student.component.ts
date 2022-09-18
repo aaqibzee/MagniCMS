@@ -15,7 +15,7 @@ export class StudentComponent implements OnInit {
   ngOnInit(): void {
     this.service.refreshList();
   }
-  PopulateForm(record: Student) {
+  UpdateStudent(record: Student) {
     //assign the object copy and not the original object
     this.service.formData =  Object.assign({}, record);
   }

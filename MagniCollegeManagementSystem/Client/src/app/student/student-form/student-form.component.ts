@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Course } from 'src/app/shared/course.model';
 import { Student } from 'src/app/shared/student.model';
 import { StudentService } from "../../shared/student.service";
 
@@ -10,21 +11,23 @@ import { StudentService } from "../../shared/student.service";
   ]
 })
 export class StudentFormComponent implements OnInit {
-   selectedValue: string = 'Select Student';
-  selectedId: number;
+   courseDropDownCelectedValue: string = 'Select Course';
+   course: Course;
   
   // On-Click Method on dropdown control
-   selectValue(student: Student) {
-     this.selectedValue = student.Name;
-     this.selectedId = student.Id;
+   selectValue(course: Course) {
+     this.courseDropDownCelectedValue = course.Name;
+     this.course = course;
    }
 
   constructor(public service:StudentService) { }
 
   ngOnInit(): void {
+    this.resetFormData();
   }
 
   onSubmit(form: NgForm) {
+    this.service.formData.Course = this.course;
     if (this.service.formData.Id == 0) {
       this.inserRecord(form);
     }
@@ -60,6 +63,11 @@ export class StudentFormComponent implements OnInit {
 
    resetForm(form: NgForm) {
      form.form.reset();
-     this.service.formData = new Student();
+     this.resetFormData();
    }
+  
+  resetFormData()
+  {
+    this.service.formData = new Student();
+  }
 }
