@@ -14,6 +14,7 @@ export class CourseFormComponent implements OnInit {
   constructor(public service:CourseService) { }
 
   ngOnInit(): void {
+    this.resetFormData();
   }
 
   onSubmit(form: NgForm) {
@@ -52,8 +53,13 @@ export class CourseFormComponent implements OnInit {
 
    resetForm(form: NgForm) {
      form.form.reset();
-     this.service.formData = new Course();
+     this.resetFormData();
    }
+  
+  resetFormData()
+  {
+    this.service.formData = new Course();
+  }
 }
 
 

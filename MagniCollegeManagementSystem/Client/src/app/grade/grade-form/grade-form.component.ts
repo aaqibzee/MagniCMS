@@ -14,6 +14,7 @@ export class GradeFormComponent implements OnInit {
   constructor(public service:GradeService) { }
 
   ngOnInit(): void {
+    this.resetFormData();
   }
 
   onSubmit(form: NgForm) {
@@ -52,6 +53,11 @@ export class GradeFormComponent implements OnInit {
 
    resetForm(form: NgForm) {
      form.form.reset();
-     this.service.formData = new Grade();
+     this.resetFormData();
    }
+  
+  resetFormData()
+  {
+    this.service.formData = new Grade();
+  }
 }
