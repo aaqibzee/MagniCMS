@@ -10,16 +10,16 @@
   <div class="form-group">
     <div class="dropdown">
       <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="true"> {{courseDropDownCelectedValue}} </button>
+        aria-haspopup="true" aria-expanded="true"> {{service.courseDropDownCelectedValue}} </button>
 
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"  #dropDownSelection>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"  #courseSelected>
         <button type="button" class="dropdown-item" *ngFor="let course of service.courseService.courseList"
-           (click)="selectValue(course);" on-click="dropDownSelection.value=course">{{course.Name +' '+ course.Code }}</button>
+           (click)="service.selectCourse(course);" on-click="courseSelected.value=course">{{course.Name +' '+ course.Code }}</button>
       </div>
     </div>
   </div>
 
   <div class="form-group">
-    <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid || !dropDownSelection.value"> {{ service.formData.Id != 0 ? 'Update' : 'Add' }} </button>
+    <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid || !courseSelected.value"> {{ service.formData.Id != 0 ? 'Update' : 'Add' }} </button>
   </div>
 </form>

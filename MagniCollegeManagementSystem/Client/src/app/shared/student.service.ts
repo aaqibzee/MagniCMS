@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Student } from "./student.model";
 import { HttpClient } from '@angular/common/http';
 import { CourseService } from "./course.service";
+import { Course } from './course.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,20 @@ export class StudentService {
 
   formData: Student = new Student();
   studentsList: Student[];
-  readonly baseUrl = '/api/'
+  readonly baseUrl = '/api/';
+
+   courseDropDownCelectedValue: string = 'Select Course';
+   course: Course;
  
+  selectCourse(course: Course) {
+     this.courseDropDownCelectedValue = course.Name;
+     this.course = course;
+  }
+  
+  populateForm(student: Student) {
+    this.courseDropDownCelectedValue = student.Course.Name;
+    this.formData = Object.assign({}, student);
+  }
 
   postStudent() {
     return this.http.post(this.baseUrl+'students', this.formData);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Input } from '@angular/core';
 import { Student } from '../shared/student.model';
 import { StudentService } from '../shared/student.service';
 
@@ -11,13 +11,13 @@ import { StudentService } from '../shared/student.service';
 export class StudentComponent implements OnInit {
 
   constructor(public service: StudentService) { }
-
+  @Input() selectedItem: string = '';
+  
   ngOnInit(): void {
     this.service.refreshList();
   }
   UpdateStudent(record: Student) {
-    //assign the object copy and not the original object
-    this.service.formData =  Object.assign({}, record);
+    this.service.populateForm(record);
   }
 
    DeleteStudent(record: Student) {

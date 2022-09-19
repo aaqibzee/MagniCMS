@@ -11,23 +11,14 @@ import { StudentService } from "../../shared/student.service";
   ]
 })
 export class StudentFormComponent implements OnInit {
-   courseDropDownCelectedValue: string = 'Select Course';
-   course: Course;
+   constructor(public service: StudentService) { }
   
-  // On-Click Method on dropdown control
-   selectValue(course: Course) {
-     this.courseDropDownCelectedValue = course.Name;
-     this.course = course;
-   }
-
-  constructor(public service:StudentService) { }
-
   ngOnInit(): void {
     this.resetFormData();
   }
 
   onSubmit(form: NgForm) {
-    this.service.formData.Course = this.course;
+    //this.service.formData.Course = this.course;
     if (this.service.formData.Id == 0) {
       this.inserRecord(form);
     }
