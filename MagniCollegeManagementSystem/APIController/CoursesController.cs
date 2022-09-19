@@ -17,8 +17,8 @@ namespace MagniCollegeManagementSystem.APIController
         // GET: api/Courses
         public List<Course> GetCourses()
         {
-            return db.Courses.
-                Include(x => x.Students)
+            return db.Courses
+                .Include(x => x.Students)
                 .Include(x => x.Subjects)
                 .Include(x=>x.Teachers)
                 .ToList();
@@ -51,10 +51,9 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            db.Entry(course).State = EntityState.Modified;
-
             try
             {
+                db.Entry(course).State = EntityState.Modified;
                 db.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)

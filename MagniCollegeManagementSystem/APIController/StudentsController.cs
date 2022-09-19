@@ -20,7 +20,7 @@ namespace MagniCollegeManagementSystem.APIController
         // GET: api/Students
         public List<Student> GetStudents()
         {
-            return db.Students.Include(x=>x.Course).Include(x => x.Grade).ToList();
+            return db.Students.Include(x => x.Course).Include(x => x.Grade).ToList();
         }
 
         // GET: api/Students/5
@@ -51,6 +51,10 @@ namespace MagniCollegeManagementSystem.APIController
             }
 
             db.Entry(student).State = EntityState.Modified;
+            db.Entry(student.Course).State = EntityState.Modified;
+            db.Entry(student.Grade).State = EntityState.Modified;
+            db.Entry(student.Subjects).State = EntityState.Modified;
+            db.Entry(student.Teachers).State = EntityState.Modified;
 
             try
             {
@@ -80,6 +84,7 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
+            db.Entry(student.Course).State = EntityState.Modified;
             db.Students.Add(student);
             db.SaveChanges();
 

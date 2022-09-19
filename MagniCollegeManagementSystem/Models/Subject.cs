@@ -12,7 +12,7 @@ namespace MagniCollegeManagementSystem.Models
         public string Code { get; set; }
 
         public virtual ICollection<Student> Students { get; set; }
-        public Teacher Teacher { get; set; }
-        public Course Course { get; set; }
+        public virtual Teacher Teacher { get; set; }
+        public virtual Course Course { get; set; }
     }
 }

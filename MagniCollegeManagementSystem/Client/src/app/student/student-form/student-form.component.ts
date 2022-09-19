@@ -59,6 +59,6 @@ export class StudentFormComponent implements OnInit {
   
   resetFormData()
   {
-    this.service.formData = new Student();
+    this.service.resetFormData();
   }
 }

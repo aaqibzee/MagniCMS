@@ -17,12 +17,17 @@ export class StudentService {
   studentsList: Student[];
   readonly baseUrl = '/api/';
 
-   courseDropDownCelectedValue: string = 'Select Course';
-   course: Course;
+  courseDropDownCelectedValue: string = 'Select Course';
+
+  resetFormData()
+  {
+    this.formData = new Student();
+    this.courseDropDownCelectedValue= 'Select Course';
+  }
  
   selectCourse(course: Course) {
      this.courseDropDownCelectedValue = course.Name;
-     this.course = course;
+     this.formData.Course = course;
   }
   
   populateForm(student: Student) {
