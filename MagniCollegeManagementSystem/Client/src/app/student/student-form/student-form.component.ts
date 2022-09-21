@@ -1,24 +1,43 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
-import { Course } from 'src/app/shared/course.model';
-import { Student } from 'src/app/shared/student.model';
+import { NgForm ,FormsModule} from '@angular/forms';
 import { StudentService } from "../../shared/student.service";
+import { NgSelectModule } from "@ng-select/ng-select";
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import { Course } from 'src/app/shared/course.model';
+import { Subject } from 'src/app/shared/subject.model';
 
 @Component({
   selector: 'app-student-form',
   templateUrl: './student-form.component.html',
   styles: [
-  ]
+  ],
 })
 export class StudentFormComponent implements OnInit {
-   constructor(public service: StudentService) { }
   
+  constructor(public service: StudentService) { }
+  selectedCourse: Course;
+
+  // Multiselect Start
+  subjectsDropdownSettings:IDropdownSettings=  {};
+  // Multiselect End
   ngOnInit(): void {
     this.resetFormData();
+    
+  
+    this.subjectsDropdownSettings = {
+      singleSelection: false,
+      idField: 'Id',
+      textField: 'Name',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      limitSelection:3,
+      itemsShowLimit: 3,
+      allowSearchFilter: true
+    };
   }
 
   onSubmit(form: NgForm) {
-    //this.service.formData.Course = this.course;
+    this.service.formData.Subjects = this.service.selectedSubjects;
     if (this.service.formData.Id == 0) {
       this.inserRecord(form);
     }
@@ -60,5 +79,20 @@ export class StudentFormComponent implements OnInit {
   resetFormData()
   {
     this.service.resetFormData();
+  }
+
+  onItemSelect(item: any) {
+    console.log(this.selectedCourse)
+    console.log(this.service.selectedSubjects)
+  }
+  onSelectAll(items: any) {
+    console.log(items);
+  }
+
+  isFormInvalid(form: NgForm)
+  {
+    return (form.invalid
+      ||this.service.courseDropDownCelectedValue == this.service.courseDropDownDefaultValue
+      || this.service.selectedSubjects.length == 0);
   }
 }

@@ -81,8 +81,15 @@ namespace MagniCollegeManagementSystem.APIController
             {
                 return BadRequest(ModelState);
             }
-
-            db.Subjects.Add(subject);
+            var entity = new Subject
+            {
+                Name = subject.Name,
+                Course = db.Courses.FirstOrDefault(x => x.Id.Equals(subject.Course.Id)),
+                Code = subject.Code,
+                Students = subject.Students,
+                Teacher = subject.Teacher,
+            };
+            db.Subjects.Add(entity);
             db.SaveChanges();
 
             return CreatedAtRoute("DefaultApi", new { id = subject.Id }, subject);

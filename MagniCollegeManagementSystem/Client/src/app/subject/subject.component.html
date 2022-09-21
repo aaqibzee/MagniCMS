@@ -21,6 +21,9 @@
                     <th>
                         Code
                     </th>
+                    <th>
+                        Course
+                    </th>
                     <th>Action</th>
                     <th>Action</th>
                 </tr>
@@ -30,7 +33,8 @@
                     <td>{{subj.Id}}</td>
                     <td>{{subj.Name}}</td>
                     <td>{{subj.Code}}</td>
-                    <td (click)="PopulateForm(subj)"> <button type="button" class="btn btn-info">Update</button>
+                    <td>{{subj.Course?.Name}}</td>
+                    <td (click)="UpdateSubject(subj)"> <button type="button" class="btn btn-info">Update</button>
                     <td (click)="DeleteSubject(subj)"> <button type="button" class="btn btn-danger">Delete</button>
                     </td>
                 </tr>

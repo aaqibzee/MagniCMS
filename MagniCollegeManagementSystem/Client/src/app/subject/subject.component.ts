@@ -16,9 +16,8 @@ export class SubjectComponent implements OnInit {
     this.service.refreshList();
   }
 
-   PopulateForm(record: Subject) {
-    //assign the object copy and not the original object
-    this.service.formData =  Object.assign({}, record);
+  UpdateSubject(record: Subject) {
+    this.service.populateForm(record);
   }
 
    DeleteSubject(record: Subject) {

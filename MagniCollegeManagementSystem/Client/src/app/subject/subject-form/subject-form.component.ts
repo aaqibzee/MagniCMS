@@ -1,7 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Subject } from 'src/app/shared/subject.model';
 import { SubjectService } from "../../shared/subject.service";
 
 @Component({
@@ -59,7 +58,7 @@ export class SubjectFormComponent implements OnInit {
   
   resetFormData()
   {
-    this.service.formData = new Subject();
+    this.service.resetFormData();
   }
 }
 

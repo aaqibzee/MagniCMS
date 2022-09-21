@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -50,11 +51,38 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            db.Entry(student).State = EntityState.Modified;
-            db.Entry(student.Course).State = EntityState.Modified;
-            db.Entry(student.Grade).State = EntityState.Modified;
-            db.Entry(student.Subjects).State = EntityState.Modified;
-            db.Entry(student.Teachers).State = EntityState.Modified;
+            var dbEntity = db.Students.First(x => x.Id.Equals(id));
+            if (dbEntity is null)
+            {
+                return BadRequest();
+            }
+
+            db.Students.Attach(dbEntity);
+
+            //Update Course
+            dbEntity.Course = student.Course;
+            var listOfSubject=dbEntity.Subjects.ToList();
+
+            //Remove subjects references
+            foreach (var item in listOfSubject)
+            {
+                var subject = student.Subjects.FirstOrDefault(c => c.Id == item.Id);
+                if (subject == null)
+                {
+                    dbEntity.Subjects.Remove(item);
+                }
+            }
+
+            //Add subjects references
+            foreach (var item in student.Subjects)
+            {
+                var subject = dbEntity.Subjects.FirstOrDefault(c => c.Id == item.Id);
+                if (subject == null)
+                {
+                    dbEntity.Subjects.Add(db.Subjects.FirstOrDefault(x => x.Id.Equals(item.Id)));
+                }
+            }
+
 
             try
             {
@@ -85,6 +113,20 @@ namespace MagniCollegeManagementSystem.APIController
             }
 
             db.Entry(student.Course).State = EntityState.Modified;
+
+            var subjectsSelectedByUser = student.Subjects.ToList();
+            student.Subjects.Clear();
+
+            foreach (var item in subjectsSelectedByUser)
+            {
+                var entity = db.Subjects.SingleOrDefault(c => c.Id == item.Id);
+                if (entity != null)
+                {
+                    student.Subjects.Add(entity);
+                    db.Entry(entity).State = EntityState.Modified;
+                }
+            }
+
             db.Students.Add(student);
             db.SaveChanges();
 

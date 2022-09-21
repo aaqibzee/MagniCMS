@@ -3,36 +3,52 @@ import { Student } from "./student.model";
 import { HttpClient } from '@angular/common/http';
 import { CourseService } from "./course.service";
 import { Course } from './course.model';
+import { SubjectService } from './subject.service';
+import { Subject } from './subject.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StudentService {
 
-  constructor(private http: HttpClient, public courseService: CourseService) {
+  constructor(
+    private http: HttpClient,
+    public courseService: CourseService,
+    public subjectService: SubjectService)
+  {
     courseService.refreshList();
+    subjectService.refreshList();
    }
 
   formData: Student = new Student();
   studentsList: Student[];
+  selectedSubjects: Subject[];
+  subjectsList = [];
+  
   readonly baseUrl = '/api/';
-
-  courseDropDownCelectedValue: string = 'Select Course';
+  readonly courseDropDownDefaultValue= 'Select Course';
+  courseDropDownCelectedValue: string = this.courseDropDownDefaultValue;
+   
 
   resetFormData()
   {
     this.formData = new Student();
-    this.courseDropDownCelectedValue= 'Select Course';
+    this.courseDropDownCelectedValue = this.courseDropDownDefaultValue;
+    this.selectedSubjects = null;
+    this.subjectsList =  null;
   }
  
   selectCourse(course: Course) {
      this.courseDropDownCelectedValue = course.Name;
-     this.formData.Course = course;
+    this.formData.Course = course;
+    this.subjectsList = this.subjectService.getList().filter(x=>x.Course?.Id==course?.Id);
   }
   
   populateForm(student: Student) {
     this.courseDropDownCelectedValue = student.Course.Name;
     this.formData = Object.assign({}, student);
+    this.subjectsList = this.subjectService.getList().filter(x=>x.Course?.Id==student.Course?.Id);
+    this.selectedSubjects = this.formData.Subjects;
   }
 
   postStudent() {

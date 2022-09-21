@@ -19,8 +19,12 @@
           <th>
             Student Name
           </th>
+          
           <th>
             Assigned Course
+          </th>
+          <th>
+            Assigned Subjects
           </th>
            <th>Action</th>
           <th>Action</th>
@@ -31,6 +35,13 @@
           <td>{{std.Id}}</td>
           <td>{{std.Name}}</td>
           <td>{{std.Course?.Name}}</td>
+          <td>
+            <div *ngFor="let subject of std.Subjects">
+              <div>
+                {{subject.Name}}
+              </div>
+            </div>
+          </td>
           <td (click)="UpdateStudent(std)"> <button type="button" class="btn btn-info">Update</button>
           <td (click)="DeleteStudent(std)"> <button type="button" class="btn btn-danger">Delete</button>
           </td>
