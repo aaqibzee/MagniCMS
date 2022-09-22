@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace MagniCollegeManagementSystem.Models
+namespace MagniCollegeManagementSystem.DTOs
 {
-    public class Grade
+    public class GradeDTO
     {
         public int Id { get; set; }
         public string Title { get; set; }
         public int Marks { get; set; }
         public int SubjectId { get; set; }
-        public virtual ICollection<Student> Students { get; set; }
+        public List<int> Students { get; set; }
     }
 }

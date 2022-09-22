@@ -3,24 +3,52 @@
 
   <div class="form-group">
     <label>Name</label>
-    <input class="form-control form-control-lg" placeholder="Student Name"
-           name="name" #studentName="ngModel" [(ngModel)]="service.formData.Name" required/>
+    <input 
+      class="form-control form-control-lg" 
+      placeholder="Student Name"
+      name="name" 
+      #studentName="ngModel" 
+      [(ngModel)]="service.formData.Name" 
+      required
+    />
   </div>
   
   <div class="form-group">
     <div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="true"> {{service.courseDropDownCelectedValue}} </button>
+      <button 
+        class="btn btn-secondary dropdown-toggle" 
+        id="dropdownMenuButton" 
+        data-toggle="dropdown"
+        aria-haspopup="true" 
+        aria-expanded="true"> 
+        {{service.courseDropDownCelectedValue}} 
+      </button>
 
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton"  #courseSelected>
-        <button type="button" class="dropdown-item" *ngFor="let course of service.courseService.courseList"
-           (click)="service.selectCourse(course);" on-click="courseSelected.value=course">{{course.Name +' '+ course.Code }}</button>
+      <div 
+        class="dropdown-menu" 
+        aria-labelledby="dropdownMenuButton"  
+        #courseSelected>
+        <button 
+          type="button" 
+          class="dropdown-item" 
+          *ngFor="let course of service.courseService.courseList"
+          (click)="service.onSelectCourse(course);" 
+          on-click="courseSelected.value=course">
+          {{course.Name +' '+ course.Code }}
+        </button>
       </div>
     </div>
   </div>
   <div class="form-group">
-<ng-multiselect-dropdown [placeholder]="'Select Subject'"  name="carSelct" [settings]="subjectsDropdownSettings" [data]="service.subjectsList"
-  [(ngModel)]="service.selectedSubjects" (onSelect)="onItemSelect($event)" (onSelectAll)="onSelectAll($event)">
+
+<ng-multiselect-dropdown 
+  [placeholder]="'Select Subject'"  
+  name="carSelct" 
+  [settings]="subjectsDropdownSettings"
+  [data]="service.subjectsList"
+  [(ngModel)]="service.selectedSubjects" 
+  (onSelect)="onItemSelect($event)" 
+  (onSelectAll)="onSelectAll($event)">
 </ng-multiselect-dropdown>
 </div>
 

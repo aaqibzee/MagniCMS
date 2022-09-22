@@ -3,9 +3,9 @@ import { Subject } from "./subject.model";
 import { Teacher } from "./teacher.model";
 
 export class Course {
-    Students: Student[]=null;
-    Subjects: Subject[]=null;
-    Teachers: Teacher[]=null;
+    Students: number[];
+    Subjects: number[];
+    Teachers: number[];
     Id:       number=0;
     Name:     string='';
     Code:     string='';

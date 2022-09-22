@@ -1,6 +1,9 @@
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
+using AutoMapper;
+using MagniCollegeManagementSystem.Models;
+using MagniCollegeManagementSystem.DTOs;
 
 namespace MagniCollegeManagementSystem
 {
@@ -18,6 +21,7 @@ namespace MagniCollegeManagementSystem
             config.Formatters.JsonFormatter
                 .SerializerSettings
                 .ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            UnityConfig.RegisterComponents();
         }
     }
 }

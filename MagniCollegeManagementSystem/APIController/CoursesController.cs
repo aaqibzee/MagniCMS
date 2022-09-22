@@ -1,31 +1,46 @@
-﻿using System.Collections.Generic;
+﻿using MagniCollegeManagementSystem.DatabseContexts;
+using MagniCollegeManagementSystem.DTOs;
+using MagniCollegeManagementSystem.Mappers;
+using MagniCollegeManagementSystem.Models;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
-using MagniCollegeManagementSystem.DatabseContexts;
-using MagniCollegeManagementSystem.Models;
+
 
 namespace MagniCollegeManagementSystem.APIController
 {
     public class CoursesController : ApiController
     {
-        private MagniDBContext db = new MagniDBContext();
+        private MagniDBContext db;
+        public CoursesController()
+        {
+            this.db = new MagniDBContext();
+
+        }
 
         // GET: api/Courses
-        public List<Course> GetCourses()
+        public List<CourseDTO> GetCourses()
         {
-            return db.Courses
+            var result = db.Courses
                 .Include(x => x.Students)
                 .Include(x => x.Subjects)
-                .Include(x=>x.Teachers)
-                .ToList();
+                .Include(x => x.Teachers);
+
+            var response = new List<CourseDTO>();
+            foreach (var item in result)
+            {
+                response.Add(CourseMapper.Map(item));
+            }
+
+            return response;
         }
 
         // GET: api/Courses/5
-        [ResponseType(typeof(Course))]
+        [ResponseType(typeof(CourseDTO))]
         public IHttpActionResult GetCourse(int id)
         {
             Course course = db.Courses.Find(id);
@@ -34,26 +49,25 @@ namespace MagniCollegeManagementSystem.APIController
                 return NotFound();
             }
 
-            return Ok(course);
+            return Ok(CourseMapper.Map(course));
         }
 
         // PUT: api/Courses/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutCourse(int id, Course course)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != course.Id)
+        public IHttpActionResult PutCourse(int id, CourseDTO course)
+        {  
+            var dbEntity = db.Courses.First(x => x.Id.Equals(id));
+            if (dbEntity is null)
             {
                 return BadRequest();
             }
 
+            db.Courses.Attach(dbEntity);
+            dbEntity = CourseMapper.Map(course, db);
+            //db.Entry(course).State = EntityState.Modified;
+
             try
             {
-                db.Entry(course).State = EntityState.Modified;
                 db.SaveChanges();
             }
             catch (DbUpdateConcurrencyException)
@@ -73,17 +87,20 @@ namespace MagniCollegeManagementSystem.APIController
 
         // POST: api/Courses
         [ResponseType(typeof(Course))]
-        public IHttpActionResult PostCourse(Course course)
+        public IHttpActionResult PostCourse(CourseDTO request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            var course = CourseMapper.Map(request, db);
+
+            db.Entry(course).State = EntityState.Modified;
             db.Courses.Add(course);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = course.Id }, course);
+            return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
         }
 
         // DELETE: api/Courses/5

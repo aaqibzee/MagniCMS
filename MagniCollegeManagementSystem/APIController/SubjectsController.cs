@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using MagniCollegeManagementSystem.DatabseContexts;
+using MagniCollegeManagementSystem.DTOs;
+using MagniCollegeManagementSystem.Mappers;
 using MagniCollegeManagementSystem.Models;
 
 namespace MagniCollegeManagementSystem.APIController
@@ -18,15 +17,24 @@ namespace MagniCollegeManagementSystem.APIController
         private MagniDBContext db = new MagniDBContext();
 
         // GET: api/Subjects
-        public List<Subject> GetSubjects()
+        public List<SubjectDTO> GetSubjects()
         {
-            return db.Subjects
+            var result = db.Subjects
                 .Include(x => x.Students)
                 .ToList();
+            
+            var response = new List<SubjectDTO>();
+
+            foreach (var item in result)
+            {
+                response.Add(SubjectMapper.Map(item));
+            }
+
+            return response;
         }
 
         // GET: api/Subjects/5
-        [ResponseType(typeof(Subject))]
+        [ResponseType(typeof(SubjectDTO))]
         public IHttpActionResult GetSubject(int id)
         {
             Subject subject = db.Subjects.Find(id);
@@ -35,12 +43,12 @@ namespace MagniCollegeManagementSystem.APIController
                 return NotFound();
             }
 
-            return Ok(subject);
+            return Ok(SubjectMapper.Map(subject));
         }
 
         // PUT: api/Subjects/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutSubject(int id, Subject subject)
+        public IHttpActionResult PutSubject(int id, SubjectDTO subject)
         {
             if (!ModelState.IsValid)
             {
@@ -52,7 +60,14 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            db.Entry(subject).State = EntityState.Modified;
+            var dbEntity = db.Subjects.First(x => x.Id.Equals(id));
+            if (dbEntity is null)
+            {
+                return BadRequest();
+            }
+
+            db.Subjects.Attach(dbEntity);
+            dbEntity = SubjectMapper.Map(subject, db);
 
             try
             {
@@ -75,28 +90,25 @@ namespace MagniCollegeManagementSystem.APIController
 
         // POST: api/Subjects
         [ResponseType(typeof(Subject))]
-        public IHttpActionResult PostSubject(Subject subject)
+        public IHttpActionResult PostSubject(SubjectDTO request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            var entity = new Subject
-            {
-                Name = subject.Name,
-                Course = db.Courses.FirstOrDefault(x => x.Id.Equals(subject.Course.Id)),
-                Code = subject.Code,
-                Students = subject.Students,
-                Teacher = subject.Teacher,
-            };
-            db.Subjects.Add(entity);
+
+            var subject = SubjectMapper.Map(request, db);
+
+            db.Entry(subject).State = EntityState.Modified;
+
+            db.Subjects.Add(subject);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = subject.Id }, subject);
+            return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
         }
 
         // DELETE: api/Subjects/5
-        [ResponseType(typeof(Subject))]
+        [ResponseType(typeof(SubjectDTO))]
         public IHttpActionResult DeleteSubject(int id)
         {
             Subject subject = db.Subjects.Find(id);
@@ -108,7 +120,7 @@ namespace MagniCollegeManagementSystem.APIController
             db.Subjects.Remove(subject);
             db.SaveChanges();
 
-            return Ok(subject);
+            return Ok(SubjectMapper.Map(subject));
         }
 
         protected override void Dispose(bool disposing)

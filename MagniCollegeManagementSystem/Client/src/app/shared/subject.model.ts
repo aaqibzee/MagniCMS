@@ -3,7 +3,7 @@ import { Student } from "./student.model";
 import { Teacher } from "./teacher.model";
 
 export class Subject {
-    Students: Student[];
+    Students: number[];
     Id:       number=0;
     Name:     string='';
     Code:     string='';

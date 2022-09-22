@@ -5,5 +5,5 @@ export class Grade {
     Title:     string='';
     Marks:     number=0;
     SubjectId: number=0;
-    Students:  Student[]=null;
+    Students:  number[];
 }

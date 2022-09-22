@@ -38,9 +38,10 @@ export class StudentService {
     this.subjectsList =  null;
   }
  
-  selectCourse(course: Course) {
+  onSelectCourse(course: Course) {
      this.courseDropDownCelectedValue = course.Name;
     this.formData.Course = course;
+    //Add elements to this list, once the course is selcted. To avoid user, selcting wrong subjects for a course
     this.subjectsList = this.subjectService.getList().filter(x=>x.Course?.Id==course?.Id);
   }
   
@@ -48,7 +49,20 @@ export class StudentService {
     this.courseDropDownCelectedValue = student.Course.Name;
     this.formData = Object.assign({}, student);
     this.subjectsList = this.subjectService.getList().filter(x=>x.Course?.Id==student.Course?.Id);
-    this.selectedSubjects = this.formData.Subjects;
+    this.selectedSubjects = this.getSelestecSubjetcs();
+  }
+
+  getSelestecSubjetcs()
+  {
+    let list: Subject[];
+    this.subjectsList.filter(function (x)
+    {
+      if (this.formData.Subjects.includes(x))
+      {
+        list.push(x);
+      }
+    });
+    return list;
   }
 
   postStudent() {

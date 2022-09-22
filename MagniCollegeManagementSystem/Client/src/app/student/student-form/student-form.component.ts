@@ -16,14 +16,11 @@ export class StudentFormComponent implements OnInit {
   
   constructor(public service: StudentService) { }
   selectedCourse: Course;
-
-  // Multiselect Start
-  subjectsDropdownSettings:IDropdownSettings=  {};
-  // Multiselect End
+  subjectsDropdownSettings: IDropdownSettings = {};
+  
   ngOnInit(): void {
     this.resetFormData();
     
-  
     this.subjectsDropdownSettings = {
       singleSelection: false,
       idField: 'Id',
@@ -37,14 +34,13 @@ export class StudentFormComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    this.service.formData.Subjects = this.service.selectedSubjects;
+    this.service.formData.Subjects = this.service.selectedSubjects.map(a => a.Id);
     if (this.service.formData.Id == 0) {
       this.inserRecord(form);
     }
     else {
       this.updateRecord(form);
     }
-     
   }
 
   inserRecord(form: NgForm)
@@ -80,7 +76,8 @@ export class StudentFormComponent implements OnInit {
   {
     this.service.resetFormData();
   }
-
+//TODO: Remote these below functions
+  //Start
   onItemSelect(item: any) {
     console.log(this.selectedCourse)
     console.log(this.service.selectedSubjects)
@@ -88,11 +85,13 @@ export class StudentFormComponent implements OnInit {
   onSelectAll(items: any) {
     console.log(items);
   }
+  //End
 
   isFormInvalid(form: NgForm)
   {
     return (form.invalid
-      ||this.service.courseDropDownCelectedValue == this.service.courseDropDownDefaultValue
-      || this.service.selectedSubjects.length == 0);
+      || this.service.courseDropDownCelectedValue == this.service.courseDropDownDefaultValue
+      || this.service.selectedSubjects?.length == 0
+      || this.service.selectedSubjects == null);
   }
 }

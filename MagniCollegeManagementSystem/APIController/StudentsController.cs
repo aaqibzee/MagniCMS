@@ -10,22 +10,40 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using MagniCollegeManagementSystem.DatabseContexts;
+using MagniCollegeManagementSystem.DTOs;
+using MagniCollegeManagementSystem.Mappers;
 using MagniCollegeManagementSystem.Models;
 
 namespace MagniCollegeManagementSystem.APIController
 {
     public class StudentsController : ApiController
     {
-        private MagniDBContext db = new MagniDBContext();
+        private MagniDBContext db;
+        public StudentsController()
+        {
+            db = new MagniDBContext();
+        }
 
         // GET: api/Students
-        public List<Student> GetStudents()
+        public List<StudentDTO> GetStudents()
         {
-            return db.Students.Include(x => x.Course).Include(x => x.Grade).ToList();
+            var result = db.Students
+                .Include(x => x.Course)
+                .Include(x => x.Grade)
+                .ToList();
+
+            var response = new List<StudentDTO>();
+
+            foreach (var item in result)
+            {
+                response.Add(StudentMapper.Map(item));
+            }
+
+            return response;
         }
 
         // GET: api/Students/5
-        [ResponseType(typeof(Student))]
+        [ResponseType(typeof(StudentDTO))]
         public IHttpActionResult GetStudent(int id)
         {
             Student student = db.Students.Find(id);
@@ -34,12 +52,12 @@ namespace MagniCollegeManagementSystem.APIController
                 return NotFound();
             }
 
-            return Ok(student);
+            return Ok(StudentMapper.Map(student));
         }
 
         // PUT: api/Students/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutStudent(int id, Student student)
+        public IHttpActionResult PutStudent(int id, StudentDTO student)
         {
             if (!ModelState.IsValid)
             {
@@ -58,31 +76,7 @@ namespace MagniCollegeManagementSystem.APIController
             }
 
             db.Students.Attach(dbEntity);
-
-            //Update Course
-            dbEntity.Course = student.Course;
-            var listOfSubject=dbEntity.Subjects.ToList();
-
-            //Remove subjects references
-            foreach (var item in listOfSubject)
-            {
-                var subject = student.Subjects.FirstOrDefault(c => c.Id == item.Id);
-                if (subject == null)
-                {
-                    dbEntity.Subjects.Remove(item);
-                }
-            }
-
-            //Add subjects references
-            foreach (var item in student.Subjects)
-            {
-                var subject = dbEntity.Subjects.FirstOrDefault(c => c.Id == item.Id);
-                if (subject == null)
-                {
-                    dbEntity.Subjects.Add(db.Subjects.FirstOrDefault(x => x.Id.Equals(item.Id)));
-                }
-            }
-
+            dbEntity = StudentMapper.Map(student, db);
 
             try
             {
@@ -104,37 +98,26 @@ namespace MagniCollegeManagementSystem.APIController
         }
 
         // POST: api/Students
-        [ResponseType(typeof(Student))]
-        public IHttpActionResult PostStudent(Student student)
+        [ResponseType(typeof(StudentDTO))]
+        public IHttpActionResult PostStudent(StudentDTO request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.Entry(student.Course).State = EntityState.Modified;
+            var student = StudentMapper.Map(request,db);
 
-            var subjectsSelectedByUser = student.Subjects.ToList();
-            student.Subjects.Clear();
-
-            foreach (var item in subjectsSelectedByUser)
-            {
-                var entity = db.Subjects.SingleOrDefault(c => c.Id == item.Id);
-                if (entity != null)
-                {
-                    student.Subjects.Add(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                }
-            }
+            db.Entry(student).State = EntityState.Modified;
 
             db.Students.Add(student);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = student.Id }, student);
+            return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
         }
 
         // DELETE: api/Students/5
-        [ResponseType(typeof(Student))]
+        [ResponseType(typeof(StudentDTO))]
         public IHttpActionResult DeleteStudent(int id)
         {
             Student student = db.Students.Find(id);
@@ -146,7 +129,7 @@ namespace MagniCollegeManagementSystem.APIController
             db.Students.Remove(student);
             db.SaveChanges();
 
-            return Ok(student);
+            return Ok(StudentMapper.Map(student));
         }
 
         protected override void Dispose(bool disposing)

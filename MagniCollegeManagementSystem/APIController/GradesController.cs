@@ -9,6 +9,8 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using MagniCollegeManagementSystem.DatabseContexts;
+using MagniCollegeManagementSystem.DTOs;
+using MagniCollegeManagementSystem.Mappers;
 using MagniCollegeManagementSystem.Models;
 
 namespace MagniCollegeManagementSystem.APIController
@@ -18,15 +20,21 @@ namespace MagniCollegeManagementSystem.APIController
         private MagniDBContext db = new MagniDBContext();
 
         // GET: api/Grades
-        public List<Grade> GetGrades()
+        public List<GradeDTO> GetGrades()
         {
-            return db.Grades.
-                Include(x => x.Students)
-                .ToList();
+            var result = db.Grades.Include(x => x.Students).ToList();
+            var response = new List<GradeDTO>();
+
+            foreach (var item in result)
+            {
+                response.Add(GradeMapper.Map(item));
+            }
+
+            return response;
         }
 
         // GET: api/Grades/5
-        [ResponseType(typeof(Grade))]
+        [ResponseType(typeof(GradeDTO))]
         public IHttpActionResult GetGrade(int id)
         {
             Grade grade = db.Grades.Find(id);
@@ -35,12 +43,12 @@ namespace MagniCollegeManagementSystem.APIController
                 return NotFound();
             }
 
-            return Ok(grade);
+            return Ok(GradeMapper.Map(grade));
         }
 
         // PUT: api/Grades/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutGrade(int id, Grade grade)
+        public IHttpActionResult PutGrade(int id, GradeDTO grade)
         {
             if (!ModelState.IsValid)
             {
@@ -52,7 +60,14 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            db.Entry(grade).State = EntityState.Modified;
+            var dbEntity = db.Grades.First(x => x.Id.Equals(id));
+            if (dbEntity is null)
+            {
+                return BadRequest();
+            }
+
+            db.Grades.Attach(dbEntity);
+            dbEntity = GradeMapper.Map(grade, db);
 
             try
             {
@@ -75,21 +90,25 @@ namespace MagniCollegeManagementSystem.APIController
 
         // POST: api/Grades
         [ResponseType(typeof(Grade))]
-        public IHttpActionResult PostGrade(Grade grade)
+        public IHttpActionResult PostGrade(GradeDTO request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            var grade = GradeMapper.Map(request, db);
+
+            db.Entry(grade).State = EntityState.Modified;
             db.Grades.Add(grade);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = grade.Id }, grade);
+            return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
+           
         }
 
         // DELETE: api/Grades/5
-        [ResponseType(typeof(Grade))]
+        [ResponseType(typeof(GradeDTO))]
         public IHttpActionResult DeleteGrade(int id)
         {
             Grade grade = db.Grades.Find(id);
@@ -101,7 +120,7 @@ namespace MagniCollegeManagementSystem.APIController
             db.Grades.Remove(grade);
             db.SaveChanges();
 
-            return Ok(grade);
+            return Ok(GradeMapper.Map(grade));
         }
 
         protected override void Dispose(bool disposing)

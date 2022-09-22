@@ -6,6 +6,8 @@ using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
 using MagniCollegeManagementSystem.DatabseContexts;
+using MagniCollegeManagementSystem.DTOs;
+using MagniCollegeManagementSystem.Mappers;
 using MagniCollegeManagementSystem.Models;
 
 namespace MagniCollegeManagementSystem.APIController
@@ -15,17 +17,26 @@ namespace MagniCollegeManagementSystem.APIController
         private MagniDBContext db = new MagniDBContext();
 
         // GET: api/Teachers
-        public List<Teacher> GetTeachers()
+        public List<TeacherDTO> GetTeachers()
         {
-            return db.Teachers
+            var result= db.Teachers
                 .Include(x => x.Students)
                 .Include(x=>x.Students)
                 .Include(x => x.Subjects)
                 .ToList();
+
+            var response = new List<TeacherDTO>();
+
+            foreach (var item in result)
+            {
+                response.Add(TeacherMapper.Map(item));
+            }
+
+            return response;
         }
 
         // GET: api/Teachers/5
-        [ResponseType(typeof(Teacher))]
+        [ResponseType(typeof(TeacherDTO))]
         public IHttpActionResult GetTeacher(int id)
         {
             Teacher teacher = db.Teachers.Find(id);

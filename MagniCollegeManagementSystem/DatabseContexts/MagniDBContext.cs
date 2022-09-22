@@ -14,5 +14,10 @@ namespace MagniCollegeManagementSystem.DatabseContexts
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Grade> Grades { get; set; }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
