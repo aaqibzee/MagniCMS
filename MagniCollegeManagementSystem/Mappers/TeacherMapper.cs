@@ -8,21 +8,20 @@ namespace MagniCollegeManagementSystem.Mappers
 {
     public static class TeacherMapper
     {
-        public static Teacher Map(TeacherDTO source, MagniDBContext db)
+        public static Teacher Map(Teacher teacher, TeacherDTO source, MagniDBContext db)
         {
             if (source is null)
                 return null;
 
-            var teacher = new Teacher
-            {
-                Id = source.Id,
-                Name = source.Name,
-                Students = new List<Student>(),
-                Subjects = new List<Subject>(),
-                Courses = new List<Course>(),
-            };
+            teacher.Id = source.Id;
+            teacher.Name = source.Name;
+            teacher.Students = new List<Student>();
+            teacher.Subjects = new List<Subject>();
+            teacher.Courses = new List<Course>();
 
             if (!(source.Subjects is null))
+            {
+                teacher.Subjects.Clear();
                 foreach (var item in source.Subjects)
                 {
                     teacher.Subjects.Add(db.Subjects.FirstOrDefault
@@ -30,8 +29,11 @@ namespace MagniCollegeManagementSystem.Mappers
                             x => x.Id.Equals(item)
                         ));
                 }
+            }
 
             if (!(source.Students is null))
+            {
+                teacher.Students.Clear();
                 foreach (var item in source.Students)
                 {
                     teacher.Students.Add(db.Students.FirstOrDefault
@@ -39,8 +41,11 @@ namespace MagniCollegeManagementSystem.Mappers
                             x => x.Id.Equals(item)
                         ));
                 }
+            }
 
             if (!(source.Courses is null))
+            {
+                teacher.Courses.Clear();
                 foreach (var item in source.Courses)
                 {
                     teacher.Courses.Add(db.Courses.FirstOrDefault
@@ -48,6 +53,9 @@ namespace MagniCollegeManagementSystem.Mappers
                             x => x.Id.Equals(item)
                         ));
                 }
+            }
+
+
 
             return teacher;
         }

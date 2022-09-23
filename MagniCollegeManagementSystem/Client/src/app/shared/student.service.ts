@@ -18,46 +18,51 @@ export class StudentService {
   {
     courseService.refreshList();
     subjectService.refreshList();
+    this.allAvailableSubjects = subjectService.getList();
    }
 
   formData: Student = new Student();
   studentsList: Student[];
-  selectedSubjects: Subject[];
-  subjectsList = [];
+  selectedSubjectsByStudent: Subject[];
+  subjectsOwnedBySelectedCourse: Subject[];
+  allAvailableSubjects: Subject[];
   
   readonly baseUrl = '/api/';
   readonly courseDropDownDefaultValue= 'Select Course';
-  courseDropDownCelectedValue: string = this.courseDropDownDefaultValue;
+  selectedCourseByStudent: string = this.courseDropDownDefaultValue;
    
 
   resetFormData()
   {
     this.formData = new Student();
-    this.courseDropDownCelectedValue = this.courseDropDownDefaultValue;
-    this.selectedSubjects = null;
-    this.subjectsList =  null;
+    this.selectedCourseByStudent = this.courseDropDownDefaultValue;
+    this.selectedSubjectsByStudent = null;
+    this.subjectsOwnedBySelectedCourse =  null;
   }
  
   onSelectCourse(course: Course) {
-     this.courseDropDownCelectedValue = course.Name;
-    this.formData.Course = course;
-    //Add elements to this list, once the course is selcted. To avoid user, selcting wrong subjects for a course
-    this.subjectsList = this.subjectService.getList().filter(x=>x.Course?.Id==course?.Id);
+    if (course?.Id != this.formData?.Course?.Id) {
+      this.selectedCourseByStudent = course.Name;
+      this.formData.Course = course;
+      this.subjectsOwnedBySelectedCourse = this.subjectService.getList().filter(x => x.Course?.Id == course?.Id);
+      this.selectedSubjectsByStudent = [];
+    }
   }
   
   populateForm(student: Student) {
-    this.courseDropDownCelectedValue = student.Course.Name;
+    this.selectedCourseByStudent = student.Course.Name;
     this.formData = Object.assign({}, student);
-    this.subjectsList = this.subjectService.getList().filter(x=>x.Course?.Id==student.Course?.Id);
-    this.selectedSubjects = this.getSelestecSubjetcs();
+    this.subjectsOwnedBySelectedCourse = this.subjectService.getList().filter(x=>x.Course?.Id==student.Course?.Id);
+    this.selectedSubjectsByStudent = this.getSelestecSubjetcs();
   }
 
   getSelestecSubjetcs()
   {
-    let list: Subject[];
-    this.subjectsList.filter(function (x)
+    let list: Subject[]=[];
+    let form = this.formData;
+    this.subjectsOwnedBySelectedCourse.filter(function (x)
     {
-      if (this.formData.Subjects.includes(x))
+      if (form?.Subjects?.includes(x.Id))
       {
         list.push(x);
       }

@@ -50,7 +50,7 @@ namespace MagniCollegeManagementSystem.APIController
 
         // PUT: api/Teachers/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutTeacher(int id, Teacher teacher)
+        public IHttpActionResult PutTeacher(int id, TeacherDTO teacher)
         {
             if (!ModelState.IsValid)
             {
@@ -62,7 +62,15 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            db.Entry(teacher).State = EntityState.Modified;
+            var dbEntity = db.Teachers.First(x => x.Id.Equals(id));
+            if (dbEntity is null)
+            {
+                return BadRequest();
+            }
+
+            db.Teachers.Attach(dbEntity);
+            dbEntity = TeacherMapper.Map(dbEntity, teacher, db);
+            db.Entry(dbEntity).State = EntityState.Modified;
 
             try
             {
@@ -85,17 +93,20 @@ namespace MagniCollegeManagementSystem.APIController
 
         // POST: api/Teachers
         [ResponseType(typeof(Teacher))]
-        public IHttpActionResult PostTeacher(Teacher teacher)
+        public IHttpActionResult PostTeacher(TeacherDTO request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
+            var teacher = TeacherMapper.Map(new Teacher(), request, db);
+
+            db.Entry(teacher).State = EntityState.Modified;
             db.Teachers.Add(teacher);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = teacher.Id }, teacher);
+            return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
         }
 
         // DELETE: api/Teachers/5

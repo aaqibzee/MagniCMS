@@ -67,7 +67,8 @@ namespace MagniCollegeManagementSystem.APIController
             }
 
             db.Subjects.Attach(dbEntity);
-            dbEntity = SubjectMapper.Map(subject, db);
+            dbEntity = SubjectMapper.Map(dbEntity,subject, db);
+            db.Entry(dbEntity).State = EntityState.Modified;
 
             try
             {
@@ -97,7 +98,7 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
-            var subject = SubjectMapper.Map(request, db);
+            var subject = SubjectMapper.Map(new Subject(),request, db);
 
             db.Entry(subject).State = EntityState.Modified;
 

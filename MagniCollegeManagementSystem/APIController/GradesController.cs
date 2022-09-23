@@ -67,7 +67,8 @@ namespace MagniCollegeManagementSystem.APIController
             }
 
             db.Grades.Attach(dbEntity);
-            dbEntity = GradeMapper.Map(grade, db);
+            dbEntity = GradeMapper.Map(dbEntity,grade, db);
+            db.Entry(dbEntity).State = EntityState.Modified;
 
             try
             {
@@ -97,7 +98,7 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
-            var grade = GradeMapper.Map(request, db);
+            var grade = GradeMapper.Map(new Grade() ,request, db);
 
             db.Entry(grade).State = EntityState.Modified;
             db.Grades.Add(grade);

@@ -8,33 +8,45 @@ namespace MagniCollegeManagementSystem.Mappers
 {
     public static class SubjectMapper
     {
-        public static Subject Map(SubjectDTO source, MagniDBContext db)
+        public static Subject Map(Subject subject, SubjectDTO source, MagniDBContext db)
         {
             if (source is null)
                 return null;
 
-            var subject= new Subject
-            {
-                Id = source.Id,
-                Name = source.Name,
-                Code = source.Code,
-                Students = new List<Student>()
-            };
+            subject.Id = source.Id;
+            subject.Name = source.Name;
+            subject.Code = source.Code;
+            subject.Students = new List<Student>();
 
             if (!(source.Teacher is null))
-                subject.Teacher = TeacherMapper.Map(source.Teacher,db);
+            {
+                subject.Teacher = db.Teachers.FirstOrDefault
+                (
+                    x => x.Id.Equals(source.Teacher.Id)
+                );
+            }
+
 
             if (!(source.Course is null))
-                subject.Course = CourseMapper.Map(source.Course,db);
+            {
+                subject.Course = db.Courses.FirstOrDefault
+                (
+                    x => x.Id.Equals(source.Course.Id)
+                );
+            }
 
             if (!(source.Students is null))
-                foreach (var item in source.Students)
             {
-                subject.Students.Add(db.Students.FirstOrDefault
+                subject.Students.Clear();
+                foreach (var item in source.Students)
+                {
+                    subject.Students.Add(db.Students.FirstOrDefault
                     (
                         x => x.Id.Equals(item)
                     ));
+                }
             }
+               
 
             return subject;
         }
@@ -59,9 +71,9 @@ namespace MagniCollegeManagementSystem.Mappers
 
             if (!(source.Students is null))
                 foreach (var item in source.Students)
-            {
-                subject.Students.Add(item.Id);
-            }
+                {
+                    subject.Students.Add(item.Id);
+                }
 
             return subject;
         }

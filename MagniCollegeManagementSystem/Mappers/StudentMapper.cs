@@ -9,52 +9,58 @@ namespace MagniCollegeManagementSystem.Mappers
 {
     public static class StudentMapper
     {
-        public static Student Map(StudentDTO source, MagniDBContext db)
+        public static Student Map(Student student, StudentDTO source, MagniDBContext db)
         {
             if (source is null)
                 return null;
 
-            var student = new Student
-            {
-                Id = source.Id,
-                Name = source.Name,
-                Teachers = new List<Teacher>(),
-                Subjects = new List<Subject>(),
-            };
+            student.Id = source.Id;
+            student.Name = source.Name;
+            student.Teachers = new List<Teacher>();
+            student.Subjects = new List<Subject>();
 
             if (!(source.Grade is null))
             {
-                //var dbGrade = db.Grades.FirstOrDefault(x => x.Id.Equals(source.Grade.Id));
-                //db.Entry(dbGrade).State = EntityState.Detached;
-                student.Grade = GradeMapper.Map(source.Grade, db);
+                student.Grade = db.Grades.FirstOrDefault
+                (
+                    x => x.Id.Equals(source.Grade.Id)
+                );
             }
 
 
             if (!(source.Course is null))
             {
-               // var dbCourse = db.Courses.FirstOrDefault(x => x.Id.Equals(source.Course.Id));
-               // db.Entry(dbCourse).State = EntityState.Modified;
-                student.Course = CourseMapper.Map(source.Course, db);
+                student.Course = db.Courses.FirstOrDefault
+                (
+                    x => x.Id.Equals(source.Course.Id)
+                );
             }
-                
+
 
             if (!(source.Subjects is null))
+            {
+                student.Subjects.Clear();
                 foreach (var item in source.Subjects)
                 {
                     student.Subjects.Add(db.Subjects.FirstOrDefault
-                        (
-                            x => x.Id.Equals(item)
-                        ));
+                    (
+                        x => x.Id.Equals(item)
+                    ));
                 }
+            }
+
 
             if (!(source.Teachers is null))
+            {
+                student.Teachers.Clear();
                 foreach (var item in source.Teachers)
                 {
                     student.Teachers.Add(db.Teachers.FirstOrDefault
-                        (
-                            x => x.Id.Equals(item)
-                        ));
+                    (
+                        x => x.Id.Equals(item)
+                    ));
                 }
+            }
 
             return student;
         }

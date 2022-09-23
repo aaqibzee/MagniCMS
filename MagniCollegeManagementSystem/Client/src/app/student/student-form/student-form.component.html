@@ -21,7 +21,7 @@
         data-toggle="dropdown"
         aria-haspopup="true" 
         aria-expanded="true"> 
-        {{service.courseDropDownCelectedValue}} 
+        {{service.selectedCourseByStudent}} 
       </button>
 
       <div 
@@ -45,8 +45,8 @@
   [placeholder]="'Select Subject'"  
   name="carSelct" 
   [settings]="subjectsDropdownSettings"
-  [data]="service.subjectsList"
-  [(ngModel)]="service.selectedSubjects" 
+  [data]="service.subjectsOwnedBySelectedCourse"
+  [(ngModel)]="service.selectedSubjectsByStudent" 
   (onSelect)="onItemSelect($event)" 
   (onSelectAll)="onSelectAll($event)">
 </ng-multiselect-dropdown>

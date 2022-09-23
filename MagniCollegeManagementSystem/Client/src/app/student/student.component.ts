@@ -20,12 +20,17 @@ export class StudentComponent implements OnInit {
     this.service.populateForm(record);
   }
 
-   DeleteStudent(record: Student) {
-     this.service.deleteStudent(record.Id).subscribe(
-       result => {
-        this.service.refreshList();
-       }, error => {
-         console.log(error);
-       });
+  DeleteStudent(record: Student) {
+    this.service.deleteStudent(record.Id).subscribe(
+      result => {
+      this.service.refreshList();
+      }, error => {
+        console.log(error);
+      });
+  }
+  GetSubjectName(subjectId:Number)
+  {
+    let subject = this.service?.subjectService?.subjectList?.filter(x => x.Id == subjectId);
+    return subject[0]?.Name;
   }
 }

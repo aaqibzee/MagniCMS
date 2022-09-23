@@ -27,14 +27,15 @@ export class StudentFormComponent implements OnInit {
       textField: 'Name',
       selectAllText: 'Select All',
       unSelectAllText: 'UnSelect All',
-      limitSelection:3,
-      itemsShowLimit: 3,
+      noDataAvailablePlaceholderText:'Select A Course First',
+      limitSelection:6,
+      itemsShowLimit: 6,
       allowSearchFilter: true
     };
   }
 
   onSubmit(form: NgForm) {
-    this.service.formData.Subjects = this.service.selectedSubjects.map(a => a.Id);
+    this.service.formData.Subjects = this.service.selectedSubjectsByStudent.map(a => a.Id);
     if (this.service.formData.Id == 0) {
       this.inserRecord(form);
     }
@@ -80,7 +81,7 @@ export class StudentFormComponent implements OnInit {
   //Start
   onItemSelect(item: any) {
     console.log(this.selectedCourse)
-    console.log(this.service.selectedSubjects)
+    console.log(this.service.selectedSubjectsByStudent)
   }
   onSelectAll(items: any) {
     console.log(items);
@@ -90,8 +91,8 @@ export class StudentFormComponent implements OnInit {
   isFormInvalid(form: NgForm)
   {
     return (form.invalid
-      || this.service.courseDropDownCelectedValue == this.service.courseDropDownDefaultValue
-      || this.service.selectedSubjects?.length == 0
-      || this.service.selectedSubjects == null);
+      || this.service.selectedCourseByStudent == this.service.courseDropDownDefaultValue
+      || this.service.selectedSubjectsByStudent?.length == 0
+      || this.service.selectedSubjectsByStudent == null);
   }
 }

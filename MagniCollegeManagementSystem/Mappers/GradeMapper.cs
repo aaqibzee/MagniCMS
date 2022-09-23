@@ -7,28 +7,27 @@ namespace MagniCollegeManagementSystem.Mappers
 {
     public static class GradeMapper
     {
-        public static Grade Map(GradeDTO source, MagniDBContext db)
+        public static Grade Map(Grade grade, GradeDTO source, MagniDBContext db)
         {
             if (source is null)
                 return null;
 
-            var grade = new Grade
-            {
-                Id = source.Id,
-                Title = source.Title,
-                Marks = source.Marks,
-                SubjectId = source.SubjectId
-            };
+            grade.Id = source.Id;
+            grade.Title = source.Title;
+            grade.Marks = source.Marks;
+            grade.SubjectId = source.SubjectId;
 
             if (!(source.Students is null))
+            {
+                grade.Students.Clear();
                 foreach (var item in source.Students)
                 {
                     grade.Students.Add(db.Students.FirstOrDefault
-                        (
-                            x => x.Id.Equals(item)
-                        ));
+                    (
+                        x => x.Id.Equals(item)
+                    ));
                 }
-
+            }
             return grade;
         }
 

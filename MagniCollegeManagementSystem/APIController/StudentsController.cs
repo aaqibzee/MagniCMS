@@ -75,9 +75,9 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            db.Students.Attach(dbEntity);
-            dbEntity = StudentMapper.Map(student, db);
-
+            StudentMapper.Map(dbEntity,student, db);
+            db.Entry(dbEntity).State = EntityState.Modified;
+            
             try
             {
                 db.SaveChanges();
@@ -106,7 +106,7 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
-            var student = StudentMapper.Map(request,db);
+            var student = StudentMapper.Map(new Student(),request,db);
 
             db.Entry(student).State = EntityState.Modified;
 

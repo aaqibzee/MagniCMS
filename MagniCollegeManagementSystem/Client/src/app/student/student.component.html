@@ -36,9 +36,9 @@
           <td>{{std.Name}}</td>
           <td>{{std.Course?.Name}}</td>
           <td>
-            <div *ngFor="let subject of std.Subjects">
+            <div *ngFor="let subject of std.Subjects; let counter = index">
               <div>
-                {{subject.Name}}
+                {{counter+1}}:{{GetSubjectName(subject)}}
               </div>
             </div>
           </td>
