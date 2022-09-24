@@ -10,6 +10,7 @@ namespace MagniCollegeManagementSystem.DTOs
         public int Id { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
+        public int NumberOfSubjectsAllowed { get; set; }
         public List<int> Students { get; set; }
         public List<int> Subjects { get; set; }
         public List<int> Teachers { get; set; }

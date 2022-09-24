@@ -46,13 +46,13 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(StudentDTO))]
         public IHttpActionResult GetStudent(int id)
         {
-            Student student = db.Students.Find(id);
-            if (student == null)
+            Student dbEntity = db.Students.Find(id);
+            if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            return Ok(StudentMapper.Map(student));
+            return Ok(StudentMapper.Map(dbEntity));
         }
 
         // PUT: api/Students/5
@@ -106,11 +106,11 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
-            var student = StudentMapper.Map(new Student(),request,db);
+            var dbEntity = StudentMapper.Map(new Student(),request,db);
 
-            db.Entry(student).State = EntityState.Modified;
+            db.Entry(dbEntity).State = EntityState.Modified;
 
-            db.Students.Add(student);
+            db.Students.Add(dbEntity);
             db.SaveChanges();
 
             return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
@@ -120,16 +120,16 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(StudentDTO))]
         public IHttpActionResult DeleteStudent(int id)
         {
-            Student student = db.Students.Find(id);
-            if (student == null)
+            Student dbEntity = db.Students.Find(id);
+            if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            db.Students.Remove(student);
+            db.Students.Remove(dbEntity);
             db.SaveChanges();
 
-            return Ok(StudentMapper.Map(student));
+            return Ok(StudentMapper.Map(dbEntity));
         }
 
         protected override void Dispose(bool disposing)

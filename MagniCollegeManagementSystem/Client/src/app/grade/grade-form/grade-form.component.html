@@ -1,18 +1,18 @@
 <form novalidate #form="ngForm" (submit)="onSubmit(form)">
     <input type="hidden" name="id" [value]="service.formData.Id" />
-
+    <label class="label label-default">Title</label>
     <div class="form-group">
-        <label>Title</label>
         <input class="form-control form-control-lg" placeholder="Grade Title" name="title" #Title="ngModel"
             [(ngModel)]="service.formData.Title" required />
     </div>
+    <label class="label label-default">Marks</label>
     <div class="form-group">
-        <label>Marks</label>
         <input class="form-control form-control-lg" placeholder="Marks" name="marks" #Marks="ngModel"
             [(ngModel)]="service.formData.Marks" required />
     </div>
+    <label class="label label-default">Subject Id</label>
+    
     <div class="form-group">
-        <label>Subject</label>
         <input class="form-control form-control-lg" placeholder="Subject" name="name" #Subject="ngModel"
             [(ngModel)]="service.formData.SubjectId" required />
     </div>

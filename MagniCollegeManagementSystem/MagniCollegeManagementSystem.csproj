@@ -320,6 +320,10 @@
     <Compile Include="Migrations\202209171655170_Add_Tables_Relations.Designer.cs">
       <DependentUpon>202209171655170_Add_Tables_Relations.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202209231545168_Add_NumberOfSubjectsAllowed_Column_To_Course_Table.cs" />
+    <Compile Include="Migrations\202209231545168_Add_NumberOfSubjectsAllowed_Column_To_Course_Table.Designer.cs">
+      <DependentUpon>202209231545168_Add_NumberOfSubjectsAllowed_Column_To_Course_Table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Grade.cs" />
     <Compile Include="Models\Student.cs" />
@@ -395,6 +399,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202209171655170_Add_Tables_Relations.resx">
       <DependentUpon>202209171655170_Add_Tables_Relations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209231545168_Add_NumberOfSubjectsAllowed_Column_To_Course_Table.resx">
+      <DependentUpon>202209231545168_Add_NumberOfSubjectsAllowed_Column_To_Course_Table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

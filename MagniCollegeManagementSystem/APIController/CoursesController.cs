@@ -43,19 +43,19 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(CourseDTO))]
         public IHttpActionResult GetCourse(int id)
         {
-            Course course = db.Courses.Find(id);
-            if (course == null)
+            Course dbEntity = db.Courses.Find(id);
+            if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            return Ok(CourseMapper.Map(course));
+            return Ok(CourseMapper.Map(dbEntity));
         }
 
         // PUT: api/Courses/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutCourse(int id, CourseDTO course)
-        {  
+        {
             var dbEntity = db.Courses.First(x => x.Id.Equals(id));
             if (dbEntity is null)
             {
@@ -63,7 +63,7 @@ namespace MagniCollegeManagementSystem.APIController
             }
 
             CourseMapper.Map(dbEntity,course, db);
-            db.Entry(course).State = EntityState.Modified;
+            db.Entry(dbEntity).State = EntityState.Modified;
 
             try
             {
@@ -93,10 +93,10 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
-            var course = CourseMapper.Map(new Course(), request, db);
+            var dbEntity = CourseMapper.Map(new Course(), request, db);
 
-            db.Entry(course).State = EntityState.Modified;
-            db.Courses.Add(course);
+            db.Entry(dbEntity).State = EntityState.Modified;
+            db.Courses.Add(dbEntity);
             db.SaveChanges();
 
             return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
@@ -106,16 +106,16 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(Course))]
         public IHttpActionResult DeleteCourse(int id)
         {
-            Course course = db.Courses.Find(id);
-            if (course == null)
+            Course dbEntity = db.Courses.Find(id);
+            if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            db.Courses.Remove(course);
+            db.Courses.Remove(dbEntity);
             db.SaveChanges();
 
-            return Ok(course);
+            return Ok(dbEntity);
         }
 
         protected override void Dispose(bool disposing)

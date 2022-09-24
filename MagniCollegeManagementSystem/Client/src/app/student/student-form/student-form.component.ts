@@ -1,10 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { NgForm ,FormsModule} from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { StudentService } from "../../shared/student.service";
-import { NgSelectModule } from "@ng-select/ng-select";
-import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Course } from 'src/app/shared/course.model';
-import { Subject } from 'src/app/shared/subject.model';
 
 @Component({
   selector: 'app-student-form',
@@ -16,22 +13,10 @@ export class StudentFormComponent implements OnInit {
   
   constructor(public service: StudentService) { }
   selectedCourse: Course;
-  subjectsDropdownSettings: IDropdownSettings = {};
-  
+  isFormValid: boolean = true;
+  subjectsSelectionClass: string = 'text-success';
   ngOnInit(): void {
     this.resetFormData();
-    
-    this.subjectsDropdownSettings = {
-      singleSelection: false,
-      idField: 'Id',
-      textField: 'Name',
-      selectAllText: 'Select All',
-      unSelectAllText: 'UnSelect All',
-      noDataAvailablePlaceholderText:'Select A Course First',
-      limitSelection:6,
-      itemsShowLimit: 6,
-      allowSearchFilter: true
-    };
   }
 
   onSubmit(form: NgForm) {
@@ -80,19 +65,50 @@ export class StudentFormComponent implements OnInit {
 //TODO: Remote these below functions
   //Start
   onItemSelect(item: any) {
-    console.log(this.selectedCourse)
-    console.log(this.service.selectedSubjectsByStudent)
+    this.validateSubjectSelection();
   }
   onSelectAll(items: any) {
-    console.log(items);
+    this.validateSubjectSelection();
   }
-  //End
+  onItemDeselect(item: any)
+  {
+    this.validateSubjectSelection();
+  }
+  
+  validateSubjectSelection()
+  {
+    let required = this.service.formData.Course?.NumberOfSubjectsAllowed;
+    let availed = this.service.selectedSubjectsByStudent.length;
+    let difference = required-availed;
+   
+   
+    if (availed < required)
+    {
+      this.subjectsSelectionClass='text-info'
+       this.isFormValid = false;
+       this.service.MultiSelcetValidationMesage = 'Select ' +difference + ' more subject(s)';
+    }
+    else if (availed > required)
+    {
+      this.subjectsSelectionClass='text-danger'
+       this.isFormValid = false;
+      this.service.MultiSelcetValidationMesage = 
+        (availed - required) + ' extra subject(s) selected';  
+    }
+    else if (availed == required)
+    {
+      this.subjectsSelectionClass='text-info'
+      this.service.MultiSelcetValidationMesage ='Max limit reached' 
+      this.isFormValid = true;
+    }
+  }
 
   isFormInvalid(form: NgForm)
   {
     return (form.invalid
       || this.service.selectedCourseByStudent == this.service.courseDropDownDefaultValue
       || this.service.selectedSubjectsByStudent?.length == 0
-      || this.service.selectedSubjectsByStudent == null);
+      || this.service.selectedSubjectsByStudent == null
+      || (!this.isFormValid));
   }
 }

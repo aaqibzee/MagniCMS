@@ -22,10 +22,10 @@ namespace MagniCollegeManagementSystem.APIController
         // GET: api/Grades
         public List<GradeDTO> GetGrades()
         {
-            var result = db.Grades.Include(x => x.Students).ToList();
+            var dbEntity = db.Grades.Include(x => x.Students).ToList();
             var response = new List<GradeDTO>();
 
-            foreach (var item in result)
+            foreach (var item in dbEntity)
             {
                 response.Add(GradeMapper.Map(item));
             }
@@ -37,13 +37,13 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(GradeDTO))]
         public IHttpActionResult GetGrade(int id)
         {
-            Grade grade = db.Grades.Find(id);
-            if (grade == null)
+            Grade dbEntity = db.Grades.Find(id);
+            if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            return Ok(GradeMapper.Map(grade));
+            return Ok(GradeMapper.Map(dbEntity));
         }
 
         // PUT: api/Grades/5
@@ -98,10 +98,10 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
-            var grade = GradeMapper.Map(new Grade() ,request, db);
+            var dbEntity = GradeMapper.Map(new Grade() ,request, db);
 
-            db.Entry(grade).State = EntityState.Modified;
-            db.Grades.Add(grade);
+            db.Entry(dbEntity).State = EntityState.Modified;
+            db.Grades.Add(dbEntity);
             db.SaveChanges();
 
             return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
@@ -112,16 +112,16 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(GradeDTO))]
         public IHttpActionResult DeleteGrade(int id)
         {
-            Grade grade = db.Grades.Find(id);
-            if (grade == null)
+            Grade dbEntity = db.Grades.Find(id);
+            if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            db.Grades.Remove(grade);
+            db.Grades.Remove(dbEntity);
             db.SaveChanges();
 
-            return Ok(GradeMapper.Map(grade));
+            return Ok(GradeMapper.Map(dbEntity));
         }
 
         protected override void Dispose(bool disposing)

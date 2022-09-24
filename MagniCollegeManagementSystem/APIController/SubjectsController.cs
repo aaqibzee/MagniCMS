@@ -37,13 +37,13 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(SubjectDTO))]
         public IHttpActionResult GetSubject(int id)
         {
-            Subject subject = db.Subjects.Find(id);
-            if (subject == null)
+            Subject dbEntity = db.Subjects.Find(id);
+            if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            return Ok(SubjectMapper.Map(subject));
+            return Ok(SubjectMapper.Map(dbEntity));
         }
 
         // PUT: api/Subjects/5
@@ -98,11 +98,11 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
-            var subject = SubjectMapper.Map(new Subject(),request, db);
+            var dbEntity = SubjectMapper.Map(new Subject(),request, db);
 
-            db.Entry(subject).State = EntityState.Modified;
+            db.Entry(dbEntity).State = EntityState.Modified;
 
-            db.Subjects.Add(subject);
+            db.Subjects.Add(dbEntity);
             db.SaveChanges();
 
             return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
@@ -112,16 +112,16 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(SubjectDTO))]
         public IHttpActionResult DeleteSubject(int id)
         {
-            Subject subject = db.Subjects.Find(id);
-            if (subject == null)
+            Subject dbEntity = db.Subjects.Find(id);
+            if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            db.Subjects.Remove(subject);
+            db.Subjects.Remove(dbEntity);
             db.SaveChanges();
 
-            return Ok(SubjectMapper.Map(subject));
+            return Ok(SubjectMapper.Map(dbEntity));
         }
 
         protected override void Dispose(bool disposing)

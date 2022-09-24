@@ -21,6 +21,9 @@
                     <th>
                         Code
                     </th>
+                    <th>
+                        Number Of Subjects Allowed
+                    </th>
                     <th>Action</th>
                     <th>Action</th>
                 </tr>
@@ -30,6 +33,7 @@
                     <td>{{course.Id}}</td>
                     <td>{{course.Name}}</td>
                     <td>{{course.Code}}</td>
+                    <td>{{course.NumberOfSubjectsAllowed}}</td>
                     <td (click)="PopulateForm(course)"> <button type="button" class="btn btn-info">Update</button>
                     <td (click)="DeleteCourse(course)"> <button type="button" class="btn btn-danger">Delete</button>
                     </td>

@@ -8,5 +8,6 @@ export class Course {
     Teachers: number[];
     Id:       number=0;
     Name:     string='';
-    Code:     string='';
+    Code: string = '';
+    NumberOfSubjectsAllowed:number=0;
 }

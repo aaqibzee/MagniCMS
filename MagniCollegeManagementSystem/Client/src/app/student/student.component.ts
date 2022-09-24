@@ -26,7 +26,11 @@ export class StudentComponent implements OnInit {
       this.service.refreshList();
       }, error => {
         console.log(error);
-      });
+    });
+    if (record.Id == this.service.formData.Id){
+        this.service.resetFormData();
+    }
+    
   }
   GetSubjectName(subjectId:Number)
   {
