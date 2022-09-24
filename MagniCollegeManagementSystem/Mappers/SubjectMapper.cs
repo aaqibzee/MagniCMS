@@ -16,6 +16,7 @@ namespace MagniCollegeManagementSystem.Mappers
             subject.Id = source.Id;
             subject.Name = source.Name;
             subject.Code = source.Code;
+            subject.CreditHours = source.CreditHours;
             subject.Students = new List<Student>();
 
             if (!(source.Teacher is null))
@@ -60,6 +61,7 @@ namespace MagniCollegeManagementSystem.Mappers
                 Id = source.Id,
                 Name = source.Name,
                 Code = source.Code,
+                CreditHours = source.CreditHours,
                 Students = new List<int>()
             };
 

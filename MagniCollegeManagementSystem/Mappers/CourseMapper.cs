@@ -16,7 +16,7 @@ namespace MagniCollegeManagementSystem.Mappers
             course.Id = source.Id;
             course.Name = source.Name;
             course.Code = source.Code;
-            course.NumberOfSubjectsAllowed = source.NumberOfSubjectsAllowed;
+            course.TotalCreditHours = source.TotalCreditHours;
             course.Students = new List<Student>();
             course.Subjects = new List<Subject>();
             course.Teachers = new List<Teacher>();
@@ -75,7 +75,7 @@ namespace MagniCollegeManagementSystem.Mappers
                 Students = new List<int>(),
                 Subjects = new List<int>(),
                 Teachers = new List<int>(),
-                NumberOfSubjectsAllowed = source.NumberOfSubjectsAllowed
+                TotalCreditHours = source.TotalCreditHours
             };
 
             if (!(source.Students is null))

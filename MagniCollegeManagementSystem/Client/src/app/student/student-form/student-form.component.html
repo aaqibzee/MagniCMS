@@ -45,9 +45,9 @@
 <ng-multiselect-dropdown 
   [placeholder]="'Select Subject'"  
   name="subjectSelect" 
-  [settings]="service.subjectsDropdownSettings"
-  [data]="service.subjectsOwnedBySelectedCourse"
-  [(ngModel)]="service.selectedSubjectsByStudent" 
+  [settings]="this.service.subjectsDropdownSettings"
+  [data]="this.service.subjectsInselcetedCourse"
+  [(ngModel)]="this.service.selectedSubjectsByStudent" 
   (onSelect)="onItemSelect($event)" 
   (onSelectAll)="onSelectAll($event)"
   (onDeSelect)="onItemDeselect($event)" >

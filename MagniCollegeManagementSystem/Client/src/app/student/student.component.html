@@ -26,6 +26,9 @@
           <th>
             Assigned Subjects
           </th>
+          <th>
+            Total Credit Hours
+          </th>
            <th>Action</th>
           <th>Action</th>
         </tr>
@@ -42,6 +45,7 @@
               </div>
             </div>
           </td>
+          <td>{{std.Course?.TotalCreditHours}}</td>
           <td (click)="UpdateStudent(std)"> <button type="button" class="btn btn-info">Update</button>
           <td (click)="DeleteStudent(std)"> <button type="button" class="btn btn-danger">Delete</button>
           </td>

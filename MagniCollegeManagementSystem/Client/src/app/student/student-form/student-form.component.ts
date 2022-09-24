@@ -77,28 +77,34 @@ export class StudentFormComponent implements OnInit {
   
   validateSubjectSelection()
   {
-    let required = this.service.formData.Course?.NumberOfSubjectsAllowed;
-    let availed = this.service.selectedSubjectsByStudent.length;
-    let difference = required-availed;
-   
-   
-    if (availed < required)
+    let allowed = this.service.formData.Course?.TotalCreditHours;
+    let availed: number = 0;
+    
+    this.service.subjectsInselcetedCourse?.forEach(element => {
+      if (this.service.selectedSubjectsByStudent?.find(x => x.Id == element.Id) != undefined)
+      {
+        availed += element.CreditHours;
+      }
+    });
+    let difference = allowed - availed;
+    
+    if (availed < allowed)
     {
       this.subjectsSelectionClass='text-info'
-       this.isFormValid = false;
-       this.service.MultiSelcetValidationMesage = 'Select ' +difference + ' more subject(s)';
+       this.isFormValid = true;
+       this.service.MultiSelcetValidationMesage = difference + ' Credit Hourse Remained';
     }
-    else if (availed > required)
+    else if (availed > allowed)
     {
       this.subjectsSelectionClass='text-danger'
        this.isFormValid = false;
       this.service.MultiSelcetValidationMesage = 
-        (availed - required) + ' extra subject(s) selected';  
+        (availed - allowed) + ' Extra Credit Hour(s) Availed, Remove Extra Subject(s)';  
     }
-    else if (availed == required)
+    else if (availed == allowed)
     {
       this.subjectsSelectionClass='text-info'
-      this.service.MultiSelcetValidationMesage ='Max limit reached' 
+      this.service.MultiSelcetValidationMesage ='All Credit Hours Availed' 
       this.isFormValid = true;
     }
   }

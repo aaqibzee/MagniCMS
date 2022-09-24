@@ -25,6 +25,9 @@
                         Course
                     </th>
                     <th>
+                        Credit Hours
+                    </th>
+                    <th>
                         Students Enrolled
                     </th>
                     <th>Action</th>
@@ -37,6 +40,7 @@
                     <td>{{subj.Name}}</td>
                     <td>{{subj.Code}}</td>
                     <td>{{subj.Course?.Name}}</td>
+                    <td>{{subj.CreditHours}}</td>
                     <td>{{subj.Course?.Students?.length}}</td>
                     <td (click)="UpdateSubject(subj)"> <button type="button" class="btn btn-info">Update</button>
                     <td (click)="DeleteSubject(subj)"> <button type="button" class="btn btn-danger">Delete</button>

@@ -1,7 +1,3 @@
-import { Student } from "./student.model";
-import { Subject } from "./subject.model";
-import { Teacher } from "./teacher.model";
-
 export class Course {
     Students: number[];
     Subjects: number[];
@@ -9,5 +5,5 @@ export class Course {
     Id:       number=0;
     Name:     string='';
     Code: string = '';
-    NumberOfSubjectsAllowed:number=0;
+    TotalCreditHours:number=0;
 }

@@ -1,5 +1,4 @@
 import { Course } from "./course.model";
-import { Student } from "./student.model";
 import { Teacher } from "./teacher.model";
 
 export class Subject {
@@ -8,5 +7,6 @@ export class Subject {
     Name:     string='';
     Code:     string='';
     Teacher:  Teacher=null;
-    Course:   Course=null;
+    Course: Course = null;
+    CreditHours: number=0;
 }

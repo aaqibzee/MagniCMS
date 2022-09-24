@@ -10,11 +10,11 @@
         <input class="form-control form-control-lg" placeholder="Course Code" name="code" #CourseCode="ngModel"
             [(ngModel)]="service.formData.Code" required maxlength="100" />
     </div>
-    <label class="label label-default">Maximum Subjects Allowed</label>
+    <label class="label label-default">Total Credit Hours</label>
     <div class="form-group">
-        <input  type="number" min="0" class="form-control form-control-lg" placeholder="Subjects Count" 
+        <input  type="number" min="0" class="form-control form-control-lg" placeholder="Total Credit Hours" 
         name="name" #SubjectsCount="ngModel"
-            [(ngModel)]="service.formData.NumberOfSubjectsAllowed" required />
+            [(ngModel)]="service.formData.TotalCreditHours" required />
     </div>
     <div class="form-group">
         <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid"> {{ service.formData.Id !=
