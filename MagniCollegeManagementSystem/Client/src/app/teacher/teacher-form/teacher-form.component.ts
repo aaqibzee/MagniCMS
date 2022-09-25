@@ -18,6 +18,7 @@ export class TeacherFormComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
+    this.service.formData.Subjects = this.service.selectedSubjects.map(x => x.Id);
     if (this.service.formData.Id == 0) {
       this.inserRecord(form);
     }
@@ -58,6 +59,6 @@ export class TeacherFormComponent implements OnInit {
   
   resetFormData()
   {
-    this.service.formData = new Teacher();
+    this.service.resetFormData();
   }
 }

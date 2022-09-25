@@ -1,33 +1,63 @@
 <div class="jumbotron py-3">
-    <h1 class="display-4 text-center"> Teacher details</h1>
+    <h5 class="display-4 text-center"> Teacher details</h5>
 </div>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-3">
         <app-teacher-form></app-teacher-form>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-9">
         <span> List of Teachers</span>
         <table class="table">
             <thead class="thead-light">
                 <tr>
                     <th>
-                        Teacher Id
+                        Id
                     </th>
                     <th>
-                        Teacher Name
+                        First Name
+                    </th>
+                    <th>
+                        Last Name
+                    </th>
+                    <th>
+                        Gender
+                    </th>
+                    <th>
+                        Contact Number
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Address
+                    </th>
+                    <th>
+                        Assigned Subjects
                     </th>
                     <th>Action</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let std of service.teacherList">
-                    <td>{{std.Id}}</td>
-                    <td>{{std.Name}}</td>
-                    <td (click)="PopulateForm(std)"> <button type="button" class="btn btn-info">Update</button>
-                    <td (click)="DeleteTeacher(std)"> <button type="button" class="btn btn-danger">Delete</button>
+                <tr *ngFor="let teacher of service.teacherList">
+                    <td>{{teacher.Id}}</td>
+                    <td>{{teacher.FirstName}}</td>
+                    <td>{{teacher.LastName}}</td>
+                    <td>{{teacher.Gender}}</td>
+                    <td>{{teacher.ContactNumber}}</td>
+                    <td>{{teacher.Email}}</td>
+                    <td>{{teacher.Address}}</td>
+                    <td>
+                        <div *ngFor="let subject of teacher.Subjects; let counter = index">
+                            <div>
+                                {{counter+1}}:{{GetSubjectName(subject)}}
+                            </div>
+                        </div>
+                    </td>
+                    <td (click)="PopulateForm(teacher)"> <button type="button" class="btn btn-info">Update</button>
+                    <td (click)="DeleteTeacher(teacher)"> <button type="button" class="btn btn-danger">Delete</button>
                     </td>
                 </tr>
             </tbody>

@@ -7,6 +7,10 @@ export class Teacher {
     Students: number[];
     Subjects: number[];
     Id:       number=0;
-    Name:     string='';
+    FirstName: string = '';
+    LastName: string = '';
+    Gender: string = '';
+    Address: string = '';
+    ContactNumber: string = '';
+    Email:     string='';
 }
-

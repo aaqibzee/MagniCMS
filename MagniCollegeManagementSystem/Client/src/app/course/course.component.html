@@ -24,6 +24,9 @@
                     <th>
                         Ttoal Credit Hours
                     </th>
+                    <th>
+                        Students Enrolled
+                    </th>
                     <th>Action</th>
                     <th>Action</th>
                 </tr>
@@ -34,8 +37,10 @@
                     <td>{{course.Name}}</td>
                     <td>{{course.Code}}</td>
                     <td>{{course.TotalCreditHours}}</td>
+                    <td>{{course.Students?.length}}</td>
                     <td (click)="PopulateForm(course)"> <button type="button" class="btn btn-info">Update</button>
-                    <td (click)="DeleteCourse(course)"> <button type="button" class="btn btn-danger">Delete</button>
+                    <td (click)="DeleteCourse(course)"> <button type="button" class="btn btn-danger" 
+                        [disabled]="course.Students?.length>0 || course.Subjects?.length>0 ">Delete</button>
                     </td>
                 </tr>
             </tbody>

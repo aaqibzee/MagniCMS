@@ -24,10 +24,11 @@ namespace MagniCollegeManagementSystem.Mappers
 
             if (!(source.Students is null))
             {
+                var dbStudents = db.Students;
                 course.Students.Clear();
                 foreach (var item in source.Students)
                 {
-                    course.Students.Add(db.Students.FirstOrDefault
+                    course.Students.Add(dbStudents.FirstOrDefault
                     (
                         x => x.Id.Equals(item)
                     ));
@@ -37,10 +38,11 @@ namespace MagniCollegeManagementSystem.Mappers
 
             if (!(source.Subjects is null))
             {
+                var dbSubjects = db.Subjects;
                 course.Subjects.Clear();
                 foreach (var item in source.Subjects)
                 {
-                    course.Subjects.Add(db.Subjects.FirstOrDefault
+                    course.Subjects.Add(dbSubjects.FirstOrDefault
                     (
                         x => x.Id.Equals(item)
                     ));
@@ -49,10 +51,11 @@ namespace MagniCollegeManagementSystem.Mappers
 
             if (!(source.Teachers is null))
             {
+                var dbTeachers = db.Teachers;
                 course.Teachers.Clear();
                 foreach (var item in source.Teachers)
                 {
-                    course.Teachers.Add(db.Teachers.FirstOrDefault
+                    course.Teachers.Add(dbTeachers.FirstOrDefault
                     (
                         x => x.Id.Equals(item)
                     ));

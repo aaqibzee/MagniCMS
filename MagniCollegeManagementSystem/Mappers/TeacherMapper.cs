@@ -14,17 +14,23 @@ namespace MagniCollegeManagementSystem.Mappers
                 return null;
 
             teacher.Id = source.Id;
-            teacher.Name = source.Name;
+            teacher.FirstName = source.FirstName;
+            teacher.LastName = source.LastName;
+            teacher.Gender = source.Gender;
+            teacher.Address = source.Address;
+            teacher.ContactNumber = source.ContactNumber;
+            teacher.Email = source.Email;
             teacher.Students = new List<Student>();
             teacher.Subjects = new List<Subject>();
             teacher.Courses = new List<Course>();
 
             if (!(source.Subjects is null))
             {
+                var dbSubjects = db.Subjects;
                 teacher.Subjects.Clear();
                 foreach (var item in source.Subjects)
                 {
-                    teacher.Subjects.Add(db.Subjects.FirstOrDefault
+                    teacher.Subjects.Add(dbSubjects.FirstOrDefault
                         (
                             x => x.Id.Equals(item)
                         ));
@@ -33,10 +39,11 @@ namespace MagniCollegeManagementSystem.Mappers
 
             if (!(source.Students is null))
             {
+                var dbStudents = db.Students;
                 teacher.Students.Clear();
                 foreach (var item in source.Students)
                 {
-                    teacher.Students.Add(db.Students.FirstOrDefault
+                    teacher.Students.Add(dbStudents.FirstOrDefault
                         (
                             x => x.Id.Equals(item)
                         ));
@@ -45,17 +52,16 @@ namespace MagniCollegeManagementSystem.Mappers
 
             if (!(source.Courses is null))
             {
+                var dbCourses = db.Courses;
                 teacher.Courses.Clear();
                 foreach (var item in source.Courses)
                 {
-                    teacher.Courses.Add(db.Courses.FirstOrDefault
+                    teacher.Courses.Add(dbCourses.FirstOrDefault
                         (
                             x => x.Id.Equals(item)
                         ));
                 }
             }
-
-
 
             return teacher;
         }
@@ -68,7 +74,12 @@ namespace MagniCollegeManagementSystem.Mappers
             var teacher = new TeacherDTO
             {
                 Id = source.Id,
-                Name = source.Name,
+                FirstName = source.FirstName,
+                LastName = source.LastName,
+                Gender = source.Gender,
+                Address = source.Address,
+                ContactNumber = source.ContactNumber,
+                Email = source.Email,
                 Students = new List<int>(),
                 Subjects = new List<int>(),
                 Courses = new List<int>(),

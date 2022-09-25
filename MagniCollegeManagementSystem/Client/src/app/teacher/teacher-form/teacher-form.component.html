@@ -2,12 +2,59 @@
     <input type="hidden" name="id" [value]="service.formData.Id" />
 
     <div class="form-group">
-        <label class="label label-default">Name</label>
-        <input class="form-control form-control-lg" placeholder="Name" name="name" #teacherName="ngModel"
-            [(ngModel)]="service.formData.Name"  required/>
+        <label class="label label-default">First Name</label>
+        <input class="form-control form-control-lg" placeholder="First Name" name="name" #FirstName="ngModel"
+            [(ngModel)]="service.formData.FirstName" required />
+    </div>
+    
+    <div class="form-group">
+        <label class="label label-default">Last Name</label>
+        <input class="form-control form-control-lg" placeholder="Last Name" name="name" #lastName="ngModel"
+            [(ngModel)]="service.formData.LastName" required />
+    </div>
+    
+    <div class="form-group">
+        <label class="label label-default">Contact Number</label>
+        <input class="form-control form-control-lg" placeholder="Contact Number" name="contact" #Contact="ngModel"
+            [(ngModel)]="service.formData.ContactNumber" required />
     </div>
     <div class="form-group">
-        <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid"> {{ service.formData.Id !=
+        <label class="label label-default">Email</label>
+        <input class="form-control form-control-lg" placeholder="Email" name="contact" #Email="ngModel"
+            [(ngModel)]="service.formData.Email" required type="email" />
+    </div>
+    <div class="form-group">
+        <label class="label label-default">Address</label>
+        <input class="form-control form-control-lg" placeholder="Address" name="contact" #Address="ngModel"
+            [(ngModel)]="service.formData.Address" required />
+    </div>
+    
+    <div class="form-group">
+        <label class="label label-default">Gender: (Required)</label>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="true">
+                {{service.selectedGender}}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" #selectedGender>
+                <button type="button" class="dropdown-item" *ngFor="let gender of service.genderOptions"
+                    (click)="service.onSelectGender(gender)" on-click="selectedGender.value=gender">
+                    {{gender}}
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="label label-default">Subjects</label>
+        <br />
+        <ng-multiselect-dropdown [placeholder]="'Select Subject'" name="subjectSelect"
+            [settings]="this.service.subjectsDropdownSettings" [data]="this.service.subjects"
+            [(ngModel)]="this.service.selectedSubjects">
+        </ng-multiselect-dropdown>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid ||
+        selectedGender.value==service.genderDropDownDefaultValue "> {{ service.formData.Id !=
             0 ? 'Update' : 'Add' }} </button>
     </div>
 </form>

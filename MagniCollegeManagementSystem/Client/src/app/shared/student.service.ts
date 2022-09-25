@@ -14,12 +14,15 @@ export class StudentService {
   
   
   readonly baseUrl = '/api/';
-  readonly courseDropDownDefaultValue = 'Select Subjects';
+  readonly courseDropDownDefaultValue = 'Select Course';
+  readonly genderDropDownDefaultValue = 'Select Gender';
+  readonly genderOptions: string []= ['Male','Female','Other'];
   subjectsInselcetedCourse: Subject[];  
   MultiSelcetValidationMesage: string = '';
   selectedSubjectsByStudent: Subject[];
   selectedCourseByStudent: string = this.courseDropDownDefaultValue;
-  subjectsDropdownSettings: IDropdownSettings = {}; 
+  selectedGender: string = this.genderDropDownDefaultValue;
+  subjectsDropdownSettings: IDropdownSettings = {};
   studentsList: Student[];
   formData: Student = new Student();
 
@@ -54,6 +57,10 @@ export class StudentService {
     this.MultiSelcetValidationMesage = ''; 
   }
  
+ onSelectGender(gender: string) {
+   this.selectedGender = gender;
+  }
+
   onSelectCourse(course: Course) {
     if (course?.Id != this.formData?.Course?.Id) {
       this.selectedCourseByStudent = course.Name;

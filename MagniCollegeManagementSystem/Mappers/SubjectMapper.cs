@@ -38,10 +38,11 @@ namespace MagniCollegeManagementSystem.Mappers
 
             if (!(source.Students is null))
             {
+                var dbStudents = db.Students;
                 subject.Students.Clear();
                 foreach (var item in source.Students)
                 {
-                    subject.Students.Add(db.Students.FirstOrDefault
+                    subject.Students.Add(dbStudents.FirstOrDefault
                     (
                         x => x.Id.Equals(item)
                     ));

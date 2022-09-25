@@ -87,15 +87,18 @@ export class StudentFormComponent implements OnInit {
       }
     });
     let difference = allowed - availed;
-    
+    this.service.formData.RemainingCreditHours = difference;
+
     if (availed < allowed)
     {
+      
       this.subjectsSelectionClass='text-info'
        this.isFormValid = true;
        this.service.MultiSelcetValidationMesage = difference + ' Credit Hourse Remained';
     }
     else if (availed > allowed)
     {
+      
       this.subjectsSelectionClass='text-danger'
        this.isFormValid = false;
       this.service.MultiSelcetValidationMesage = 
@@ -113,6 +116,7 @@ export class StudentFormComponent implements OnInit {
   {
     return (form.invalid
       || this.service.selectedCourseByStudent == this.service.courseDropDownDefaultValue
+      || this.service.selectedGender == this.service.genderDropDownDefaultValue
       || this.service.selectedSubjectsByStudent?.length == 0
       || this.service.selectedSubjectsByStudent == null
       || (!this.isFormValid));

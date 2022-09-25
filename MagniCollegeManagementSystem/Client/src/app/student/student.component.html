@@ -4,22 +4,24 @@
 </div>
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-3">
     <app-student-form></app-student-form>
   </div>
   
-  <div class="col-md-6">
+  <div class="col-md-9">
     <span> List of students</span>
     <table class="table">
       <thead class="thead-light">
         <tr>
           <th>
-            Student Id
+            Id
           </th>
           <th>
-            Student Name
+            First Name
           </th>
-          
+          <th>
+            Last Name
+          </th>
           <th>
             Assigned Course
           </th>
@@ -29,6 +31,9 @@
           <th>
             Total Credit Hours
           </th>
+          <th>
+            Remaining Credit Hours
+          </th>
            <th>Action</th>
           <th>Action</th>
         </tr>
@@ -36,7 +41,8 @@
       <tbody>
         <tr *ngFor="let std of service.studentsList">
           <td>{{std.Id}}</td>
-          <td>{{std.Name}}</td>
+          <td>{{std.FirstName}}</td>
+          <td>{{std.LastName}}</td>
           <td>{{std.Course?.Name}}</td>
           <td>
             <div *ngFor="let subject of std.Subjects; let counter = index">
@@ -46,6 +52,7 @@
             </div>
           </td>
           <td>{{std.Course?.TotalCreditHours}}</td>
+          <td>{{std.RemainingCreditHours}}</td>
           <td (click)="UpdateStudent(std)"> <button type="button" class="btn btn-info">Update</button>
           <td (click)="DeleteStudent(std)"> <button type="button" class="btn btn-danger">Delete</button>
           </td>

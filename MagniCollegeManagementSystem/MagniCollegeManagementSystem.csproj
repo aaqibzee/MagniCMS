@@ -328,6 +328,18 @@
     <Compile Include="Migrations\202209240756189_Update_Course_Table_And_Subject_Table.Designer.cs">
       <DependentUpon>202209240756189_Update_Course_Table_And_Subject_Table.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202209241008433_Update_Student_Table.cs" />
+    <Compile Include="Migrations\202209241008433_Update_Student_Table.Designer.cs">
+      <DependentUpon>202209241008433_Update_Student_Table.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209241242326_Update_Student_Table1.cs" />
+    <Compile Include="Migrations\202209241242326_Update_Student_Table1.Designer.cs">
+      <DependentUpon>202209241242326_Update_Student_Table1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202209241742217_Update_Teacher_Table.cs" />
+    <Compile Include="Migrations\202209241742217_Update_Teacher_Table.Designer.cs">
+      <DependentUpon>202209241742217_Update_Teacher_Table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Grade.cs" />
     <Compile Include="Models\Student.cs" />
@@ -409,6 +421,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202209240756189_Update_Course_Table_And_Subject_Table.resx">
       <DependentUpon>202209240756189_Update_Course_Table_And_Subject_Table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209241008433_Update_Student_Table.resx">
+      <DependentUpon>202209241008433_Update_Student_Table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209241242326_Update_Student_Table1.resx">
+      <DependentUpon>202209241242326_Update_Student_Table1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202209241742217_Update_Teacher_Table.resx">
+      <DependentUpon>202209241742217_Update_Teacher_Table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
