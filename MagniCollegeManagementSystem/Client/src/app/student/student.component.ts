@@ -1,6 +1,7 @@
-import { Component, OnInit,Input } from '@angular/core';
+import { Component, OnInit,Input,NgZone  } from '@angular/core';
 import { Student } from '../shared/student.model';
 import { StudentService } from '../shared/student.service';
+import { Constants } from '../shared/Constants';
 
 @Component({
   selector: 'app-student',
@@ -10,11 +11,14 @@ import { StudentService } from '../shared/student.service';
 })
 export class StudentComponent implements OnInit {
 
-  constructor(public service: StudentService) { }
+  constructor(public service: StudentService,private ngZone: NgZone) {
+     
+   }
   @Input() selectedItem: string = '';
   
   ngOnInit(): void {
     this.service.refreshList();
+    window[Constants.studentComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
   }
   UpdateStudent(record: Student) {
     this.service.populateForm(record);
@@ -23,7 +27,6 @@ export class StudentComponent implements OnInit {
   DeleteStudent(record: Student) {
     this.service.deleteStudent(record.Id).subscribe(
       result => {
-      this.service.refreshList();
       }, error => {
         console.log(error);
     });

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
+import { Constants } from '../shared/Constants';
 import { Subject } from '../shared/subject.model';
 import { Teacher } from '../shared/teacher.model';
 import { TeacherService } from '../shared/teacher.service'
@@ -10,17 +11,18 @@ import { TeacherService } from '../shared/teacher.service'
 })
 export class TeacherComponent implements OnInit {
 
-  constructor(public service: TeacherService) { }
+  constructor(public service: TeacherService,private ngZone: NgZone) { }
 
   ngOnInit(): void {
     this.service.refreshList();
+     window[Constants.teacherComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
   }
 
   GetSubjectName(subjectId:number)
   {
     let subject = this.service?.subjectService?.subjectList?.filter(x => x.Id == subjectId);
     return subject[0]?.Name;
-  }
+  }t
   
   PopulateForm(record: Teacher) {
     //assign the object copy and not the original object
@@ -44,7 +46,6 @@ export class TeacherComponent implements OnInit {
    DeleteTeacher(record: Teacher) {
      this.service.deleteTeacher(record.Id).subscribe(
        result => {
-        this.service.refreshList();
        }, error => {
          console.log(error);
      });

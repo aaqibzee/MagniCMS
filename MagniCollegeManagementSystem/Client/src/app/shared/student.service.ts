@@ -6,14 +6,12 @@ import { Course } from './course.model';
 import { SubjectService } from './subject.service';
 import { Subject } from './subject.model';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import { Constants } from './Constants';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StudentService {
-  
-  
-  readonly baseUrl = '/api/';
   readonly courseDropDownDefaultValue = 'Select Course';
   readonly genderDropDownDefaultValue = 'Select Gender';
   readonly genderOptions: string []= ['Male','Female','Other'];
@@ -45,8 +43,6 @@ export class StudentService {
       allowSearchFilter: true
     };
    }
-
- 
 
   resetFormData()
   {
@@ -93,19 +89,19 @@ export class StudentService {
   }
 
   postStudent() {
-    return this.http.post(this.baseUrl+'students', this.formData);
+    return this.http.post(Constants.studentsBase, this.formData);
   }
 
   putStudent() {
-    return this.http.put(this.baseUrl + 'students/' + this.formData.Id, this.formData);
+    return this.http.put(Constants.studentsBase + '/' + this.formData.Id, this.formData);
   }
 
   deleteStudent(id:number) {
-    return this.http.delete(this.baseUrl + 'students/' + id);
+    return this.http.delete(Constants.studentsBase + '/' + id);
   }
 
   refreshList() {
-    this.http.get(this.baseUrl + 'students')
+    this.http.get(Constants.studentsBase)
       .toPromise()
       .then(res => this.studentsList = res as Student[]);
   }

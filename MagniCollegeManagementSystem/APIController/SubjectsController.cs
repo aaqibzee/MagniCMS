@@ -7,19 +7,27 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using MagniCollegeManagementSystem.DatabseContexts;
 using MagniCollegeManagementSystem.DTOs;
+using MagniCollegeManagementSystem.Hubs;
 using MagniCollegeManagementSystem.Mappers;
 using MagniCollegeManagementSystem.Models;
+using Microsoft.AspNet.SignalR;
 
 namespace MagniCollegeManagementSystem.APIController
 {
     public class SubjectsController : ApiController
     {
-        private MagniDBContext db = new MagniDBContext();
+        private readonly MagniDBContext dbContext;
+        private readonly IHubContext magniSyncHub;
+        public SubjectsController(MagniDBContext db)
+        {
+            this.dbContext = db;
+            this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
+        }
 
         // GET: api/Subjects
         public List<SubjectDTO> GetSubjects()
         {
-            var result = db.Subjects
+            var result = dbContext.Subjects
                 .Include(x => x.Students)
                 .ToList();
             
@@ -37,7 +45,7 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(SubjectDTO))]
         public IHttpActionResult GetSubject(int id)
         {
-            Subject dbEntity = db.Subjects.Find(id);
+            Subject dbEntity = dbContext.Subjects.Find(id);
             if (dbEntity == null)
             {
                 return NotFound();
@@ -60,19 +68,20 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            var dbEntity = db.Subjects.First(x => x.Id.Equals(id));
+            var dbEntity = dbContext.Subjects.First(x => x.Id.Equals(id));
             if (dbEntity is null)
             {
                 return BadRequest();
             }
 
-            db.Subjects.Attach(dbEntity);
-            dbEntity = SubjectMapper.Map(dbEntity,subject, db);
-            db.Entry(dbEntity).State = EntityState.Modified;
+            dbContext.Subjects.Attach(dbEntity);
+            dbEntity = SubjectMapper.Map(dbEntity,subject, dbContext);
+            dbContext.Entry(dbEntity).State = EntityState.Modified;
 
             try
             {
-                db.SaveChanges();
+                dbContext.SaveChanges();
+                magniSyncHub.Clients.All.subjectsUpdated();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -98,12 +107,13 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
-            var dbEntity = SubjectMapper.Map(new Subject(),request, db);
+            var dbEntity = SubjectMapper.Map(new Subject(),request, dbContext);
 
-            db.Entry(dbEntity).State = EntityState.Modified;
+            dbContext.Entry(dbEntity).State = EntityState.Modified;
 
-            db.Subjects.Add(dbEntity);
-            db.SaveChanges();
+            dbContext.Subjects.Add(dbEntity);
+            dbContext.SaveChanges();
+            magniSyncHub.Clients.All.subjectsUpdated();
 
             return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
         }
@@ -112,14 +122,15 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(SubjectDTO))]
         public IHttpActionResult DeleteSubject(int id)
         {
-            Subject dbEntity = db.Subjects.Find(id);
+            Subject dbEntity = dbContext.Subjects.Find(id);
             if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            db.Subjects.Remove(dbEntity);
-            db.SaveChanges();
+            dbContext.Subjects.Remove(dbEntity);
+            dbContext.SaveChanges();
+            magniSyncHub.Clients.All.subjectsUpdated();
 
             return Ok(SubjectMapper.Map(dbEntity));
         }
@@ -128,14 +139,14 @@ namespace MagniCollegeManagementSystem.APIController
         {
             if (disposing)
             {
-                db.Dispose();
+                dbContext.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool SubjectExists(int id)
         {
-            return db.Subjects.Count(e => e.Id == id) > 0;
+            return dbContext.Subjects.Count(e => e.Id == id) > 0;
         }
     }
 }

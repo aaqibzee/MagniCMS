@@ -1,28 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using MagniCollegeManagementSystem.DatabseContexts;
 using MagniCollegeManagementSystem.DTOs;
+using MagniCollegeManagementSystem.Hubs;
 using MagniCollegeManagementSystem.Mappers;
 using MagniCollegeManagementSystem.Models;
+using Microsoft.AspNet.SignalR;
 
 namespace MagniCollegeManagementSystem.APIController
 {
     public class GradesController : ApiController
     {
-        private MagniDBContext db = new MagniDBContext();
+        private readonly MagniDBContext dbContext;
+        private readonly IHubContext magniSyncHub;
+        public GradesController(MagniDBContext db)
+        {
+            this.dbContext = db;
+            this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
+        }
 
         // GET: api/Grades
         public List<GradeDTO> GetGrades()
         {
-            var dbEntity = db.Grades.Include(x => x.Students).ToList();
+            var dbEntity = dbContext.Grades.Include(x => x.Students).ToList();
             var response = new List<GradeDTO>();
 
             foreach (var item in dbEntity)
@@ -37,7 +42,7 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(GradeDTO))]
         public IHttpActionResult GetGrade(int id)
         {
-            Grade dbEntity = db.Grades.Find(id);
+            Grade dbEntity = dbContext.Grades.Find(id);
             if (dbEntity == null)
             {
                 return NotFound();
@@ -60,19 +65,20 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            var dbEntity = db.Grades.First(x => x.Id.Equals(id));
+            var dbEntity = dbContext.Grades.First(x => x.Id.Equals(id));
             if (dbEntity is null)
             {
                 return BadRequest();
             }
 
-            db.Grades.Attach(dbEntity);
-            dbEntity = GradeMapper.Map(dbEntity,grade, db);
-            db.Entry(dbEntity).State = EntityState.Modified;
+            dbContext.Grades.Attach(dbEntity);
+            dbEntity = GradeMapper.Map(dbEntity,grade, dbContext);
+            dbContext.Entry(dbEntity).State = EntityState.Modified;
 
             try
             {
-                db.SaveChanges();
+                dbContext.SaveChanges();
+                magniSyncHub.Clients.All.gardesUpdated();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -98,11 +104,12 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
-            var dbEntity = GradeMapper.Map(new Grade() ,request, db);
+            var dbEntity = GradeMapper.Map(new Grade() ,request, dbContext);
 
-            db.Entry(dbEntity).State = EntityState.Modified;
-            db.Grades.Add(dbEntity);
-            db.SaveChanges();
+            dbContext.Entry(dbEntity).State = EntityState.Modified;
+            dbContext.Grades.Add(dbEntity);
+            dbContext.SaveChanges();
+            magniSyncHub.Clients.All.gardesUpdated();
 
             return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
            
@@ -112,14 +119,15 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(GradeDTO))]
         public IHttpActionResult DeleteGrade(int id)
         {
-            Grade dbEntity = db.Grades.Find(id);
+            Grade dbEntity = dbContext.Grades.Find(id);
             if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            db.Grades.Remove(dbEntity);
-            db.SaveChanges();
+            dbContext.Grades.Remove(dbEntity);
+            dbContext.SaveChanges();
+            magniSyncHub.Clients.All.gardesUpdated();
 
             return Ok(GradeMapper.Map(dbEntity));
         }
@@ -128,14 +136,14 @@ namespace MagniCollegeManagementSystem.APIController
         {
             if (disposing)
             {
-                db.Dispose();
+                dbContext.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool GradeExists(int id)
         {
-            return db.Grades.Count(e => e.Id == id) > 0;
+            return dbContext.Grades.Count(e => e.Id == id) > 0;
         }
     }
 }

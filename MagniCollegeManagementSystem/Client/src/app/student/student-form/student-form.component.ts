@@ -34,7 +34,6 @@ export class StudentFormComponent implements OnInit {
      this.service.postStudent().subscribe(
       result =>{
          this.resetForm(form);
-         this.service.refreshList();
       }, error =>{
         console.log(error);
       }
@@ -46,7 +45,6 @@ export class StudentFormComponent implements OnInit {
      this.service.putStudent().subscribe(
       result =>{
          this.resetForm(form);
-         this.service.refreshList();
       }, error =>{
         console.log(error);
       }

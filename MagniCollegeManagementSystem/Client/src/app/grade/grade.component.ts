@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
+import { Constants } from '../shared/Constants';
 import { Grade } from '../shared/grade.model';
 import { GradeService } from '../shared/grade.service'
 
@@ -10,10 +11,11 @@ import { GradeService } from '../shared/grade.service'
 })
 export class GradeComponent implements OnInit {
 
-  constructor(public service: GradeService) { }
+  constructor(public service: GradeService, private ngZone: NgZone) { }
 
   ngOnInit(): void {
     this.service.refreshList();
+     window[Constants.gradeComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
   }
 
    PopulateForm(record: Grade) {
@@ -24,7 +26,7 @@ export class GradeComponent implements OnInit {
    DeleteGrade(record: Grade) {
      this.service.deleteGrade(record.Id).subscribe(
        result => {
-        this.service.refreshList();
+        
        }, error => {
          console.log(error);
        });

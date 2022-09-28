@@ -32,7 +32,6 @@ export class GradeFormComponent implements OnInit {
      this.service.postGrade().subscribe(
       result =>{
          this.resetForm(form);
-         this.service.refreshList();
       }, error =>{
         console.log(error);
       }
@@ -44,7 +43,6 @@ export class GradeFormComponent implements OnInit {
      this.service.putGrade().subscribe(
       result =>{
          this.resetForm(form);
-         this.service.refreshList();
       }, error =>{
         console.log(error);
       }

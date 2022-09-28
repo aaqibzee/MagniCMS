@@ -3,6 +3,7 @@ import { Subject } from "./subject.model";
 import { HttpClient } from '@angular/common/http';
 import { CourseService } from './course.service';
 import { Course } from './course.model';
+import { Constants } from './Constants';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,6 @@ export class SubjectService {
 
   formData: Subject = new Subject();
   subjectList: Subject[];
-  readonly baseUrl = '/api/'
-  readonly endpoint = 'subjects'
   courseDropDownCelectedValue: string = 'Select Course';
 
   
@@ -36,19 +35,19 @@ export class SubjectService {
   }s
 
   postSubject() {
-    return this.http.post(this.baseUrl+this.endpoint, this.formData);
+    return this.http.post(Constants.subjectsBase, this.formData);
   }
 
   putSubject() {
-    return this.http.put(this.baseUrl + this.endpoint+'/' + this.formData.Id, this.formData);
+    return this.http.put(Constants.subjectsBase+'/' + this.formData.Id, this.formData);
   }
 
   deleteSubject(id:number) {
-    return this.http.delete(this.baseUrl + this.endpoint+'/' + id);
+    return this.http.delete(Constants.subjectsBase+'/' + id);
   }
 
   refreshList() {
-    this.http.get(this.baseUrl+ this.endpoint)
+    this.http.get(Constants.subjectsBase)
       .toPromise()
       .then(res => this.subjectList = res as Subject[]);
   }

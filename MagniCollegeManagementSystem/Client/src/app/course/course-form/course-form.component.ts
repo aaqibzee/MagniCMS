@@ -32,7 +32,6 @@ export class CourseFormComponent implements OnInit {
      this.service.postCourse().subscribe(
       result =>{
          this.resetForm(form);
-         this.service.refreshList();
       }, error =>{
         console.log(error);
       }
@@ -44,7 +43,6 @@ export class CourseFormComponent implements OnInit {
      this.service.putCourse().subscribe(
       result =>{
          this.resetForm(form);
-         this.service.refreshList();
       }, error =>{
         console.log(error);
       }

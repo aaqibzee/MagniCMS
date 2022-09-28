@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Grade } from "./grade.model";
 import { HttpClient } from '@angular/common/http';
+import { Constants } from './Constants';
 
 @Injectable({
   providedIn: 'root'
@@ -11,22 +12,21 @@ export class GradeService {
 
   formData: Grade = new Grade();
   gradesList: Grade[];
-  readonly baseUrl='/api/'
 
   postGrade() {
-    return this.http.post(this.baseUrl+'Grades', this.formData);
+    return this.http.post(Constants.gradesBase, this.formData);
   }
 
   putGrade() {
-    return this.http.put(this.baseUrl + 'Grades/' + this.formData.Id, this.formData);
+    return this.http.put(Constants.gradesBase+'/' + this.formData.Id, this.formData);
   }
 
   deleteGrade(id:number) {
-    return this.http.delete(this.baseUrl + 'Grades/' + id);
+    return this.http.delete(Constants.gradesBase + '/' + id);
   }
 
   refreshList() {
-    this.http.get(this.baseUrl + 'Grades')
+    this.http.get(Constants.gradesBase)
       .toPromise()
       .then(res => this.gradesList = res as Grade[]);
   }

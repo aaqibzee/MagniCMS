@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Course } from "./course.model";
 import { HttpClient } from '@angular/common/http';
+import { Constants } from '../shared/Constants';
 
 @Injectable({
   providedIn: 'root'
@@ -11,23 +12,21 @@ export class CourseService {
 
   formData: Course = new Course();
   courseList: Course[];
-  readonly baseUrl = '/api/'
-  readonly endpoint='courses'
 
   postCourse() {
-    return this.http.post(this.baseUrl+this.endpoint, this.formData);
+    return this.http.post(Constants.coursesBase, this.formData);
   }
-
+        
   putCourse() {
-    return this.http.put(this.baseUrl + this.endpoint+'/' + this.formData.Id, this.formData);
+    return this.http.put(Constants.coursesBase+'/' + this.formData.Id, this.formData);
   }
 
   deleteCourse(id:number) {
-    return this.http.delete(this.baseUrl + this.endpoint+'/' + id);
+    return this.http.delete(Constants.coursesBase+'/' + id);
   }
 
   refreshList() {
-    this.http.get(this.baseUrl+ this.endpoint)
+    this.http.get(Constants.coursesBase)
       .toPromise()
       .then(res => this.courseList = res as Course[]);
   }

@@ -4,6 +4,7 @@ using System.Web.Routing;
 using AutoMapper;
 using MagniCollegeManagementSystem.Models;
 using MagniCollegeManagementSystem.DTOs;
+using Microsoft.AspNet.SignalR;
 
 namespace MagniCollegeManagementSystem
 {

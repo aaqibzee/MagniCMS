@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Subject } from './subject.model';
 import { SubjectService } from './subject.service';
-import { NgForm } from '@angular/forms';
+import { Constants } from './Constants';
 
 @Injectable({
   providedIn: 'root'
@@ -27,8 +27,6 @@ export class TeacherService {
 
   formData: Teacher = new Teacher();
   teacherList: Teacher[];
-  readonly baseUrl = '/api/'
-  readonly endpoint = 'teachers'
   readonly genderDropDownDefaultValue = 'Select Gender';
   readonly genderOptions: string[] = ['Male', 'Female', 'Other'];
   selectedGender: string = this.genderDropDownDefaultValue;
@@ -49,19 +47,19 @@ export class TeacherService {
   }
 
   postTeacher() {
-    return this.http.post(this.baseUrl+this.endpoint, this.formData);
+    return this.http.post(Constants.teachersBase, this.formData);
   }
 
   putTeacher() {
-    return this.http.put(this.baseUrl + this.endpoint+'/' + this.formData.Id, this.formData);
+    return this.http.put(Constants.teachersBase+'/' + this.formData.Id, this.formData);
   }
 
   deleteTeacher(id:number) {
-    return this.http.delete(this.baseUrl + this.endpoint+'/' + id);
+    return this.http.delete(Constants.teachersBase+'/' + id);
   }
 
   refreshList() {
-    this.http.get(this.baseUrl+ this.endpoint)
+    this.http.get(Constants.teachersBase)
       .toPromise()
       .then(res => this.teacherList = res as Teacher[]);
   }

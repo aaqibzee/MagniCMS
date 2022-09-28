@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
+import { Constants } from '../shared/Constants';
 import { Subject } from '../shared/subject.model';
 import { SubjectService } from '../shared/subject.service'
 
@@ -10,10 +11,11 @@ import { SubjectService } from '../shared/subject.service'
 })
 export class SubjectComponent implements OnInit {
 
-  constructor(public service: SubjectService) { }
+  constructor(public service: SubjectService ,private ngZone: NgZone) { }
 
   ngOnInit(): void {
     this.service.refreshList();
+     window[Constants.subjectComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
   }
 
   UpdateSubject(record: Subject) {

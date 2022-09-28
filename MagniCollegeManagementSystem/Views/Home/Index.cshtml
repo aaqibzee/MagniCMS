@@ -1,7 +1,5 @@
 ﻿
-@{
-    ViewBag.Title = "Index";
-}
+@{ ViewBag.Title = "Index"; }
 
 <!doctype html>
 <html lang="en">
@@ -12,9 +10,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<app-root></app-root>
 
-</body>
+</head>
+
+<script type="text/javascript" src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/jquery.signalR-2.4.0.min.js"></script>
+<script src="~/signalr/hubs"></script>
+<script>
+    $(function () {
+
+        var magniSyncHub = $.connection.magniSyncHub;
+        var client = magniSyncHub.client;
+
+        client.studentsUpdated = function () {
+            window.studentComponentReference.zone.run(() => {
+                window.studentComponentReference.syncData();
+            });
+        };
+
+        client.coursesUpdated = function () {
+            window.courseComponentReference.zone.run(() => {
+                window.courseComponentReference.syncData();
+            });
+        };
+
+        client.subjectsUpdated = function () {
+            window.subjectComponentReference.zone.run(() => {
+                window.subjectComponentReference.syncData();
+            });
+        };
+
+        client.teachersUpdated = function () {
+            window.teacherComponentReference.zone.run(() => {
+                window.teacherComponentReference.syncData();
+            });
+        };
+
+        client.gradesUpdated = function () {
+            window.gradeComponentReference.zone.run(() => {
+                window.gradeComponentReference.syncData();
+            });
+        };
+
+        $.connection.hub.start().done();
+       
+    });
+
+</script>
+
+<app-root></app-root>
 </html>

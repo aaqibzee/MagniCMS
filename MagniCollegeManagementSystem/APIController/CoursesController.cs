@@ -9,23 +9,26 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
+using MagniCollegeManagementSystem.Hubs;
+using Microsoft.AspNet.SignalR;
 
 
 namespace MagniCollegeManagementSystem.APIController
 {
     public class CoursesController : ApiController
     {
-        private MagniDBContext db;
-        public CoursesController()
+        private readonly MagniDBContext dbContext;
+        private readonly IHubContext magniSyncHub;
+        public CoursesController(MagniDBContext db)
         {
-            this.db = new MagniDBContext();
-
+            this.dbContext = db;
+            this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
         }
 
         // GET: api/Courses
         public List<CourseDTO> GetCourses()
         {
-            var result = db.Courses
+            var result = dbContext.Courses
                 .Include(x => x.Students)
                 .Include(x => x.Subjects)
                 .Include(x => x.Teachers);
@@ -43,7 +46,7 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(CourseDTO))]
         public IHttpActionResult GetCourse(int id)
         {
-            Course dbEntity = db.Courses.Find(id);
+            Course dbEntity = dbContext.Courses.Find(id);
             if (dbEntity == null)
             {
                 return NotFound();
@@ -56,18 +59,19 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(void))]
         public IHttpActionResult PutCourse(int id, CourseDTO course)
         {
-            var dbEntity = db.Courses.First(x => x.Id.Equals(id));
+            var dbEntity = dbContext.Courses.First(x => x.Id.Equals(id));
             if (dbEntity is null)
             {
                 return BadRequest();
             }
 
-            CourseMapper.Map(dbEntity,course, db);
-            db.Entry(dbEntity).State = EntityState.Modified;
+            CourseMapper.Map(dbEntity,course, dbContext);
+            dbContext.Entry(dbEntity).State = EntityState.Modified;
 
             try
             {
-                db.SaveChanges();
+                dbContext.SaveChanges();
+                magniSyncHub.Clients.All.coursesUpdated();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -93,11 +97,12 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
-            var dbEntity = CourseMapper.Map(new Course(), request, db);
+            var dbEntity = CourseMapper.Map(new Course(), request, dbContext);
 
-            db.Entry(dbEntity).State = EntityState.Modified;
-            db.Courses.Add(dbEntity);
-            db.SaveChanges();
+            dbContext.Entry(dbEntity).State = EntityState.Modified;
+            dbContext.Courses.Add(dbEntity);
+            dbContext.SaveChanges();
+            magniSyncHub.Clients.All.coursesUpdated();
 
             return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
         }
@@ -106,14 +111,15 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(Course))]
         public IHttpActionResult DeleteCourse(int id)
         {
-            Course dbEntity = db.Courses.Find(id);
+            Course dbEntity = dbContext.Courses.Find(id);
             if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            db.Courses.Remove(dbEntity);
-            db.SaveChanges();
+            dbContext.Courses.Remove(dbEntity);
+            dbContext.SaveChanges();
+            magniSyncHub.Clients.All.coursesUpdated();
 
             return Ok(dbEntity);
         }
@@ -122,14 +128,14 @@ namespace MagniCollegeManagementSystem.APIController
         {
             if (disposing)
             {
-                db.Dispose();
+                dbContext.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool CourseExists(int id)
         {
-            return db.Courses.Count(e => e.Id == id) > 0;
+            return dbContext.Courses.Count(e => e.Id == id) > 0;
         }
     }
 }

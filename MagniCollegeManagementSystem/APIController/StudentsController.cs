@@ -1,33 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using MagniCollegeManagementSystem.DatabseContexts;
 using MagniCollegeManagementSystem.DTOs;
+using MagniCollegeManagementSystem.Hubs;
 using MagniCollegeManagementSystem.Mappers;
 using MagniCollegeManagementSystem.Models;
+using Microsoft.AspNet.SignalR;
 
 namespace MagniCollegeManagementSystem.APIController
 {
     public class StudentsController : ApiController
     {
-        private MagniDBContext db;
-        public StudentsController()
+        private readonly MagniDBContext dbContext;
+        private readonly IHubContext magniSyncHub;
+        public StudentsController(MagniDBContext db)
         {
-            db = new MagniDBContext();
+            this.dbContext = db;
+            this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
         }
 
         // GET: api/Students
         public List<StudentDTO> GetStudents()
         {
-            var result = db.Students
+            var result = dbContext.Students
                 .Include(x => x.Course)
                 .Include(x => x.Grade)
                 .ToList();
@@ -46,7 +46,7 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(StudentDTO))]
         public IHttpActionResult GetStudent(int id)
         {
-            Student dbEntity = db.Students.Find(id);
+            Student dbEntity = dbContext.Students.Find(id);
             if (dbEntity == null)
             {
                 return NotFound();
@@ -69,18 +69,20 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            var dbEntity = db.Students.First(x => x.Id.Equals(id));
+            var dbEntity = dbContext.Students.First(x => x.Id.Equals(id));
             if (dbEntity is null)
             {
                 return BadRequest();
             }
 
-            StudentMapper.Map(dbEntity,student, db);
-            db.Entry(dbEntity).State = EntityState.Modified;
-            
+            StudentMapper.Map(dbEntity, student, dbContext);
+            dbContext.Entry(dbEntity).State = EntityState.Modified;
+
             try
             {
-                db.SaveChanges();
+                dbContext.SaveChanges();
+                magniSyncHub.Clients.All.studentsUpdated();
+
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -106,12 +108,13 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
-            var dbEntity = StudentMapper.Map(new Student(),request,db);
+            var dbEntity = StudentMapper.Map(new Student(), request, dbContext);
 
-            db.Entry(dbEntity).State = EntityState.Modified;
+            dbContext.Entry(dbEntity).State = EntityState.Modified;
 
-            db.Students.Add(dbEntity);
-            db.SaveChanges();
+            dbContext.Students.Add(dbEntity);
+            dbContext.SaveChanges();
+            magniSyncHub.Clients.All.studentsUpdated();
 
             return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
         }
@@ -120,14 +123,15 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(StudentDTO))]
         public IHttpActionResult DeleteStudent(int id)
         {
-            Student dbEntity = db.Students.Find(id);
+            Student dbEntity = dbContext.Students.Find(id);
             if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            db.Students.Remove(dbEntity);
-            db.SaveChanges();
+            dbContext.Students.Remove(dbEntity);
+            dbContext.SaveChanges();
+            magniSyncHub.Clients.All.studentsUpdated();
 
             return Ok(StudentMapper.Map(dbEntity));
         }
@@ -136,14 +140,14 @@ namespace MagniCollegeManagementSystem.APIController
         {
             if (disposing)
             {
-                db.Dispose();
+                dbContext.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool StudentExists(int id)
         {
-            return db.Students.Count(e => e.Id == id) > 0;
+            return dbContext.Students.Count(e => e.Id == id) > 0;
         }
     }
 }

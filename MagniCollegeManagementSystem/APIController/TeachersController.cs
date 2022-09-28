@@ -7,19 +7,27 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using MagniCollegeManagementSystem.DatabseContexts;
 using MagniCollegeManagementSystem.DTOs;
+using MagniCollegeManagementSystem.Hubs;
 using MagniCollegeManagementSystem.Mappers;
 using MagniCollegeManagementSystem.Models;
+using Microsoft.AspNet.SignalR;
 
 namespace MagniCollegeManagementSystem.APIController
 {
     public class TeachersController : ApiController
     {
-        private MagniDBContext db = new MagniDBContext();
+        private readonly MagniDBContext dbContext;
+        private readonly IHubContext magniSyncHub;
+        public TeachersController(MagniDBContext db)
+        {
+            this.dbContext = db;
+            this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
+        }
 
         // GET: api/Teachers
         public List<TeacherDTO> GetTeachers()
         {
-            var result= db.Teachers
+            var result= dbContext.Teachers
                 .Include(x => x.Students)
                 .Include(x=>x.Students)
                 .Include(x => x.Subjects)
@@ -39,7 +47,7 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(TeacherDTO))]
         public IHttpActionResult GetTeacher(int id)
         {
-            Teacher dbEntity = db.Teachers.Find(id);
+            Teacher dbEntity = dbContext.Teachers.Find(id);
             if (dbEntity == null)
             {
                 return NotFound();
@@ -62,19 +70,20 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            var dbEntity = db.Teachers.First(x => x.Id.Equals(id));
+            var dbEntity = dbContext.Teachers.First(x => x.Id.Equals(id));
             if (dbEntity is null)
             {
                 return BadRequest();
             }
 
-            db.Teachers.Attach(dbEntity);
-            dbEntity = TeacherMapper.Map(dbEntity, teacher, db);
-            db.Entry(dbEntity).State = EntityState.Modified;
+            dbContext.Teachers.Attach(dbEntity);
+            dbEntity = TeacherMapper.Map(dbEntity, teacher, dbContext);
+            dbContext.Entry(dbEntity).State = EntityState.Modified;
 
             try
             {
-                db.SaveChanges();
+                dbContext.SaveChanges();
+                magniSyncHub.Clients.All.teachersUpdated();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -100,11 +109,12 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest(ModelState);
             }
 
-            var dbEntity = TeacherMapper.Map(new Teacher(), request, db);
+            var dbEntity = TeacherMapper.Map(new Teacher(), request, dbContext);
 
-            db.Entry(dbEntity).State = EntityState.Modified;
-            db.Teachers.Add(dbEntity);
-            db.SaveChanges();
+            dbContext.Entry(dbEntity).State = EntityState.Modified;
+            dbContext.Teachers.Add(dbEntity);
+            dbContext.SaveChanges();
+            magniSyncHub.Clients.All.teachersUpdated();
 
             return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
         }
@@ -113,14 +123,15 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(Teacher))]
         public IHttpActionResult DeleteTeacher(int id)
         {
-            Teacher dbEntity = db.Teachers.Find(id);
+            Teacher dbEntity = dbContext.Teachers.Find(id);
             if (dbEntity == null)
             {
                 return NotFound();
             }
 
-            db.Teachers.Remove(dbEntity);
-            db.SaveChanges();
+            dbContext.Teachers.Remove(dbEntity);
+            dbContext.SaveChanges();
+            magniSyncHub.Clients.All.teachersUpdated();
 
             return Ok(dbEntity);
         }
@@ -129,14 +140,14 @@ namespace MagniCollegeManagementSystem.APIController
         {
             if (disposing)
             {
-                db.Dispose();
+                dbContext.Dispose();
             }
             base.Dispose(disposing);
         }
 
         private bool TeacherExists(int id)
         {
-            return db.Teachers.Count(e => e.Id == id) > 0;
+            return dbContext.Teachers.Count(e => e.Id == id) > 0;
         }
     }
 }
