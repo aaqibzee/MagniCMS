@@ -35,9 +35,9 @@ export class StudentComponent implements OnInit {
     }
     
   }
-  GetSubjectName(subjectId:Number)
+  GetSubjectName(subjectId:number)
   {
-    let subject = this.service?.subjectService?.subjectList?.filter(x => x.Id == subjectId);
-    return subject[0]?.Name;
+    let subject = this.service?.subjectService?.subjectList?.find(x => x.Id == subjectId);
+    return subject?.Name;
   }
 }

@@ -5,12 +5,13 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
-using MagniCollegeManagementSystem.DatabseContexts;
 using MagniCollegeManagementSystem.DTOs;
 using MagniCollegeManagementSystem.Hubs;
 using MagniCollegeManagementSystem.Mappers;
-using MagniCollegeManagementSystem.Models;
+using DataAccess.Models;
 using Microsoft.AspNet.SignalR;
+using DataAccess.DatabseContexts;
+using DataAccess.Interfaces;
 
 namespace MagniCollegeManagementSystem.APIController
 {
@@ -18,8 +19,10 @@ namespace MagniCollegeManagementSystem.APIController
     {
         private readonly MagniDBContext dbContext;
         private readonly IHubContext magniSyncHub;
+        private readonly ITeacherRepository repository;
         public TeachersController(MagniDBContext db)
         {
+            this.repository = new TeacherRepository(db);
             this.dbContext = db;
             this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
         }
@@ -27,12 +30,7 @@ namespace MagniCollegeManagementSystem.APIController
         // GET: api/Teachers
         public List<TeacherDTO> GetTeachers()
         {
-            var result= dbContext.Teachers
-                .Include(x => x.Students)
-                .Include(x=>x.Students)
-                .Include(x => x.Subjects)
-                .ToList();
-
+            var result = repository.GetAll();
             var response = new List<TeacherDTO>();
 
             foreach (var item in result)
@@ -47,7 +45,7 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(TeacherDTO))]
         public IHttpActionResult GetTeacher(int id)
         {
-            Teacher dbEntity = dbContext.Teachers.Find(id);
+            Teacher dbEntity = repository.Get(id);
             if (dbEntity == null)
             {
                 return NotFound();
@@ -70,24 +68,20 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            var dbEntity = dbContext.Teachers.First(x => x.Id.Equals(id));
+            var dbEntity = repository.Get(id);
             if (dbEntity is null)
             {
                 return BadRequest();
             }
 
-            dbContext.Teachers.Attach(dbEntity);
-            dbEntity = TeacherMapper.Map(dbEntity, teacher, dbContext);
-            dbContext.Entry(dbEntity).State = EntityState.Modified;
-
             try
             {
-                dbContext.SaveChanges();
+                repository.Update(dbEntity);
                 magniSyncHub.Clients.All.teachersUpdated();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!TeacherExists(id))
+                if (repository.Get(dbEntity.Id) is null)
                 {
                     return NotFound();
                 }
@@ -111,9 +105,7 @@ namespace MagniCollegeManagementSystem.APIController
 
             var dbEntity = TeacherMapper.Map(new Teacher(), request, dbContext);
 
-            dbContext.Entry(dbEntity).State = EntityState.Modified;
-            dbContext.Teachers.Add(dbEntity);
-            dbContext.SaveChanges();
+            repository.Add(dbEntity);
             magniSyncHub.Clients.All.teachersUpdated();
 
             return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
@@ -129,8 +121,7 @@ namespace MagniCollegeManagementSystem.APIController
                 return NotFound();
             }
 
-            dbContext.Teachers.Remove(dbEntity);
-            dbContext.SaveChanges();
+            repository.Delete(dbEntity);
             magniSyncHub.Clients.All.teachersUpdated();
 
             return Ok(dbEntity);
@@ -143,11 +134,6 @@ namespace MagniCollegeManagementSystem.APIController
                 dbContext.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private bool TeacherExists(int id)
-        {
-            return dbContext.Teachers.Count(e => e.Id == id) > 0;
         }
     }
 }

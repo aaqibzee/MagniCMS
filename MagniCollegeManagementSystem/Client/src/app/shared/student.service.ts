@@ -55,6 +55,7 @@ export class StudentService {
  
  onSelectGender(gender: string) {
    this.selectedGender = gender;
+   this.formData.Gender = gender;
   }
 
   onSelectCourse(course: Course) {
@@ -71,7 +72,8 @@ export class StudentService {
     this.selectedCourseByStudent = student.Course.Name;
     this.formData = Object.assign({}, student);
     this.subjectsInselcetedCourse = this.subjectService.getList().filter(x=>x.Course?.Id==student.Course?.Id);
-    this.selectedSubjectsByStudent=this.getSelctedSubjectListWithAllDetails();
+    this.selectedSubjectsByStudent = this.getSelctedSubjectListWithAllDetails();
+    this.selectedGender = student.Gender;
   }
 
   getSelctedSubjectListWithAllDetails()

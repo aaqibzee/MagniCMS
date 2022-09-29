@@ -5,13 +5,13 @@
 
   <div class="form-group">
     <label class="label label-default">First Name</label>
-    <input class="form-control form-control-lg" placeholder="First Name" name="name" #FirstName="ngModel"
+    <input class="form-control form-control-lg" placeholder="First Name" name="firstName" #FirstName="ngModel"
       [(ngModel)]="service.formData.FirstName" required />
   </div>
 
   <div class="form-group">
     <label class="label label-default">Last Name</label>
-    <input class="form-control form-control-lg" placeholder="Last Name" name="name" #lastName="ngModel"
+    <input class="form-control form-control-lg" placeholder="Last Name" name="lastName" #lastName="ngModel"
       [(ngModel)]="service.formData.LastName" required />
   </div>
 
@@ -23,7 +23,7 @@
 
   <div class="form-group">
     <label class="label label-default">Address</label>
-    <input class="form-control form-control-lg" placeholder="Address" name="contact" #Address="ngModel"
+    <input class="form-control form-control-lg" placeholder="Address" name="address" #Address="ngModel"
       [(ngModel)]="service.formData.Address" required />
   </div>
 
@@ -65,8 +65,8 @@
     <label class="label label-default {{subjectsSelectionClass}}">{{service.MultiSelcetValidationMesage}}</label>
     <ng-multiselect-dropdown [placeholder]="'Select Subject'" name="subjectSelect"
       [settings]="this.service.subjectsDropdownSettings" [data]="this.service.subjectsInselcetedCourse"
-      [(ngModel)]="this.service.selectedSubjectsByStudent" (onSelect)="onItemSelect($event)"
-      (onSelectAll)="onSelectAll($event)" (onDeSelect)="onItemDeselect($event)">
+      [(ngModel)]="this.service.selectedSubjectsByStudent" (onSelect)="onSubjectSelect($event)"
+      (onSelectAll)="onSelectAllSubjects($event)" (onDeSelect)="onSubjectDeselect($event)">
     </ng-multiselect-dropdown>
   </div>
   </div>

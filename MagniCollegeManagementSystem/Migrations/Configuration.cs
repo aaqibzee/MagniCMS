@@ -1,18 +1,19 @@
 ﻿namespace MagniCollegeManagementSystem.Migrations
 {
+    using DataAccess.DatabseContexts;
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<MagniCollegeManagementSystem.DatabseContexts.MagniDBContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<MagniDBContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(MagniCollegeManagementSystem.DatabseContexts.MagniDBContext context)
+        protected override void Seed(MagniDBContext context)
         {
             //  This method will be called after migrating to the latest version.
 

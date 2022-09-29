@@ -25,9 +25,9 @@ export class TeacherComponent implements OnInit {
   }t
   
   PopulateForm(record: Teacher) {
-    //assign the object copy and not the original object
      this.service.formData = Object.assign({}, record);
-    this.service.selectedSubjects=this.GetSelctedSubjectListWithAllDetails();
+    this.service.selectedSubjects = this.GetSelctedSubjectListWithAllDetails();
+    this.service.selectedGender = this.service.formData.Gender;
    }
   
   GetSelctedSubjectListWithAllDetails()

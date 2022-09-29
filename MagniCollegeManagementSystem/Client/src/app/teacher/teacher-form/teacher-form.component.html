@@ -3,13 +3,13 @@
 
     <div class="form-group">
         <label class="label label-default">First Name</label>
-        <input class="form-control form-control-lg" placeholder="First Name" name="name" #FirstName="ngModel"
+        <input class="form-control form-control-lg" placeholder="First Name" name="firstName" #FirstName="ngModel"
             [(ngModel)]="service.formData.FirstName" required />
     </div>
     
     <div class="form-group">
         <label class="label label-default">Last Name</label>
-        <input class="form-control form-control-lg" placeholder="Last Name" name="name" #lastName="ngModel"
+        <input class="form-control form-control-lg" placeholder="Last Name" name="lastName" #lastName="ngModel"
             [(ngModel)]="service.formData.LastName" required />
     </div>
     
@@ -20,12 +20,12 @@
     </div>
     <div class="form-group">
         <label class="label label-default">Email</label>
-        <input class="form-control form-control-lg" placeholder="Email" name="contact" #Email="ngModel"
+        <input class="form-control form-control-lg" placeholder="Email" name="email" #Email="ngModel"
             [(ngModel)]="service.formData.Email" required type="email" />
     </div>
     <div class="form-group">
         <label class="label label-default">Address</label>
-        <input class="form-control form-control-lg" placeholder="Address" name="contact" #Address="ngModel"
+        <input class="form-control form-control-lg" placeholder="Address" name="address" #Address="ngModel"
             [(ngModel)]="service.formData.Address" required />
     </div>
     

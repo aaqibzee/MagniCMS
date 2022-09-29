@@ -1,0 +1,14 @@
+﻿using System.Data.Entity;
+using DataAccess.Models;
+
+namespace DataAccess.DatabseContexts
+{
+    public class MagniDBContext : DbContext
+    {
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<Grade> Grades { get; set; }
+    }
+}

@@ -62,13 +62,13 @@ export class StudentFormComponent implements OnInit {
   }
 //TODO: Remote these below functions
   //Start
-  onItemSelect(item: any) {
+  onSubjectSelect(item: any) {
     this.validateSubjectSelection();
   }
-  onSelectAll(items: any) {
+  onSelectAllSubjects(items: any) {
     this.validateSubjectSelection();
   }
-  onItemDeselect(item: any)
+  onSubjectDeselect(item: any)
   {
     this.validateSubjectSelection();
   }

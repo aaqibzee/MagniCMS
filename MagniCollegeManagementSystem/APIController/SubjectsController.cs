@@ -5,12 +5,13 @@ using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
-using MagniCollegeManagementSystem.DatabseContexts;
 using MagniCollegeManagementSystem.DTOs;
 using MagniCollegeManagementSystem.Hubs;
 using MagniCollegeManagementSystem.Mappers;
-using MagniCollegeManagementSystem.Models;
+using DataAccess.Models;
 using Microsoft.AspNet.SignalR;
+using DataAccess.DatabseContexts;
+using DataAccess.Interfaces;
 
 namespace MagniCollegeManagementSystem.APIController
 {
@@ -18,19 +19,18 @@ namespace MagniCollegeManagementSystem.APIController
     {
         private readonly MagniDBContext dbContext;
         private readonly IHubContext magniSyncHub;
+        private readonly ISubjectRepository repository;
         public SubjectsController(MagniDBContext db)
         {
             this.dbContext = db;
+            this.repository = new SubjectRepository(db);
             this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
         }
 
         // GET: api/Subjects
         public List<SubjectDTO> GetSubjects()
         {
-            var result = dbContext.Subjects
-                .Include(x => x.Students)
-                .ToList();
-            
+            var result = repository.GetAll();
             var response = new List<SubjectDTO>();
 
             foreach (var item in result)
@@ -45,7 +45,7 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(SubjectDTO))]
         public IHttpActionResult GetSubject(int id)
         {
-            Subject dbEntity = dbContext.Subjects.Find(id);
+            Subject dbEntity = repository.Get(id);
             if (dbEntity == null)
             {
                 return NotFound();
@@ -68,19 +68,15 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            var dbEntity = dbContext.Subjects.First(x => x.Id.Equals(id));
+            var dbEntity = repository.Get(id);
             if (dbEntity is null)
             {
                 return BadRequest();
             }
 
-            dbContext.Subjects.Attach(dbEntity);
-            dbEntity = SubjectMapper.Map(dbEntity,subject, dbContext);
-            dbContext.Entry(dbEntity).State = EntityState.Modified;
-
             try
             {
-                dbContext.SaveChanges();
+                repository.Update(dbEntity);
                 magniSyncHub.Clients.All.subjectsUpdated();
             }
             catch (DbUpdateConcurrencyException)
@@ -109,10 +105,7 @@ namespace MagniCollegeManagementSystem.APIController
 
             var dbEntity = SubjectMapper.Map(new Subject(),request, dbContext);
 
-            dbContext.Entry(dbEntity).State = EntityState.Modified;
-
-            dbContext.Subjects.Add(dbEntity);
-            dbContext.SaveChanges();
+            repository.Add(dbEntity);
             magniSyncHub.Clients.All.subjectsUpdated();
 
             return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
@@ -128,8 +121,7 @@ namespace MagniCollegeManagementSystem.APIController
                 return NotFound();
             }
 
-            dbContext.Subjects.Remove(dbEntity);
-            dbContext.SaveChanges();
+            repository.Delete(dbEntity);
             magniSyncHub.Clients.All.subjectsUpdated();
 
             return Ok(SubjectMapper.Map(dbEntity));

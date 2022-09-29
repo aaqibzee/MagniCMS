@@ -1,13 +1,12 @@
-using AutoMapper;
 using MagniCollegeManagementSystem.APIController;
-using MagniCollegeManagementSystem.DatabseContexts;
-using MagniCollegeManagementSystem.Models;
-using MagniCollegeManagementSystem.DTOs;
 using System.Web.Http;
-using MagniCollegeManagementSystem.Hubs;
-using Microsoft.AspNet.SignalR;
+using DataAccess.Interfaces;
 using Unity;
+using Unity.Injection;
+using Unity.Lifetime;
 using Unity.WebApi;
+using System.Configuration;
+using DataAccess.DatabseContexts;
 
 namespace MagniCollegeManagementSystem
 {
@@ -16,17 +15,18 @@ namespace MagniCollegeManagementSystem
         public static void RegisterComponents()
         {
 			var container = new UnityContainer();
-            
-            // register all your components with the container here
-            // it is NOT necessary to register your controllers
-            
-            // e.g. container.RegisterType<ITestService, TestService>();
-            
+            var magniDbContext = new MagniDBContext();
+
             GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
-
-
             container.RegisterType<MagniDBContext, MagniDBContext>();
-            container.RegisterType<CoursesController, CoursesController>();
+
+            //container.RegisterInstance(magniDbContext);
+            
+            container.RegisterType<IStudentRepository, StudentRepository>();
+            container.RegisterType<ICourseRepository, CourseRepository>();
+            container.RegisterType<ISubjectRepository, SubjectRepository>();
+            container.RegisterType<ITeacherRepository, TeacherRepository>();
+            container.RegisterType<IGradeRepository, GradeRepository>();
         }
     }
 }

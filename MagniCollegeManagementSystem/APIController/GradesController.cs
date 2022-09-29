@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Linq;
 using System.Net;
 using System.Web.Http;
 using System.Web.Http.Description;
-using MagniCollegeManagementSystem.DatabseContexts;
 using MagniCollegeManagementSystem.DTOs;
 using MagniCollegeManagementSystem.Hubs;
 using MagniCollegeManagementSystem.Mappers;
-using MagniCollegeManagementSystem.Models;
+using DataAccess.Models;
 using Microsoft.AspNet.SignalR;
+using DataAccess.DatabseContexts;
+using DataAccess.Interfaces;
 
 namespace MagniCollegeManagementSystem.APIController
 {
@@ -18,8 +17,10 @@ namespace MagniCollegeManagementSystem.APIController
     {
         private readonly MagniDBContext dbContext;
         private readonly IHubContext magniSyncHub;
+        private readonly IGradeRepository repository;
         public GradesController(MagniDBContext db)
         {
+            this.repository = new GradeRepository(db);
             this.dbContext = db;
             this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
         }
@@ -27,7 +28,7 @@ namespace MagniCollegeManagementSystem.APIController
         // GET: api/Grades
         public List<GradeDTO> GetGrades()
         {
-            var dbEntity = dbContext.Grades.Include(x => x.Students).ToList();
+            var dbEntity = repository.GetAll();
             var response = new List<GradeDTO>();
 
             foreach (var item in dbEntity)
@@ -42,7 +43,7 @@ namespace MagniCollegeManagementSystem.APIController
         [ResponseType(typeof(GradeDTO))]
         public IHttpActionResult GetGrade(int id)
         {
-            Grade dbEntity = dbContext.Grades.Find(id);
+            Grade dbEntity = repository.Get(id);
             if (dbEntity == null)
             {
                 return NotFound();
@@ -65,24 +66,21 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
-            var dbEntity = dbContext.Grades.First(x => x.Id.Equals(id));
+            var dbEntity = repository.Get(id);
             if (dbEntity is null)
             {
                 return BadRequest();
             }
 
-            dbContext.Grades.Attach(dbEntity);
             dbEntity = GradeMapper.Map(dbEntity,grade, dbContext);
-            dbContext.Entry(dbEntity).State = EntityState.Modified;
-
             try
             {
-                dbContext.SaveChanges();
+                repository.Update(dbEntity);
                 magniSyncHub.Clients.All.gardesUpdated();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!GradeExists(id))
+                if (repository.Get(dbEntity.Id) is null)
                 {
                     return NotFound();
                 }
@@ -106,9 +104,7 @@ namespace MagniCollegeManagementSystem.APIController
 
             var dbEntity = GradeMapper.Map(new Grade() ,request, dbContext);
 
-            dbContext.Entry(dbEntity).State = EntityState.Modified;
-            dbContext.Grades.Add(dbEntity);
-            dbContext.SaveChanges();
+            repository.Add(dbEntity);
             magniSyncHub.Clients.All.gardesUpdated();
 
             return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
@@ -125,8 +121,7 @@ namespace MagniCollegeManagementSystem.APIController
                 return NotFound();
             }
 
-            dbContext.Grades.Remove(dbEntity);
-            dbContext.SaveChanges();
+            repository.Delete(dbEntity);
             magniSyncHub.Clients.All.gardesUpdated();
 
             return Ok(GradeMapper.Map(dbEntity));
@@ -139,11 +134,6 @@ namespace MagniCollegeManagementSystem.APIController
                 dbContext.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private bool GradeExists(int id)
-        {
-            return dbContext.Grades.Count(e => e.Id == id) > 0;
         }
     }
 }

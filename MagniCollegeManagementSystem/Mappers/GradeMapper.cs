@@ -1,7 +1,7 @@
-﻿using MagniCollegeManagementSystem.Models;
+﻿using DataAccess.Models;
 using MagniCollegeManagementSystem.DTOs;
-using MagniCollegeManagementSystem.DatabseContexts;
 using System.Linq;
+using DataAccess.DatabseContexts;
 
 namespace MagniCollegeManagementSystem.Mappers
 {

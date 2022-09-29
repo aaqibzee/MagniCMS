@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace MagniCollegeManagementSystem.App_Start
 {
@@ -14,10 +10,6 @@ namespace MagniCollegeManagementSystem.App_Start
                 "~/Scripts/jquery-3.6.0.js",
                 "~/Scripts/bootstrap.min.js",
                 "~/js/common_scripts.js"));
-
-            //bundles.Add(new StyleBundle(StyleBundleKeys.AutoComplete).Include(
-            //            "~/css/autocomplete.css"));
-
         }
     }
 }
