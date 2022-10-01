@@ -22,14 +22,6 @@ namespace MagniCollegeManagementSystem.Mappers
             student.RemainingCreditHours = source.RemainingCreditHours;
             student.Subjects = new List<Subject>();
 
-            if (!(source.Grade is null))
-            {
-                student.Grade = db.Grades.FirstOrDefault
-                (
-                    x => x.Id.Equals(source.Grade.Id)
-                );
-            }
-
 
             if (!(source.Course is null))
             {
@@ -73,9 +65,6 @@ namespace MagniCollegeManagementSystem.Mappers
                 Subjects = new List<int>(),
                 Teachers = new List<int>(),
             };
-
-            if (!(source.Grade is null))
-                student.Grade = GradeMapper.Map(source.Grade);
 
             if (!(source.Course is null))
                 student.Course = CourseMapper.Map(source.Course);

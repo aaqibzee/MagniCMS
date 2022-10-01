@@ -10,5 +10,6 @@ namespace DataAccess.DatabseContexts
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<Grade> Grades { get; set; }
+        public DbSet<Result> Results { get; set; }
     }
 }

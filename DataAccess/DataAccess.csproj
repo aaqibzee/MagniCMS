@@ -107,11 +107,20 @@
     <Compile Include="Migrations\202210010949399_Update_Tables_Teacher_Student.Designer.cs">
       <DependentUpon>202210010949399_Update_Tables_Teacher_Student.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202210011021422_Update_Tables_Teacher.cs" />
+    <Compile Include="Migrations\202210011021422_Update_Tables_Teacher.Designer.cs">
+      <DependentUpon>202210011021422_Update_Tables_Teacher.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210011034166_Update_Tables_Teacher_Student_Result.cs" />
+    <Compile Include="Migrations\202210011034166_Update_Tables_Teacher_Student_Result.Designer.cs">
+      <DependentUpon>202210011034166_Update_Tables_Teacher_Student_Result.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Course.cs" />
     <Compile Include="Models\Grade.cs" />
     <Compile Include="Models\Student.cs" />
     <Compile Include="Models\Subject.cs" />
+    <Compile Include="Models\Result.cs" />
     <Compile Include="Models\Teacher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -155,6 +164,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202210010949399_Update_Tables_Teacher_Student.resx">
       <DependentUpon>202210010949399_Update_Tables_Teacher_Student.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210011021422_Update_Tables_Teacher.resx">
+      <DependentUpon>202210011021422_Update_Tables_Teacher.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210011034166_Update_Tables_Teacher_Student_Result.resx">
+      <DependentUpon>202210011034166_Update_Tables_Teacher_Student_Result.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
