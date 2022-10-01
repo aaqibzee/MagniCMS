@@ -3,7 +3,6 @@ import { Grade } from "./grade.model";
 
 export class Student {
     Subjects: number[];
-    Teachers: number[];
     Id:       number=0;
     FirstName: string = '';
     LastName: string = '';

@@ -1,6 +1,5 @@
 export class Teacher {
     Courses:  number[];
-    Students: number[];
     Subjects: number[];
     Id:       number=0;
     FirstName: string = '';

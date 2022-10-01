@@ -17,7 +17,6 @@ namespace DataAccess.Interfaces
         {
             return dbContext.Students
                 .Include(x => x.Subjects)
-                .Include(x => x.Teachers)
                 .ToList();
         }
 

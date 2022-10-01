@@ -103,6 +103,10 @@
     <Compile Include="Migrations\202209241742217_Update_Teacher_Table.Designer.cs">
       <DependentUpon>202209241742217_Update_Teacher_Table.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202210010949399_Update_Tables_Teacher_Student.cs" />
+    <Compile Include="Migrations\202210010949399_Update_Tables_Teacher_Student.Designer.cs">
+      <DependentUpon>202210010949399_Update_Tables_Teacher_Student.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Course.cs" />
     <Compile Include="Models\Grade.cs" />
@@ -148,6 +152,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202209241742217_Update_Teacher_Table.resx">
       <DependentUpon>202209241742217_Update_Teacher_Table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210010949399_Update_Tables_Teacher_Student.resx">
+      <DependentUpon>202210010949399_Update_Tables_Teacher_Student.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

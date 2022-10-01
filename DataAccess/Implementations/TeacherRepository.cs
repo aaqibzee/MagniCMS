@@ -16,7 +16,6 @@ namespace DataAccess.Interfaces
         public List<Teacher> GetAll()
         {
             return dbContext.Teachers
-                .Include(x => x.Students)
                 .Include(x => x.Subjects)
                 .Include(x => x.Courses)
                 .ToList();

@@ -20,7 +20,6 @@ namespace MagniCollegeManagementSystem.Mappers
             student.Address = source.Address;
             student.ContactNumber = source.ContactNumber;
             student.RemainingCreditHours = source.RemainingCreditHours;
-            student.Teachers = new List<Teacher>();
             student.Subjects = new List<Subject>();
 
             if (!(source.Grade is null))
@@ -48,20 +47,6 @@ namespace MagniCollegeManagementSystem.Mappers
                 foreach (var item in source.Subjects)
                 {
                     student.Subjects.Add(dbSubjects.FirstOrDefault
-                    (
-                        x => x.Id.Equals(item)
-                    ));
-                }
-            }
-
-
-            if (!(source.Teachers is null))
-            {
-                var dbTeachers = db.Teachers;
-                student.Teachers.Clear();
-                foreach (var item in source.Teachers)
-                {
-                    student.Teachers.Add(dbTeachers.FirstOrDefault
                     (
                         x => x.Id.Equals(item)
                     ));
@@ -99,12 +84,6 @@ namespace MagniCollegeManagementSystem.Mappers
                 foreach (var item in source.Subjects)
                 {
                     student.Subjects.Add(item.Id);
-                }
-
-            if (!(source.Teachers is null))
-                foreach (var item in source.Teachers)
-                {
-                    student.Teachers.Add(item.Id);
                 }
 
             return student;

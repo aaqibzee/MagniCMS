@@ -14,7 +14,6 @@ namespace DataAccess.Models
         public string Address { get; set; }
         public string ContactNumber { get; set; }
         public string Email { get; set; }
-        public virtual ICollection<Student> Students { get; set; }
         public virtual ICollection<Subject> Subjects { get; set; }
         public virtual ICollection<Course> Courses { get; set; }
     }
