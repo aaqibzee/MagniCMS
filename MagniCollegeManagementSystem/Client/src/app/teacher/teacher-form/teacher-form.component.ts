@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
-import { Teacher } from 'src/app/shared/teacher.model';
 import { TeacherService } from "../../shared/teacher.service";
 
 @Component({
