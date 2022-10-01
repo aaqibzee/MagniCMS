@@ -43,6 +43,7 @@ namespace DataAccess.Interfaces
 
         public void Update(Teacher teacher)
         {
+            dbContext.Teachers.Attach(teacher);
             dbContext.Entry(teacher).State = EntityState.Modified;
             dbContext.SaveChanges();
         }

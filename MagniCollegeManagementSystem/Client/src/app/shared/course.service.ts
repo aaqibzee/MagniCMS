@@ -30,4 +30,10 @@ export class CourseService {
       .toPromise()
       .then(res => this.courseList = res as Course[]);
   }
+
+  getList()
+  {
+    this.refreshList();
+    return this.courseList;
+  }
 }

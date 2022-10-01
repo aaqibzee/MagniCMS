@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Teacher } from 'src/app/shared/teacher.model';
 import { TeacherService } from "../../shared/teacher.service";
 
@@ -11,7 +12,29 @@ import { TeacherService } from "../../shared/teacher.service";
 })
 export class TeacherFormComponent implements OnInit {
 
-  constructor(public service:TeacherService) { }
+  constructor(public service: TeacherService) {
+    this.subjectsDropdownSettings = {
+      singleSelection: false,
+      idField: 'Id',
+      textField: 'Name',
+      noDataAvailablePlaceholderText:'Select Course First',
+      limitSelection:6,
+      itemsShowLimit: 6,
+      allowSearchFilter: true
+    };
+
+    this.coursesDropdownSettings = {
+      singleSelection: false,
+      idField: 'Id',
+      textField: 'Name',
+      limitSelection:6,
+      itemsShowLimit: 6,
+      allowSearchFilter: true
+    };
+    
+  }
+  subjectsDropdownSettings: IDropdownSettings = {};
+  coursesDropdownSettings: IDropdownSettings = {};
 
   ngOnInit(): void {
     this.resetFormData();
@@ -19,6 +42,7 @@ export class TeacherFormComponent implements OnInit {
 
   onSubmit(form: NgForm) {
     this.service.formData.Subjects = this.service.selectedSubjects.map(x => x.Id);
+    this.service.formData.Courses = this.service.selectedCourses.map(x => x.Id);
     if (this.service.formData.Id == 0) {
       this.inserRecord(form);
     }
@@ -33,7 +57,6 @@ export class TeacherFormComponent implements OnInit {
      this.service.postTeacher().subscribe(
       result =>{
          this.resetForm(form);
-         this.service.refreshList();
       }, error =>{
         console.log(error);
       }
@@ -45,7 +68,6 @@ export class TeacherFormComponent implements OnInit {
      this.service.putTeacher().subscribe(
       result =>{
          this.resetForm(form);
-         this.service.refreshList();
       }, error =>{
         console.log(error);
       }

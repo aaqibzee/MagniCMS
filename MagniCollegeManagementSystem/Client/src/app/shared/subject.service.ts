@@ -17,7 +17,6 @@ export class SubjectService {
   subjectList: Subject[];
   courseDropDownCelectedValue: string = 'Select Course';
 
-  
   resetFormData()
   {
     this.formData = new Subject();
@@ -57,3 +56,4 @@ export class SubjectService {
     return this.subjectList;
   }
 }
+ 

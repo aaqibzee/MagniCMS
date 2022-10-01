@@ -64,7 +64,6 @@ namespace MagniCollegeManagementSystem.APIController
             }
 
             CourseMapper.Map(dbEntity,course, dbContext);
-            dbContext.Entry(dbEntity).State = EntityState.Modified;
 
             try
             {

@@ -45,13 +45,24 @@
         </div>
     </div>
     <div class="form-group">
+        <label class="label label-default">Courses</label>
+        <br />
+        <ng-multiselect-dropdown [placeholder]="'Select Courses'" name="coursesSelect"
+            [settings]="this.coursesDropdownSettings" [data]="this.service.courses"
+            [(ngModel)]="this.service.selectedCourses"
+            (onSelect)="this.service.onCourseSelect($event)"
+            (onDeSelect)="this.service.onCourseDeselect($event)">
+        </ng-multiselect-dropdown>
+    </div>
+    <div class="form-group">
         <label class="label label-default">Subjects</label>
         <br />
         <ng-multiselect-dropdown [placeholder]="'Select Subject'" name="subjectSelect"
-            [settings]="this.service.subjectsDropdownSettings" [data]="this.service.subjects"
+            [settings]="this.subjectsDropdownSettings" [data]="this.service.subjectsForSelectedCourses"
             [(ngModel)]="this.service.selectedSubjects">
         </ng-multiselect-dropdown>
     </div>
+
     <div class="form-group">
         <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid ||
         selectedGender.value==service.genderDropDownDefaultValue "> {{ service.formData.Id !=

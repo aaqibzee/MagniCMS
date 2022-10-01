@@ -74,6 +74,8 @@ namespace MagniCollegeManagementSystem.APIController
                 return BadRequest();
             }
 
+            SubjectMapper.Map(dbEntity, subject, dbContext);
+
             try
             {
                 repository.Update(dbEntity);

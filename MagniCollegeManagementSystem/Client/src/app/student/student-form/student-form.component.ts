@@ -60,8 +60,7 @@ export class StudentFormComponent implements OnInit {
   {
     this.service.resetFormData();
   }
-//TODO: Remote these below functions
-  //Start
+
   onSubjectSelect(item: any) {
     this.validateSubjectSelection();
   }
@@ -78,10 +77,10 @@ export class StudentFormComponent implements OnInit {
     let allowed = this.service.formData.Course?.TotalCreditHours;
     let availed: number = 0;
     
-    this.service.subjectsInselcetedCourse?.forEach(element => {
-      if (this.service.selectedSubjectsByStudent?.find(x => x.Id == element.Id) != undefined)
+    this.service.subjectsInselcetedCourse?.forEach(course => {
+      if (this.service.selectedSubjectsByStudent?.find(x => x.Id == course.Id) != undefined)
       {
-        availed += element.CreditHours;
+        availed += course.CreditHours;
       }
     });
     let difference = allowed - availed;
@@ -89,18 +88,15 @@ export class StudentFormComponent implements OnInit {
 
     if (availed < allowed)
     {
-      
       this.subjectsSelectionClass='text-info'
-       this.isFormValid = true;
-       this.service.MultiSelcetValidationMesage = difference + ' Credit Hourse Remained';
+      this.isFormValid = true;
+      this.service.MultiSelcetValidationMesage = difference + ' Credit Hourse Remained';
     }
     else if (availed > allowed)
     {
-      
       this.subjectsSelectionClass='text-danger'
-       this.isFormValid = false;
-      this.service.MultiSelcetValidationMesage = 
-        (availed - allowed) + ' Extra Credit Hour(s) Availed, Remove Extra Subject(s)';  
+      this.isFormValid = false;
+      this.service.MultiSelcetValidationMesage =  (availed - allowed) + ' Extra Credit Hour(s) Availed, Remove Extra Subject(s)';  
     }
     else if (availed == allowed)
     {
