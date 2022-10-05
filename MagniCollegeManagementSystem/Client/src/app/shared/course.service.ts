@@ -2,13 +2,17 @@ import { Injectable } from '@angular/core';
 import { Course } from "./course.model";
 import { HttpClient } from '@angular/common/http';
 import { Constants } from '../shared/Constants';
+import { GradeService } from './grade.service';
+import { ResultService } from './result.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CourseService {
 
-  constructor(private http:HttpClient) { }
+  constructor(private http: HttpClient) { 
+    
+  }
 
   formData: Course = new Course();
   courseList: Course[];

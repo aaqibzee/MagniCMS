@@ -1,0 +1,77 @@
+
+<form novalidate #form="ngForm" (submit)="onSubmit(form)">
+            <input type="hidden" name="id" [value]="service.formData.Id" />
+
+            <div class="form-group">
+                <label class="label label-default">Course</label>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle drp" id="dropdownMenuButton" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="true">
+                        {{service.formData?.Course?.Name?service.formData?.Course?.Name:'Select Course'}}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" #selectedCourse>
+                        <button type="button" class="dropdown-item" *ngFor="let course of courseService.courseList"
+                         (click)="calculateGrade()"   (click)="onCourseSelect(course)" on-click="selectedCourse.value=course.Name">
+                            {{course.Name}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="label label-default">Subject</label>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle drp" id="dropdownMenuButton" data-toggle="dropdown"
+                        style="width: 250px; max-width:100%">
+                        {{service.formData?.Subject?.Name?service.formData?.Subject?.Name:'Select Subject'}}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" #selectedSubject>
+                        <button type="button" class="dropdown-item" *ngFor="let subject of subjectsInSelectedCourse"
+                         (click)="calculateGrade()" (click)="onSubjectSelect(subject)" on-click="selectedSubject.value=subject.Name">
+                            {{subject.Name}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="label label-default">Student</label>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle drp" id="dropdownMenuButton" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="true">
+                        {{service.formData?.Student?.Name?service.formData?.Student?.Name:'Select Student'}}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" #selectedStudent>
+                        <button type="button" class="dropdown-item" *ngFor="let student of studentsInSelectedSubject"
+                          (click)="onStudentSelect(student)" on-click="selectedStudent.value=student.Name">
+                            {{student.Name}}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <label class="label label-default">Obtained Marks</label>
+                <div class="form-group">
+                    <input type="number" min="0" max="100" class="form-control form-control-lg" placeholder="Marks" name="marks"
+                      (change)="calculateGrade()" #Marks="ngModel" [(ngModel)]="service.formData.ObtainedMarks" required />
+                </div>
+            <div class="form-group">
+                <label class="label label-default">Grade:</label>
+                <br/>
+                <label class="label label-default">({{this.gradeLabelText}})</label>
+            </div>
+                <!-- <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle drp" id="dropdownMenuButton" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="true" >
+                        {{service.formData?.Grade?.Title?service.formData?.Grade?.Title:'Select Grade'}}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" #selectedGrade>
+                        <button type="button" class="dropdown-item" *ngFor="let grade of gradesInSelectedSubject"
+                            (click)="onGradeSelect(grade)" on-click="selectedGrade.value=grade.Title">
+                            {{grade.Title}}
+                        </button>
+                    </div>
+                </div> -->
+            <div class="form-group">
+                <!-- [disabled]="isFormInvalid(form)" -->
+                <button class="btn btn-info btn-lg btn-block" type="submit" > {{
+                    service.formData.Id != 0 ? 'Update' : 'Add' }} </button>
+            </div>
+</form>

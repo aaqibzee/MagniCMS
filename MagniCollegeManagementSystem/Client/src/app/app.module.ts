@@ -17,6 +17,9 @@ import { CourseComponent } from './course/course.component';
 import { CourseFormComponent } from './course/course-form/course-form.component';
 import { GradeFormComponent } from './grade/grade-form/grade-form.component';
 import { GradeComponent } from './grade/grade.component';
+import { DpDatePickerModule } from 'ng2-date-picker';
+import { ResultFormComponent } from './result/result-form/result-form.component';
+import { ResultComponent } from './result/result.component';
 
 @NgModule({
   declarations: [
@@ -31,6 +34,8 @@ import { GradeComponent } from './grade/grade.component';
     CourseFormComponent,
     GradeFormComponent,
     GradeComponent,
+    ResultFormComponent,
+    ResultComponent,
     
   ],
   imports: [
@@ -40,6 +45,7 @@ import { GradeComponent } from './grade/grade.component';
     HttpClientModule,
     NgSelectModule,
     NgMultiSelectDropDownModule.forRoot(),
+    DpDatePickerModule
   ],
   providers: [],
   bootstrap: [AppComponent]

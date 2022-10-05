@@ -21,6 +21,7 @@
     "@angular/router": "~11.0.1",
     "@ng-select/ng-select": "^6.1.0",
     "ng-multiselect-dropdown": "^0.3.4",
+    "ng2-date-picker": "^11.0.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"

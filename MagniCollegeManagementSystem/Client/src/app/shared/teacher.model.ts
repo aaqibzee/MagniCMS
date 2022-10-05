@@ -3,7 +3,7 @@ export class Teacher {
     Subjects: number[];
     Id: number = 0;
     Salary: number = 0;
-    Birthday: string = '';
+    Birthday: string = '' ;
     FirstName: string = '';
     LastName: string = '';
     Gender: string = '';

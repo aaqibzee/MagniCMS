@@ -9,8 +9,10 @@ namespace DataAccess.Models
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public int Marks { get; set; }
-        public int SubjectId { get; set; }
+
+        public int StartingMarks { get; set; }
+        public int EndingMarks { get; set; }
+        public virtual Course Course { get; set; }
         public virtual ICollection<Student> Students { get; set; }
     }
 }

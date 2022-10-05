@@ -5,17 +5,15 @@ import { Subject } from './subject.model';
 import { SubjectService } from './subject.service';
 import { Constants } from './Constants';
 import { Course } from './course.model';
-import { CourseService } from './course.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TeacherService {
 
-  constructor(private http: HttpClient, public subjectService:SubjectService, public courseService:CourseService) {
-    this.courses = this.courseService.getList();
-    this.allOfferedSubjects = this.subjectService.getList();
-   }
+  constructor(
+    private http: HttpClient,
+    public subjectService: SubjectService) { }
 
   formData: Teacher = new Teacher();
   teacherList: Teacher[]=[];
@@ -27,7 +25,6 @@ export class TeacherService {
   selectedCourses: Course[]=[];
   selectedSubjects: Subject[]=[]; 
   subjectsForSelectedCourses: Subject[]=[]; 
-  allOfferedSubjects: Subject[]=[];
    
   resetFormData()
   {

@@ -4,15 +4,17 @@ import { StudentComponent } from './student/student.component';
 import { TeacherComponent } from './teacher/teacher.component';
 import { SubjectComponent } from './subject/subject.component';
 import { CourseComponent } from './course/course.component';
-import {GradeComponent } from './grade/grade.component';
+import { GradeComponent } from './grade/grade.component';
+import { ResultComponent } from './result/result.component';
 
 
 const routes: Routes = [
-  { path: 'student', component: StudentComponent },
-  { path: 'teacher', component: TeacherComponent },
-  { path: 'subject', component: SubjectComponent },
-  { path: 'course', component: CourseComponent },
-  { path: 'grade', component: GradeComponent },
+  { path: 'Student', component: StudentComponent },
+  { path: 'Teacher', component: TeacherComponent },
+  { path: 'Subject', component: SubjectComponent },
+  { path: 'Course', component: CourseComponent },
+  { path: 'Results', component: ResultComponent },
+  { path: 'Grade', component: GradeComponent },
 
 ];
 

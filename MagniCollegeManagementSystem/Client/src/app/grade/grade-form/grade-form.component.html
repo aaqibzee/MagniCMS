@@ -5,18 +5,33 @@
         <input class="form-control form-control-lg" placeholder="Grade Title" name="title" #Title="ngModel"
             [(ngModel)]="service.formData.Title" required />
     </div>
-    <label class="label label-default">Marks</label>
     <div class="form-group">
-        <input class="form-control form-control-lg" placeholder="Marks" name="marks" #Marks="ngModel"
-            [(ngModel)]="service.formData.Marks" required />
+        <label class="label label-default">Course</label>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle drp" id="dropdownMenuButton" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="true">
+                {{service.formData?.Course?.Name?service.formData?.Course?.Name:'Select Course'}}
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" #selectedCourse>
+                <button type="button" class="dropdown-item" *ngFor="let course of courseService.courseList"
+                    (click)="onCourseSelect(course)" on-click="selectedCourse.value=course.Name">
+                    {{course.Name}}
+                </button>
+            </div>
+        </div>
     </div>
-    <label class="label label-default">Subject Id</label>
-    
+    <label class="label label-default">Starting Marks</label>
     <div class="form-group">
-        <input class="form-control form-control-lg" placeholder="Subject" name="name" #Subject="ngModel"
-            [(ngModel)]="service.formData.SubjectId" required />
+        <input type="number" class="form-control form-control-lg" placeholder="Starting Marks" name="startingMarks" #StartingMarks="ngModel"
+            [(ngModel)]="service.formData.StartingMarks" required />
     </div>
 
+    <label class="label label-default">Ending Marks</label>
+    <div class="form-group">
+        <input type="number" class="form-control form-control-lg" placeholder="EndingMarks" name="endingMarks" #EndingMarks="ngModel"
+            [(ngModel)]="service.formData.EndingMarks" required />
+    </div>
+    
     <div class="form-group">
         <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="form.invalid"> {{ service.formData.Id !=
             0 ? 'Update' : 'Add' }} </button>

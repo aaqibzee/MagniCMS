@@ -51,11 +51,13 @@
     <Compile Include="DatabseContexts\MagniDBContext.cs" />
     <Compile Include="Implementations\CourseRepository.cs" />
     <Compile Include="Implementations\GradeRepository.cs" />
+    <Compile Include="Implementations\ResultRepository.cs" />
     <Compile Include="Implementations\TeacherRepository.cs" />
     <Compile Include="Implementations\SubjectRepository.cs" />
     <Compile Include="Implementations\StudentRepository.cs" />
     <Compile Include="Interfaces\ICourseRepository.cs" />
     <Compile Include="Interfaces\IGradeRepository.cs" />
+    <Compile Include="Interfaces\IResultRepository.cs" />
     <Compile Include="Interfaces\ITeacherRepository .cs" />
     <Compile Include="Interfaces\ISubjectRepository.cs" />
     <Compile Include="Interfaces\IStudentRepository.cs" />
@@ -115,6 +117,30 @@
     <Compile Include="Migrations\202210011034166_Update_Tables_Teacher_Student_Result.Designer.cs">
       <DependentUpon>202210011034166_Update_Tables_Teacher_Student_Result.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202210031339407_Tables_Updated_Result_Grade.cs" />
+    <Compile Include="Migrations\202210031339407_Tables_Updated_Result_Grade.Designer.cs">
+      <DependentUpon>202210031339407_Tables_Updated_Result_Grade.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210031422100_Table_Updated_Grade.cs" />
+    <Compile Include="Migrations\202210031422100_Table_Updated_Grade.Designer.cs">
+      <DependentUpon>202210031422100_Table_Updated_Grade.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210031736248_Table_Updated_Grade1.cs" />
+    <Compile Include="Migrations\202210031736248_Table_Updated_Grade1.Designer.cs">
+      <DependentUpon>202210031736248_Table_Updated_Grade1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210040551144_Update_Table_Student.cs" />
+    <Compile Include="Migrations\202210040551144_Update_Table_Student.Designer.cs">
+      <DependentUpon>202210040551144_Update_Table_Student.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210041019509_Table_Updated_Result.cs" />
+    <Compile Include="Migrations\202210041019509_Table_Updated_Result.Designer.cs">
+      <DependentUpon>202210041019509_Table_Updated_Result.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202210041505489_Table_Updated_Grade2.cs" />
+    <Compile Include="Migrations\202210041505489_Table_Updated_Grade2.Designer.cs">
+      <DependentUpon>202210041505489_Table_Updated_Grade2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Course.cs" />
     <Compile Include="Models\Grade.cs" />
@@ -170,6 +196,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202210011034166_Update_Tables_Teacher_Student_Result.resx">
       <DependentUpon>202210011034166_Update_Tables_Teacher_Student_Result.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210031339407_Tables_Updated_Result_Grade.resx">
+      <DependentUpon>202210031339407_Tables_Updated_Result_Grade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210031422100_Table_Updated_Grade.resx">
+      <DependentUpon>202210031422100_Table_Updated_Grade.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210031736248_Table_Updated_Grade1.resx">
+      <DependentUpon>202210031736248_Table_Updated_Grade1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210040551144_Update_Table_Student.resx">
+      <DependentUpon>202210040551144_Update_Table_Student.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210041019509_Table_Updated_Result.resx">
+      <DependentUpon>202210041019509_Table_Updated_Result.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202210041505489_Table_Updated_Grade2.resx">
+      <DependentUpon>202210041505489_Table_Updated_Grade2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

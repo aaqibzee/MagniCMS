@@ -1,10 +1,6 @@
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
-using AutoMapper;
-using MagniCollegeManagementSystem.Models;
-using MagniCollegeManagementSystem.DTOs;
-using Microsoft.AspNet.SignalR;
 
 namespace MagniCollegeManagementSystem
 {
@@ -15,7 +11,6 @@ namespace MagniCollegeManagementSystem
             GlobalConfiguration.Configure(WebApiConfig.Register);
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            //BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             HttpConfiguration config = GlobalConfiguration.Configuration;
 

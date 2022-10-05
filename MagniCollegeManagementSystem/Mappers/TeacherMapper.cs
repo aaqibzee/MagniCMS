@@ -3,6 +3,7 @@ using MagniCollegeManagementSystem.DTOs;
 using System.Linq;
 using System.Collections.Generic;
 using DataAccess.DatabseContexts;
+using System;
 
 namespace MagniCollegeManagementSystem.Mappers
 {
@@ -17,6 +18,8 @@ namespace MagniCollegeManagementSystem.Mappers
             teacher.FirstName = source.FirstName;
             teacher.LastName = source.LastName;
             teacher.Gender = source.Gender;
+            teacher.Salary = source.Salary;
+            teacher.Birthday = DateTime.Parse(source.Birthday??null);
             teacher.Address = source.Address;
             teacher.ContactNumber = source.ContactNumber;
             teacher.Email = source.Email;
@@ -63,6 +66,8 @@ namespace MagniCollegeManagementSystem.Mappers
                 FirstName = source.FirstName,
                 LastName = source.LastName,
                 Gender = source.Gender,
+                Salary = source.Salary,
+                Birthday = source.Birthday.Date.ToString("yyyy-MM-dd"),
                 Address = source.Address,
                 ContactNumber = source.ContactNumber,
                 Email = source.Email,

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { StudentService } from "../../shared/student.service";
 import { Course } from 'src/app/shared/course.model';
+import { IDropdownSettings } from 'ng-multiselect-dropdown';
 
 @Component({
   selector: 'app-student-form',
@@ -10,11 +11,26 @@ import { Course } from 'src/app/shared/course.model';
   ],
 })
 export class StudentFormComponent implements OnInit {
-  
-  constructor(public service: StudentService) { }
+  subjectsDropdownSettings: IDropdownSettings = {};
   selectedCourse: Course;
   isFormValid: boolean = true;
   subjectsSelectionClass: string = 'text-success';
+
+  constructor(public service: StudentService) { 
+     this.subjectsDropdownSettings = {
+      singleSelection: false,
+      idField: 'Id',
+      textField: 'Name',
+      selectAllText: 'Select All',
+      unSelectAllText: 'UnSelect All',
+      noDataAvailablePlaceholderText:'Select A Course First',
+      limitSelection:6,
+      itemsShowLimit: 6,
+      allowSearchFilter: true
+    };
+  }
+  
+  
   ngOnInit(): void {
     this.resetFormData();
   }
@@ -110,7 +126,6 @@ export class StudentFormComponent implements OnInit {
   {
     return (form.invalid
       || this.service.selectedCourseByStudent == this.service.courseDropDownDefaultValue
-      || this.service.selectedGender == this.service.genderDropDownDefaultValue
       || this.service.selectedSubjectsByStudent?.length == 0
       || this.service.selectedSubjectsByStudent == null
       || (!this.isFormValid));

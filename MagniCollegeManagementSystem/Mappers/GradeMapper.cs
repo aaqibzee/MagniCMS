@@ -14,8 +14,8 @@ namespace MagniCollegeManagementSystem.Mappers
 
             grade.Id = source.Id;
             grade.Title = source.Title;
-            grade.Marks = source.Marks;
-            grade.SubjectId = source.SubjectId;
+            grade.StartingMarks = source.StartingMarks;
+            grade.EndingMarks = source.EndingMarks;
 
             if (!(source.Students is null))
             {
@@ -29,6 +29,10 @@ namespace MagniCollegeManagementSystem.Mappers
                     ));
                 }
             }
+
+            if (!(source.Course is null))
+                grade.Course = db.Courses.FirstOrDefault(x => x.Id.Equals(source.Course.Id));
+
             return grade;
         }
 
@@ -41,8 +45,8 @@ namespace MagniCollegeManagementSystem.Mappers
             {
                 Id = source.Id,
                 Title = source.Title,
-                Marks = source.Marks,
-                SubjectId = source.SubjectId
+                StartingMarks = source.StartingMarks,
+                EndingMarks=source.EndingMarks,
             };
 
             if (!(source.Students is null))
@@ -50,6 +54,9 @@ namespace MagniCollegeManagementSystem.Mappers
                 {
                     grade.Students.Add(item.Id);
                 }
+
+            if (!(source.Course is null))
+                grade.Course = CourseMapper.Map(source.Course);
 
             return grade;
         }

@@ -4,43 +4,9 @@
   <input type="hidden" name="id" [value]="service.formData.Id"/>
 
   <div class="form-group">
-    <label class="label label-default">First Name</label>
-    <input class="form-control form-control-lg" placeholder="First Name" name="firstName" #FirstName="ngModel"
-      [(ngModel)]="service.formData.FirstName" required />
-  </div>
-
-  <div class="form-group">
-    <label class="label label-default">Last Name</label>
-    <input class="form-control form-control-lg" placeholder="Last Name" name="lastName" #lastName="ngModel"
-      [(ngModel)]="service.formData.LastName" required />
-  </div>
-
-  <div class="form-group">
-    <label class="label label-default">Contact Number</label>
-    <input class="form-control form-control-lg" placeholder="Contact Number" name="contact" #Contact="ngModel"
-      [(ngModel)]="service.formData.ContactNumber" required />
-  </div>
-
-  <div class="form-group">
-    <label class="label label-default">Address</label>
-    <input class="form-control form-control-lg" placeholder="Address" name="address" #Address="ngModel"
-      [(ngModel)]="service.formData.Address" required />
-  </div>
-
-  <div class="form-group">
-    <label class="label label-default">Gender: (Required)</label>
-    <div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="true">
-        {{service.selectedGender}}
-      </button>
-      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" #selectedGender>
-        <button type="button" class="dropdown-item" *ngFor="let gender of service.genderOptions"
-           (click)="service.onSelectGender(gender)" on-click="selectedGender.value=gender">
-          {{gender}}
-        </button>
-      </div>
-    </div>
+    <label class="label label-default">Name</label>
+    <input class="form-control form-control-lg" placeholder="First Name" name="name" #Name="ngModel"
+      [(ngModel)]="service.formData.Name" required />
   </div>
 
   <div class="form-group">
@@ -64,7 +30,7 @@
     <br />
     <label class="label label-default {{subjectsSelectionClass}}">{{service.MultiSelcetValidationMesage}}</label>
     <ng-multiselect-dropdown [placeholder]="'Select Subject'" name="subjectSelect"
-      [settings]="this.service.subjectsDropdownSettings" [data]="this.service.subjectsInselcetedCourse"
+      [settings]="this.subjectsDropdownSettings" [data]="this.service.subjectsInselcetedCourse"
       [(ngModel)]="this.service.selectedSubjectsByStudent" (onSelect)="onSubjectSelect($event)"
       (onSelectAll)="onSelectAllSubjects($event)" (onDeSelect)="onSubjectDeselect($event)">
     </ng-multiselect-dropdown>

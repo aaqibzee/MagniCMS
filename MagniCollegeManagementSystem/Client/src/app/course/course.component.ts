@@ -2,6 +2,8 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import { Constants } from '../shared/Constants';
 import { Course } from '../shared/course.model';
 import { CourseService } from '../shared/course.service'
+import { GradeService } from '../shared/grade.service';
+import { ResultService } from '../shared/result.service';
 
 @Component({
   selector: 'app-course',
@@ -11,20 +13,43 @@ import { CourseService } from '../shared/course.service'
 })
 export class CourseComponent implements OnInit {
 
-  constructor(public service: CourseService, private ngZone: NgZone) { }
+  constructor(
+    public service: CourseService,
+    private ngZone: NgZone,
+    public resultService: ResultService,
+    public gradeService: GradeService) {
+    
+  }
+
 
   ngOnInit(): void {
     this.service.refreshList();
      window[Constants.courseComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
   }
 
-   PopulateForm(record: Course) {
+   PopulateForm(course: Course) {
     //assign the object copy and not the original object
-    this.service.formData =  Object.assign({}, record);
+    this.service.formData =  Object.assign({},course);
+   }
+  
+   GetAverageGrade(course: Course) {
+    let resultsForTheCourse = this.resultService.resultsList.filter(x => x.Course.Id == course.Id); 
+    let sum = 0;
+    resultsForTheCourse.forEach(function (x) {
+       sum += x.ObtainedMarks;
+    });
+    let average = sum / resultsForTheCourse.length;   
+     let grade = this.gradeService.gradesList.find
+      (
+         x => x.Course.Id == course.Id &&
+         x.StartingMarks <= average &&
+         x.EndingMarks >= average
+      );   
+    return grade?.Title?grade?.Title:'Not enough data';
   }
 
-   DeleteCourse(record: Course) {
-     this.service.deleteCourse(record.Id).subscribe(
+   DeleteCourse(course: Course) {
+     this.service.deleteCourse(course.Id).subscribe(
        result => {
        }, error => {
          console.log(error);

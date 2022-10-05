@@ -1,7 +1,9 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Constants } from '../shared/Constants';
 import { Course } from '../shared/course.model';
+import { CourseService } from '../shared/course.service';
 import { Subject } from '../shared/subject.model';
+import { SubjectService } from '../shared/subject.service';
 import { Teacher } from '../shared/teacher.model';
 import { TeacherService } from '../shared/teacher.service'
 
@@ -12,8 +14,16 @@ import { TeacherService } from '../shared/teacher.service'
 })
 export class TeacherComponent implements OnInit {
 
-  constructor(public service: TeacherService,private ngZone: NgZone) { }
-
+  constructor(
+    public service: TeacherService,
+    public courseService: CourseService,
+    public subjectService:SubjectService,
+    private ngZone: NgZone) {
+     this.allOfferedSubjects = this.subjectService.getList();
+     }
+  
+  allOfferedSubjects: Subject[] = [];
+  
   ngOnInit(): void {
     this.service.refreshList();
      window[Constants.teacherComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
@@ -21,7 +31,7 @@ export class TeacherComponent implements OnInit {
 
   GetSubjectName(subjectId:number)
   {
-    return this.service?.allOfferedSubjects?.find(x => x.Id == subjectId)?.Name;
+    return this.allOfferedSubjects?.find(x => x.Id == subjectId)?.Name;
   }
   
   PopulateForm(record: Teacher) {
@@ -66,7 +76,7 @@ export class TeacherComponent implements OnInit {
   {
     let list: Course[]=[];
     let form = this.service.formData;
-    this.service.courseService.getList().filter(function (x)
+    this.courseService.getList().filter(function (x)
     {
       if (form?.Courses?.includes(x.Id))
       {

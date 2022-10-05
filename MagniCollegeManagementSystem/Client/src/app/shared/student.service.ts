@@ -5,7 +5,6 @@ import { CourseService } from "./course.service";
 import { Course } from './course.model';
 import { SubjectService } from './subject.service';
 import { Subject } from './subject.model';
-import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Constants } from './Constants';
 
 @Injectable({
@@ -19,29 +18,18 @@ export class StudentService {
   MultiSelcetValidationMesage: string = '';
   selectedSubjectsByStudent: Subject[];
   selectedCourseByStudent: string = this.courseDropDownDefaultValue;
-  selectedGender: string = this.genderDropDownDefaultValue;
-  subjectsDropdownSettings: IDropdownSettings = {};
   studentsList: Student[];
   formData: Student = new Student();
 
   constructor(
     private http: HttpClient,
     public courseService: CourseService,
-    public subjectService: SubjectService)
+    public subjectService: SubjectService
+  )
   {
     courseService.refreshList();
     subjectService.refreshList();
-    this.subjectsDropdownSettings = {
-      singleSelection: false,
-      idField: 'Id',
-      textField: 'Name',
-      selectAllText: 'Select All',
-      unSelectAllText: 'UnSelect All',
-      noDataAvailablePlaceholderText:'Select A Course First',
-      limitSelection:6,
-      itemsShowLimit: 6,
-      allowSearchFilter: true
-    };
+   
    }
 
   resetFormData()
@@ -51,11 +39,6 @@ export class StudentService {
     this.selectedSubjectsByStudent = null;
     this.subjectsInselcetedCourse = null;
     this.MultiSelcetValidationMesage = ''; 
-  }
- 
- onSelectGender(gender: string) {
-   this.selectedGender = gender;
-   this.formData.Gender = gender;
   }
 
   onSelectCourse(course: Course) {
@@ -73,7 +56,6 @@ export class StudentService {
     this.formData = Object.assign({}, student);
     this.subjectsInselcetedCourse = this.subjectService.getList().filter(x=>x.Course?.Id==student.Course?.Id);
     this.selectedSubjectsByStudent = this.getSelctedSubjectListWithAllDetails();
-    this.selectedGender = student.Gender;
   }
 
   getSelctedSubjectListWithAllDetails()
@@ -106,9 +88,5 @@ export class StudentService {
     this.http.get(Constants.studentsBase)
       .toPromise()
       .then(res => this.studentsList = res as Student[]);
-  }
-
-  getMultiSelctSettings() {
-    return this.subjectsDropdownSettings;
   }
 }

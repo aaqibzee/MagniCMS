@@ -10,8 +10,7 @@ import { Constants } from './Constants';
 })
 export class SubjectService {
 
-  constructor(private http: HttpClient,
-  public courseService: CourseService) { }
+  constructor(private http: HttpClient) { }
 
   formData: Subject = new Subject();
   subjectList: Subject[];

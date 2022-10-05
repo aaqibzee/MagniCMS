@@ -14,12 +14,7 @@ namespace MagniCollegeManagementSystem.Mappers
                 return null;
 
             student.Id = source.Id;
-            student.FirstName = source.FirstName;
-            student.LastName = source.LastName;
-            student.Gender= source.Gender;
-            student.Address = source.Address;
-            student.ContactNumber = source.ContactNumber;
-            student.RemainingCreditHours = source.RemainingCreditHours;
+            student.Name = source.Name;
             student.Subjects = new List<Subject>();
 
 
@@ -55,12 +50,7 @@ namespace MagniCollegeManagementSystem.Mappers
             var student = new StudentDTO
             {
                 Id = source.Id,
-                FirstName = source.FirstName,
-                LastName = source.LastName,
-                Gender = source.Gender,
-                Address = source.Address,
-                ContactNumber = source.ContactNumber,
-                RemainingCreditHours = source.RemainingCreditHours,
+                Name = source.Name,
 
                 Subjects = new List<int>(),
                 Teachers = new List<int>(),

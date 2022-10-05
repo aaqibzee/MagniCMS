@@ -19,11 +19,17 @@
                         Grade Title
                     </th>
                     <th>
-                        Marks Required 
+                        Starting Marks  
                     </th>
                     <th>
-                        Subject
+                        Ending Marks
                     </th>
+                    <th>
+                        Course
+                    </th>
+                    <!-- <th>
+                        Subject
+                    </th> -->
                     <th>Action</th>
                     <th>Action</th>
                 </tr>
@@ -32,8 +38,10 @@
                 <tr *ngFor="let grade of service.gradesList">
                     <td>{{grade.Id}}</td>
                     <td>{{grade.Title}}</td>
-                    <td>{{grade.Marks}}</td>
-                     <td>{{grade.SubjectId}}</td>
+                    <td>{{grade.StartingMarks}}</td>
+                    <td>{{grade.EndingMarks}}</td>
+                    <td>{{grade.Course?.Name}}</td>
+                     <!-- <td>{{grade.Subject?.Name}}</td> -->
                     
                     <td (click)="PopulateForm(grade)"> <button type="button" class="btn btn-info">Update</button>
                     <td (click)="DeleteGrade(grade)"> <button type="button" class="btn btn-danger">Delete</button>

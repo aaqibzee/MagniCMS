@@ -46,7 +46,13 @@
             });
         };
 
-        client.gradesUpdated = function () {
+        client.resultsUpdated = function () {
+            window.resultComponentReference.zone.run(() => {
+                window.resultComponentReference.syncData();
+            });
+        };
+
+        client.gardesUpdated = function () {
             window.gradeComponentReference.zone.run(() => {
                 window.gradeComponentReference.syncData();
             });

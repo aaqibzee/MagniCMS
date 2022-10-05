@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { Course } from 'src/app/shared/course.model';
+import { CourseService } from 'src/app/shared/course.service';
 import { Grade } from 'src/app/shared/grade.model';
+import { Subject } from 'src/app/shared/subject.model';
 import { GradeService } from "../../shared/grade.service";
 
 @Component({
@@ -11,7 +14,9 @@ import { GradeService } from "../../shared/grade.service";
 })
 export class GradeFormComponent implements OnInit {
 
-  constructor(public service:GradeService) { }
+  constructor(public service: GradeService,public courseService: CourseService ) { }
+  
+  subjectsInSelectedCourse: Subject[];
 
   ngOnInit(): void {
     this.resetFormData();
@@ -26,6 +31,10 @@ export class GradeFormComponent implements OnInit {
     }
      
   }
+
+  onCourseSelect(course: Course) {
+    this.service.formData.Course = course;
+   }
 
  inserRecord(form: NgForm)
   {

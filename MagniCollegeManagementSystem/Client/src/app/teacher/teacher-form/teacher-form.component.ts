@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { TeacherService } from "../../shared/teacher.service";
@@ -34,7 +34,6 @@ export class TeacherFormComponent implements OnInit {
   }
   subjectsDropdownSettings: IDropdownSettings = {};
   coursesDropdownSettings: IDropdownSettings = {};
-
   ngOnInit(): void {
     this.resetFormData();
   }

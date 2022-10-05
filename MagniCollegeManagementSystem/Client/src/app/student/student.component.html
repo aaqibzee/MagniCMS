@@ -17,16 +17,16 @@
             Id
           </th>
           <th>
-            First Name
+             Name
           </th>
           <th>
-            Last Name
+             Course
           </th>
           <th>
-            Assigned Course
+            Subjects 
           </th>
           <th>
-            Assigned Subjects
+            Grades
           </th>
           <th>
             Total Credit Hours
@@ -41,8 +41,7 @@
       <tbody>
         <tr *ngFor="let std of service.studentsList">
           <td>{{std.Id}}</td>
-          <td>{{std.FirstName}}</td>
-          <td>{{std.LastName}}</td>
+          <td>{{std.Name}}</td>
           <td>{{std.Course?.Name}}</td>
           <td>
             <div *ngFor="let subject of std.Subjects; let counter = index">
@@ -51,8 +50,15 @@
               </div>
             </div>
           </td>
+          <td>
+            <div *ngFor="let subject of std.Subjects; let counter = index">
+              <div>
+                {{counter+1}}:{{GetGrade(subject,std.Id)}}
+              </div>
+            </div>
+          </td>
           <td>{{std.Course?.TotalCreditHours}}</td>
-          <td>{{std.RemainingCreditHours}}</td>
+          <td>{{std.Course?.TotalCreditHours-GetAvailedCreditHours(std)}}</td>
           <td (click)="UpdateStudent(std)"> <button type="button" class="btn btn-info">Update</button>
           <td (click)="DeleteStudent(std)"> <button type="button" class="btn btn-danger">Delete</button>
           </td>
