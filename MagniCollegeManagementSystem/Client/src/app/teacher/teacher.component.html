@@ -1,14 +1,12 @@
 <div class="jumbotron py-3">
-    <h5 class="display-4 text-center"> Teacher details</h5>
+    <h5 class="display-4 text-center"> Teachers</h5>
 </div>
 
 <div class="row">
     <div class="col-md-3">
         <app-teacher-form></app-teacher-form>
     </div>
-
     <div class="col-md-9">
-        <span> List of Teachers</span>
         <table class="table">
             <thead class="thead-light">
                 <tr>
@@ -16,25 +14,13 @@
                         Id
                     </th>
                     <th>
-                        First Name
-                    </th>
-                    <th>
-                        Last Name
-                    </th>
-                    <th>
-                        Gender
-                    </th>
-                    <th>
-                        Contact Number
-                    </th>
-                    <th>
-                        Email
+                       Name
                     </th>
                     <th>
                         Birthday
                     </th>
                     <th>
-                        Address
+                        Salary
                     </th>
                     <th>
                         Assigned Subjects
@@ -46,13 +32,9 @@
             <tbody>
                 <tr *ngFor="let teacher of service.teacherList">
                     <td>{{teacher.Id}}</td>
-                    <td>{{teacher.FirstName}}</td>
-                    <td>{{teacher.LastName}}</td>
-                    <td>{{teacher.Gender}}</td>
-                    <td>{{teacher.ContactNumber}}</td>
-                    <td>{{teacher.Email}}</td>
+                    <td>{{teacher.Name}}</td>
                     <td>{{teacher.Birthday}}</td>
-                    <td>{{teacher.Address}}</td>
+                    <td>{{teacher.Salary}}</td>
                     <td>
                         <div *ngFor="let subject of teacher.Subjects; let counter = index">
                             <div>

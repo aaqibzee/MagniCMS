@@ -8,7 +8,7 @@ namespace DataAccess.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string RegistrationNumber { get; set; }
+        public string RegisterationNumber { get; set; }
         [Column(TypeName = "Date")]
         public DateTime Birthday { get; set; }
         public virtual ICollection<Subject> Subjects { get; set; }

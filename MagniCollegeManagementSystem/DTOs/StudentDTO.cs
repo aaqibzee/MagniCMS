@@ -6,7 +6,8 @@ namespace MagniCollegeManagementSystem.DTOs
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int RemainingCreditHours { get; set; }
+        public string Birthday { get; set; }
+        public string RegisterationNumber { get; set; }
         public GradeDTO Grade { get; set; }
         public CourseDTO Course { get; set; }
         public List<int> Subjects { get; set; }

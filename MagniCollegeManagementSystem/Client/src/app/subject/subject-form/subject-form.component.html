@@ -3,7 +3,7 @@
     <label class="label label-default">Course</label>
     <div class="form-group">
         <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"
+            <button class="btn btn-secondary dropdown-toggle drp-dwn" id="dropdownMenuButton" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="true"> {{service.courseDropDownCelectedValue}} </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" #courseSelected>
                 <button type="button" class="dropdown-item" *ngFor="let course of courseService.courseList"

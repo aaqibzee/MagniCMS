@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
+import { Course } from 'src/app/shared/course.model';
+import { CourseService } from 'src/app/shared/course.service';
 import { TeacherService } from "../../shared/teacher.service";
 
 @Component({
@@ -10,14 +12,15 @@ import { TeacherService } from "../../shared/teacher.service";
   ]
 })
 export class TeacherFormComponent implements OnInit {
+  courses: Course[] = [];
 
-  constructor(public service: TeacherService) {
+  constructor(public service: TeacherService, public courseService: CourseService) {
     this.subjectsDropdownSettings = {
       singleSelection: false,
       idField: 'Id',
       textField: 'Name',
-      noDataAvailablePlaceholderText:'Select Course First',
-      limitSelection:6,
+      noDataAvailablePlaceholderText: 'Select Course First',
+      limitSelection: 6,
       itemsShowLimit: 6,
       allowSearchFilter: true
     };
@@ -26,11 +29,12 @@ export class TeacherFormComponent implements OnInit {
       singleSelection: false,
       idField: 'Id',
       textField: 'Name',
-      limitSelection:6,
+      limitSelection: 6,
       itemsShowLimit: 6,
       allowSearchFilter: true
     };
-    
+    courseService.refreshList();
+    this.courses = courseService.courseList;
   }
   subjectsDropdownSettings: IDropdownSettings = {};
   coursesDropdownSettings: IDropdownSettings = {};
@@ -47,38 +51,35 @@ export class TeacherFormComponent implements OnInit {
     else {
       this.updateRecord(form);
     }
-     
+
   }
 
- inserRecord(form: NgForm)
-  {
-     this.service.postTeacher().subscribe(
-      result =>{
-         this.resetForm(form);
-      }, error =>{
+  inserRecord(form: NgForm) {
+    this.service.postTeacher().subscribe(
+      result => {
+        this.resetForm(form);
+      }, error => {
         console.log(error);
       }
     );
   }
 
-  updateRecord(form: NgForm)
-  {
-     this.service.putTeacher().subscribe(
-      result =>{
-         this.resetForm(form);
-      }, error =>{
+  updateRecord(form: NgForm) {
+    this.service.putTeacher().subscribe(
+      result => {
+        this.resetForm(form);
+      }, error => {
         console.log(error);
       }
     );
   }
 
   resetForm(form: NgForm) {
-     form.form.reset();
-     this.resetFormData();
-   }
-  
-  resetFormData()
-  {
+    form.form.reset();
+    this.resetFormData();
+  }
+
+  resetFormData() {
     this.service.resetFormData();
   }
 }

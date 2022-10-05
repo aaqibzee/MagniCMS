@@ -4,15 +4,27 @@
   <input type="hidden" name="id" [value]="service.formData.Id"/>
 
   <div class="form-group">
+    <label class="label label-default">Registeration Number</label>
+    <input class="form-control form-control-lg" placeholder="Registeration Number" name="registeration" #registeration="ngModel"
+      [(ngModel)]="service.formData.RegisterationNumber" required />
+  </div>
+
+  <div class="form-group">
     <label class="label label-default">Name</label>
-    <input class="form-control form-control-lg" placeholder="First Name" name="name" #Name="ngModel"
+    <input class="form-control form-control-lg" placeholder="Name" name="name" #Name="ngModel"
       [(ngModel)]="service.formData.Name" required />
+  </div>
+  
+  <div class="form-group">
+    <label class="label label-default">Birthday</label>
+    <input type="date" class="form-control form-control-lg" placeholder="Pick Date Of Birth" name="dob" #dob="ngModel"
+      [(ngModel)]="service.formData.Birthday" max="2010-01-01" />
   </div>
 
   <div class="form-group">
     <label class="label label-default">Course</label>
     <div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+      <button class="btn btn-secondary dropdown-toggle drp-dwn" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="true">
         {{service.selectedCourseByStudent}}
       </button>
@@ -29,7 +41,7 @@
     <label class="label label-default">Subjects</label>
     <br />
     <label class="label label-default {{subjectsSelectionClass}}">{{service.MultiSelcetValidationMesage}}</label>
-    <ng-multiselect-dropdown [placeholder]="'Select Subject'" name="subjectSelect"
+    <ng-multiselect-dropdown [placeholder]="'Select Subject(s)'" name="subjectSelect"
       [settings]="this.subjectsDropdownSettings" [data]="this.service.subjectsInselcetedCourse"
       [(ngModel)]="this.service.selectedSubjectsByStudent" (onSelect)="onSubjectSelect($event)"
       (onSelectAll)="onSelectAllSubjects($event)" (onDeSelect)="onSubjectDeselect($event)">

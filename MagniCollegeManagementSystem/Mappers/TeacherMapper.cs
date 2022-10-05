@@ -15,14 +15,9 @@ namespace MagniCollegeManagementSystem.Mappers
                 return null;
 
             teacher.Id = source.Id;
-            teacher.FirstName = source.FirstName;
-            teacher.LastName = source.LastName;
-            teacher.Gender = source.Gender;
+            teacher.Name = source.Name;
             teacher.Salary = source.Salary;
             teacher.Birthday = DateTime.Parse(source.Birthday??null);
-            teacher.Address = source.Address;
-            teacher.ContactNumber = source.ContactNumber;
-            teacher.Email = source.Email;
             teacher.Subjects = new List<Subject>();
             teacher.Courses = new List<Course>();
 
@@ -63,19 +58,13 @@ namespace MagniCollegeManagementSystem.Mappers
             var teacher = new TeacherDTO
             {
                 Id = source.Id,
-                FirstName = source.FirstName,
-                LastName = source.LastName,
-                Gender = source.Gender,
+                Name = source.Name,
                 Salary = source.Salary,
                 Birthday = source.Birthday.Date.ToString("yyyy-MM-dd"),
-                Address = source.Address,
-                ContactNumber = source.ContactNumber,
-                Email = source.Email,
                 Students = new List<int>(),
                 Subjects = new List<int>(),
                 Courses = new List<int>(),
             };
-
 
             if (!(source.Subjects is null))
                 foreach (var item in source.Subjects)

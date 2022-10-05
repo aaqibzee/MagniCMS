@@ -1,14 +1,12 @@
 <div class="jumbotron py-3">
-    <h1 class="display-4 text-center"> Subject details</h1>
+    <h1 class="display-4 text-center">Subjects</h1>
 </div>
 
 <div class="row">
     <div class="col-md-3">
         <app-subject-form></app-subject-form>
     </div>
-
     <div class="col-md-9">
-        <span> List of subjects</span>
         <table class="table">
             <thead class="thead-light">
                 <tr>
@@ -47,8 +45,10 @@
                     <td>{{subj.Teacher?.FirstName}}</td>
                     <td>{{subj.Students?.length}}</td>
                     <td (click)="UpdateSubject(subj)"> <button type="button" class="btn btn-info">Update</button>
-                    <td (click)="DeleteSubject(subj)"> <button type="button" class="btn btn-danger"
-                        [disabled]="subj.Students?.length>0">Delete</button>
+                    <td (click)="DeleteSubject(subj)"> 
+                        <div class="tooltip-wrapper disabled" data-title="Deletion not allowed. There's data linked to this item">
+                            <button type="button" class="btn btn-danger" [disabled]="subj.Students?.length>0">Delete</button>
+                        </div>
                     </td>
                 </tr>
             </tbody>

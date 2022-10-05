@@ -15,20 +15,20 @@ export class GradeComponent implements OnInit {
 
   ngOnInit(): void {
     this.service.refreshList();
-     window[Constants.gradeComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
+    window[Constants.gradeComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
   }
 
-   PopulateForm(record: Grade) {
+  PopulateForm(record: Grade) {
     //assign the object copy and not the original object
-    this.service.formData =  Object.assign({}, record);
+    this.service.formData = Object.assign({}, record);
   }
 
-   DeleteGrade(record: Grade) {
-     this.service.deleteGrade(record.Id).subscribe(
-       result => {
-        
-       }, error => {
-         console.log(error);
-       });
+  DeleteGrade(record: Grade) {
+    this.service.deleteGrade(record.Id).subscribe(
+      result => {
+
+      }, error => {
+        console.log(error);
+      });
   }
 }

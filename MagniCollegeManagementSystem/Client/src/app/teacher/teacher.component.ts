@@ -38,7 +38,6 @@ export class TeacherComponent implements OnInit {
     this.service.formData = Object.assign({}, record);
     this.service.selectedSubjects = this.getSelctedSubjectListWithAllDetails();
     this.service.selectedCourses = this.getSelctedCourseListWithAllDetails();
-    this.service.selectedGender = this.service.formData.Gender;
     this.service.subjectsForSelectedCourses = this.getSubjectsForSelectedCourses();
   }
   

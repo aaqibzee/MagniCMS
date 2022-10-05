@@ -7,8 +7,8 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 @Component({
   selector: 'app-student-form',
   templateUrl: './student-form.component.html',
-  styles: [
-  ],
+  styleUrls: ['./student-form.component.css'],
+  styles: [],
 })
 export class StudentFormComponent implements OnInit {
   subjectsDropdownSettings: IDropdownSettings = {};
@@ -16,21 +16,21 @@ export class StudentFormComponent implements OnInit {
   isFormValid: boolean = true;
   subjectsSelectionClass: string = 'text-success';
 
-  constructor(public service: StudentService) { 
-     this.subjectsDropdownSettings = {
+  constructor(public service: StudentService) {
+    this.subjectsDropdownSettings = {
       singleSelection: false,
       idField: 'Id',
       textField: 'Name',
       selectAllText: 'Select All',
       unSelectAllText: 'UnSelect All',
-      noDataAvailablePlaceholderText:'Select A Course First',
-      limitSelection:6,
+      noDataAvailablePlaceholderText: 'Select A Course First',
+      limitSelection: 6,
       itemsShowLimit: 6,
       allowSearchFilter: true
     };
   }
-  
-  
+
+
   ngOnInit(): void {
     this.resetFormData();
   }
@@ -45,35 +45,32 @@ export class StudentFormComponent implements OnInit {
     }
   }
 
-  inserRecord(form: NgForm)
-  {
-     this.service.postStudent().subscribe(
-      result =>{
-         this.resetForm(form);
-      }, error =>{
+  inserRecord(form: NgForm) {
+    this.service.postStudent().subscribe(
+      result => {
+        this.resetForm(form);
+      }, error => {
         console.log(error);
       }
     );
   }
 
-  updateRecord(form: NgForm)
-  {
-     this.service.putStudent().subscribe(
-      result =>{
-         this.resetForm(form);
-      }, error =>{
+  updateRecord(form: NgForm) {
+    this.service.putStudent().subscribe(
+      result => {
+        this.resetForm(form);
+      }, error => {
         console.log(error);
       }
     );
   }
 
-   resetForm(form: NgForm) {
-     form.form.reset();
-     this.resetFormData();
-   }
-  
-  resetFormData()
-  {
+  resetForm(form: NgForm) {
+    form.form.reset();
+    this.resetFormData();
+  }
+
+  resetFormData() {
     this.service.resetFormData();
   }
 
@@ -83,47 +80,39 @@ export class StudentFormComponent implements OnInit {
   onSelectAllSubjects(items: any) {
     this.validateSubjectSelection();
   }
-  onSubjectDeselect(item: any)
-  {
+  onSubjectDeselect(item: any) {
     this.validateSubjectSelection();
   }
-  
-  validateSubjectSelection()
-  {
+
+  validateSubjectSelection() {
     let allowed = this.service.formData.Course?.TotalCreditHours;
     let availed: number = 0;
-    
+
     this.service.subjectsInselcetedCourse?.forEach(course => {
-      if (this.service.selectedSubjectsByStudent?.find(x => x.Id == course.Id) != undefined)
-      {
+      if (this.service.selectedSubjectsByStudent?.find(x => x.Id == course.Id) != undefined) {
         availed += course.CreditHours;
       }
     });
     let difference = allowed - availed;
-    this.service.formData.RemainingCreditHours = difference;
 
-    if (availed < allowed)
-    {
-      this.subjectsSelectionClass='text-info'
+    if (availed < allowed) {
+      this.subjectsSelectionClass = 'text-info'
       this.isFormValid = true;
       this.service.MultiSelcetValidationMesage = difference + ' Credit Hourse Remained';
     }
-    else if (availed > allowed)
-    {
-      this.subjectsSelectionClass='text-danger'
+    else if (availed > allowed) {
+      this.subjectsSelectionClass = 'text-danger'
       this.isFormValid = false;
-      this.service.MultiSelcetValidationMesage =  (availed - allowed) + ' Extra Credit Hour(s) Availed, Remove Extra Subject(s)';  
+      this.service.MultiSelcetValidationMesage = (availed - allowed) + ' Extra Credit Hour(s) Availed, Remove Extra Subject(s)';
     }
-    else if (availed == allowed)
-    {
-      this.subjectsSelectionClass='text-info'
-      this.service.MultiSelcetValidationMesage ='All Credit Hours Availed' 
+    else if (availed == allowed) {
+      this.subjectsSelectionClass = 'text-info'
+      this.service.MultiSelcetValidationMesage = 'All Credit Hours Availed'
       this.isFormValid = true;
     }
   }
 
-  isFormInvalid(form: NgForm)
-  {
+  isFormInvalid(form: NgForm) {
     return (form.invalid
       || this.service.selectedCourseByStudent == this.service.courseDropDownDefaultValue
       || this.service.selectedSubjectsByStudent?.length == 0

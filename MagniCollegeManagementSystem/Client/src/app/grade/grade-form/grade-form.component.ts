@@ -9,13 +9,14 @@ import { GradeService } from "../../shared/grade.service";
 @Component({
   selector: 'app-grade-form',
   templateUrl: './grade-form.component.html',
+  styleUrls: ['./grade-form.component.css'],
   styles: [
   ]
 })
 export class GradeFormComponent implements OnInit {
 
-  constructor(public service: GradeService,public courseService: CourseService ) { }
-  
+  constructor(public service: GradeService, public courseService: CourseService) { }
+
   subjectsInSelectedCourse: Subject[];
 
   ngOnInit(): void {
@@ -29,42 +30,39 @@ export class GradeFormComponent implements OnInit {
     else {
       this.updateRecord(form);
     }
-     
+
   }
 
   onCourseSelect(course: Course) {
     this.service.formData.Course = course;
-   }
+  }
 
- inserRecord(form: NgForm)
-  {
-     this.service.postGrade().subscribe(
-      result =>{
-         this.resetForm(form);
-      }, error =>{
+  inserRecord(form: NgForm) {
+    this.service.postGrade().subscribe(
+      result => {
+        this.resetForm(form);
+      }, error => {
         console.log(error);
       }
     );
   }
 
-  updateRecord(form: NgForm)
-  {
-     this.service.putGrade().subscribe(
-      result =>{
-         this.resetForm(form);
-      }, error =>{
+  updateRecord(form: NgForm) {
+    this.service.putGrade().subscribe(
+      result => {
+        this.resetForm(form);
+      }, error => {
         console.log(error);
       }
     );
   }
 
-   resetForm(form: NgForm) {
-     form.form.reset();
-     this.resetFormData();
-   }
-  
-  resetFormData()
-  {
+  resetForm(form: NgForm) {
+    form.form.reset();
+    this.resetFormData();
+  }
+
+  resetFormData() {
     this.service.formData = new Grade();
   }
 }

@@ -2,81 +2,45 @@
     <input type="hidden" name="id" [value]="service.formData.Id" />
 
     <div class="form-group">
-        <label class="label label-default">First Name</label>
-        <input class="form-control form-control-lg" placeholder="First Name" name="firstName" #FirstName="ngModel"
-            [(ngModel)]="service.formData.FirstName" required />
+        <label class="label label-default">Name</label>
+        <input class="form-control form-control-lg" placeholder=" Name" name="name" #Name="ngModel"
+            [(ngModel)]="service.formData.Name" required />
     </div>
-    
+
     <div class="form-group">
-        <label class="label label-default">Last Name</label>
-        <input class="form-control form-control-lg" placeholder="Last Name" name="lastName" #lastName="ngModel"
-            [(ngModel)]="service.formData.LastName" required />
+        <label class="label label-default">Birthday</label>
+        <input type="date" class="form-control form-control-lg" placeholder="Pick Date Of Birth" name="dob" #dob="ngModel"
+            [(ngModel)]="service.formData.Birthday" max="2010-01-01" />
     </div>
-    
-    <div class="form-group">
-        <label class="label label-default" for="contact">Contact Number</label>
-        <input type="number"  class="form-control form-control-lg" placeholder="Contact Number" name="contact"  id="contact" #Contact="ngModel"
-            [(ngModel)]="service.formData.ContactNumber" required />
-    </div>
-    <div class="form-group">
-        <label class="label label-default" for="email">Email</label>
-        <input type="email"  class="form-control form-control-lg" placeholder="Email" name="email" #Email="ngModel"
-           id="email" [(ngModel)]="service.formData.Email" required />
-    </div>
-    <div class="form-group">
-        <label class="label label-default">Address</label>
-        <input class="form-control form-control-lg" placeholder="Address" name="address" #Address="ngModel"
-            [(ngModel)]="service.formData.Address" required />
-    </div>
+
     <div class="form-group">
         <label class="label label-default">Salary</label>
         <input class="form-control form-control-lg" placeholder="Salary" name="salary" #salary="ngModel"
            type="number" min="0" [(ngModel)]="service.formData.Salary" required />
     </div>
-    
-    <div class="form-group">
-        <label class="label label-default">Gender</label>
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" id="dropdownMenuButton" data-toggle="dropdown"
-                aria-haspopup="true" aria-expanded="true">
-                {{service.selectedGender}}
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" #selectedGender>
-                <button type="button" class="dropdown-item" *ngFor="let gender of service.genderOptions"
-                    (click)="service.onSelectGender(gender)" on-click="selectedGender.value=gender">
-                    {{gender}}
-                </button>
-            </div>
-        </div>
-    </div>
+
     <div class="form-group">
         <label class="label label-default">Courses</label>
         <br />
-        <ng-multiselect-dropdown [placeholder]="'Select Courses'" name="coursesSelect"
-            [settings]="this.coursesDropdownSettings" [data]="this.service.courses"
+        <ng-multiselect-dropdown [placeholder]="'Select Course(s)'" name="coursesSelect"
+            [settings]="this.coursesDropdownSettings" [data]="this.courses"
             [(ngModel)]="this.service.selectedCourses"
             (onSelect)="this.service.onCourseSelect($event)"
             (onDeSelect)="this.service.onCourseDeselect($event)">
         </ng-multiselect-dropdown>
     </div>
+
     <div class="form-group">
         <label class="label label-default">Subjects</label>
         <br />
-        <ng-multiselect-dropdown [placeholder]="'Select Subject'" name="subjectSelect"
+        <ng-multiselect-dropdown [placeholder]="'Select Subject(s)'" name="subjectSelect"
             [settings]="this.subjectsDropdownSettings" [data]="this.service.subjectsForSelectedCourses"
             [(ngModel)]="this.service.selectedSubjects">
         </ng-multiselect-dropdown>
-    </div>
+    </div>    
+    
     <div class="form-group">
-        <label class="label label-default">Birthday</label>
-        <input type="date" class="form-control form-control-lg" placeholder="Pick Date Of Birth" name="dob" #dob="ngModel"
-            [(ngModel)]="service.formData.Birthday"  max="2010-01-01" />
-    </div>
-
-
-    <div class="form-group">
-        <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="
-        selectedGender.value==service.genderDropDownDefaultValue "> {{ service.formData.Id !=
+        <button class="btn btn-info btn-lg btn-block" type="submit"> {{ service.formData.Id !=
             0 ? 'Update' : 'Add' }} </button>
     </div>
 </form>

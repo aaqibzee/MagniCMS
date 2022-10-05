@@ -8,7 +8,7 @@
     <div class="form-group">
         <label class="label label-default">Course</label>
         <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle drp" id="dropdownMenuButton" data-toggle="dropdown"
+            <button class="btn btn-secondary dropdown-toggle drp-dwn" id="dropdownMenuButton" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="true">
                 {{service.formData?.Course?.Name?service.formData?.Course?.Name:'Select Course'}}
             </button>
@@ -22,13 +22,13 @@
     </div>
     <label class="label label-default">Starting Marks</label>
     <div class="form-group">
-        <input type="number" class="form-control form-control-lg" placeholder="Starting Marks" name="startingMarks" #StartingMarks="ngModel"
+        <input type="number" min="0" min="100" class="form-control form-control-lg" placeholder="Starting Marks" name="startingMarks" #StartingMarks="ngModel"
             [(ngModel)]="service.formData.StartingMarks" required />
     </div>
 
     <label class="label label-default">Ending Marks</label>
     <div class="form-group">
-        <input type="number" class="form-control form-control-lg" placeholder="EndingMarks" name="endingMarks" #EndingMarks="ngModel"
+        <input type="number" min="0" min="100" class="form-control form-control-lg" placeholder="EndingMarks" name="endingMarks" #EndingMarks="ngModel"
             [(ngModel)]="service.formData.EndingMarks" required />
     </div>
     
