@@ -7,7 +7,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! D:\Personal\Projects\MagniCollegeManagementSystem\MagniCollegeManagementSystem\Client\src\polyfills.ts */"hN/g");
+module.exports = __webpack_require__(/*! D:\Personal\Projects\Angular\Magni CMS\MagniCMS\MagniCollegeManagementSystem\Client\src\polyfills.ts */"hN/g");
 
 
 /***/ }),
