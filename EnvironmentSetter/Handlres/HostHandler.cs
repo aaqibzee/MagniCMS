@@ -1,26 +1,27 @@
 ﻿using System;
+using System.Configuration;
 using System.IO;
-using System.Linq;
-using Microsoft.Web.Administration;
+using EnvironmentSetter.Common;
 
-namespace EnvironmentSetter
+namespace Handlres
 {
     static class HostHandler
     {
         public static void CreateHostFileEntry()
         {
-            string ip = "127.0.0.1",
-                host = Constants.Host,
-                entry = ip + " " + host;
-
-            if (ModifyHostsFile(entry))
+            string localHostIp = ConfigurationManager.AppSettings[Constants.LocalHostIpKey];
+            string hostName = ConfigurationManager.AppSettings[Constants.HostNameKey];
+            string hostAndIp = localHostIp + " " + hostName;
+            
+            if (AddEntryToHostFile(hostAndIp))
             {
                 Console.WriteLine("Host File modified successfully");
             }
         }
 
-        private static bool ModifyHostsFile(string entry)
+        private static bool AddEntryToHostFile(string entry)
         {
+
             try
             {
                 if (IsEntryExists(entry))
@@ -28,7 +29,7 @@ namespace EnvironmentSetter
                     Console.WriteLine("Host file is already modified, skipping this part.");
                     return false;
                 }
-                using (StreamWriter streamWriter = File.AppendText(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), @"drivers\etc\hosts")))
+                using (StreamWriter streamWriter = File.AppendText(Constants.HostFilePath))
                 {
                     streamWriter.WriteLine(entry);
                     return true;
@@ -44,23 +45,22 @@ namespace EnvironmentSetter
         private static bool IsEntryExists(string entry)
         {
 
-            bool isMatch = false;
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), @"drivers\etc\hosts");
-            using (StreamReader sr = File.OpenText(path))
+            var isMatch = false;
+            using (StreamReader streamReader = File.OpenText(Constants.HostFilePath))
             {
-                string[] lines = File.ReadAllLines(path);
+               var lines = File.ReadAllLines(Constants.HostFilePath);
 
-                for (int x = 0; x < lines.Length - 1; x++)
+                for (var counter = 0; counter < lines.Length - 1; counter++)
                 {
-                    if (entry == lines[x])
+                    if (entry == lines[counter])
                     {
-                        sr.Close();
+                        streamReader.Close();
                         isMatch = true;
                     }
                 }
                 if (!isMatch)
                 {
-                    sr.Close();
+                    streamReader.Close();
                 }
             }
 

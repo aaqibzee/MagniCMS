@@ -1,47 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
+using EnvironmentSetter.Common;
 using Microsoft.Dism;
-using Microsoft.Web.Administration;
 
-namespace EnvironmentSetter
+namespace Handlres
 {
     static class WindowsFeaturesHandler
     {
-        private static readonly List<string> features = new List<string>()
-        {   
-            "IIS-WebServerRole",
-            "IIS-WebServer",
-            "IIS-CommonHttpFeatures",
-            "IIS-HttpErrors",
-            "IIS-HttpRedirect",
-            "IIS-ApplicationDevelopment",
-            "IIS-Security",
-            "IIS-RequestFiltering",
-            "IIS-HttpLogging",
-            "IIS-LoggingLibraries",
-            "IIS-RequestMonitor",
-            "IIS-HttpTracing",
-            "IIS-HttpCompressionDynamic",
-            "IIS-WebServerManagementTools",
-            "IIS-ManagementScriptingTools",
-            "IIS-IIS6ManagementCompatibility",
-            "IIS-Metabase",
-            "IIS-StaticContent",
-            "IIS-DefaultDocument",
-            "IIS-DirectoryBrowsing",
-            "IIS-WebDAV",
-            "IIS-WebSockets",
-            "IIS-ApplicationInit",
-            "IIS-ASPNET",
-            "IIS-ASPNET45",
-            "IIS-HttpCompressionStatic",
-            "IIS-ManagementConsole",
-            "IIS-ManagementService",
-            "IIS-WMICompatibility",
-            "IIS-WindowsAuthentication",
-            "IIS-ODBCLogging",
-        };
+        private static readonly string[] features = ConfigurationManager
+            .AppSettings[Constants.IISFeaturesToActivateKey]
+            .Replace(" ",string.Empty)
+            .Replace("\r", string.Empty)
+            .Replace("\n", string.Empty)
+            .Replace("\t", string.Empty)
+            .Split(',');
+
         public static void EnableFeatures()
         {
             var installedFeatures = GetInstalledFeatures();
@@ -72,7 +47,6 @@ namespace EnvironmentSetter
                             installedFeatures.Add(feature.FeatureName);
                     }
                 }
-                
             }
             finally
             {
@@ -84,6 +58,7 @@ namespace EnvironmentSetter
 
         private static void EnableFeature(string featureName)
         {
+            Console.WriteLine("Activating feature "+featureName);
             DismApi.Initialize(DismLogLevel.LogErrorsWarningsInfo);
             try
             {
@@ -91,6 +66,7 @@ namespace EnvironmentSetter
                 {
                     DismApi.EnableFeature(session, featureName, false, true, null, progress =>
                     {
+                        Console.WriteLine("Progress:");
                         Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
                         Console.Write($"{progress.Total} / {progress.Current}");
                     });
@@ -103,5 +79,4 @@ namespace EnvironmentSetter
             }
         }
     }
-
 }
