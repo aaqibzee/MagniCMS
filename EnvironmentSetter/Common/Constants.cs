@@ -20,6 +20,7 @@ namespace EnvironmentSetter.Common
         //Queries End
         //Misc Start
         public static readonly string HostFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), @"drivers\etc\hosts");
+        public static readonly string SQLServerRegKey = @"SOFTWARE\MICROSOFT\Microsoft SQL Server";
         //Misc End
         //Config Keys Start
         public static readonly string LocalHostIpKey = "LocalHostIp";

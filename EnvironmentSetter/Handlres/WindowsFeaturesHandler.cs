@@ -20,12 +20,16 @@ namespace Handlres
         public static void EnableFeatures()
         {
             var installedFeatures = GetInstalledFeatures();
-
+            Console.WriteLine("Activating features not activated previously ");
             foreach (var feature in features)
             {
                 if (!installedFeatures.Contains(feature))
                 {
                     EnableFeature(feature);
+                }
+                else
+                {
+                    Console.WriteLine(feature+" already activated. Skipping it.");
                 }
             }
         }
@@ -34,7 +38,7 @@ namespace Handlres
         {
             var installedFeatures = new List<string>();
             DismApi.Initialize(DismLogLevel.LogErrorsWarningsInfo);
-
+            Console.WriteLine("Checking already activated features");
             try
             {
                 using (var session = DismApi.OpenOnlineSessionEx(new DismSessionOptions() { }))
@@ -43,6 +47,7 @@ namespace Handlres
 
                     foreach (var feature in features)
                     {
+                        Console.Write(".");
                         if (feature.State == DismPackageFeatureState.Installed)
                             installedFeatures.Add(feature.FeatureName);
                     }
@@ -58,7 +63,7 @@ namespace Handlres
 
         private static void EnableFeature(string featureName)
         {
-            Console.WriteLine("Activating feature "+featureName);
+            Console.WriteLine("Activating feature "+featureName+"\n Progress:");
             DismApi.Initialize(DismLogLevel.LogErrorsWarningsInfo);
             try
             {
@@ -66,7 +71,6 @@ namespace Handlres
                 {
                     DismApi.EnableFeature(session, featureName, false, true, null, progress =>
                     {
-                        Console.WriteLine("Progress:");
                         Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
                         Console.Write($"{progress.Total} / {progress.Current}");
                     });
