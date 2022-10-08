@@ -39,6 +39,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -61,95 +62,10 @@
     <Compile Include="Interfaces\ITeacherRepository .cs" />
     <Compile Include="Interfaces\ISubjectRepository.cs" />
     <Compile Include="Interfaces\IStudentRepository.cs" />
-    <Compile Include="Migrations\202209141052379_Add_Student_Table.cs" />
-    <Compile Include="Migrations\202209141052379_Add_Student_Table.Designer.cs">
-      <DependentUpon>202209141052379_Add_Student_Table.cs</DependentUpon>
+    <Compile Include="Migrations\202210081355355_CreateDBShcema.cs" />
+    <Compile Include="Migrations\202210081355355_CreateDBShcema.Designer.cs">
+      <DependentUpon>202210081355355_CreateDBShcema.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202209161414106_Add_Teacher_Table.cs" />
-    <Compile Include="Migrations\202209161414106_Add_Teacher_Table.Designer.cs">
-      <DependentUpon>202209161414106_Add_Teacher_Table.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202209161652425_Add_Subject_Table.cs" />
-    <Compile Include="Migrations\202209161652425_Add_Subject_Table.Designer.cs">
-      <DependentUpon>202209161652425_Add_Subject_Table.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202209161751358_Add_Course_Table.cs" />
-    <Compile Include="Migrations\202209161751358_Add_Course_Table.Designer.cs">
-      <DependentUpon>202209161751358_Add_Course_Table.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202209170622455_Add_Grade_Table.cs" />
-    <Compile Include="Migrations\202209170622455_Add_Grade_Table.Designer.cs">
-      <DependentUpon>202209170622455_Add_Grade_Table.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202209171655170_Add_Tables_Relations.cs" />
-    <Compile Include="Migrations\202209171655170_Add_Tables_Relations.Designer.cs">
-      <DependentUpon>202209171655170_Add_Tables_Relations.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202209231545168_Add_NumberOfSubjectsAllowed_Column_To_Course_Table.cs" />
-    <Compile Include="Migrations\202209231545168_Add_NumberOfSubjectsAllowed_Column_To_Course_Table.Designer.cs">
-      <DependentUpon>202209231545168_Add_NumberOfSubjectsAllowed_Column_To_Course_Table.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202209240756189_Update_Course_Table_And_Subject_Table.cs" />
-    <Compile Include="Migrations\202209240756189_Update_Course_Table_And_Subject_Table.Designer.cs">
-      <DependentUpon>202209240756189_Update_Course_Table_And_Subject_Table.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202209241008433_Update_Student_Table.cs" />
-    <Compile Include="Migrations\202209241008433_Update_Student_Table.Designer.cs">
-      <DependentUpon>202209241008433_Update_Student_Table.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202209241242326_Update_Student_Table1.cs" />
-    <Compile Include="Migrations\202209241242326_Update_Student_Table1.Designer.cs">
-      <DependentUpon>202209241242326_Update_Student_Table1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202209241742217_Update_Teacher_Table.cs" />
-    <Compile Include="Migrations\202209241742217_Update_Teacher_Table.Designer.cs">
-      <DependentUpon>202209241742217_Update_Teacher_Table.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202210010949399_Update_Tables_Teacher_Student.cs" />
-    <Compile Include="Migrations\202210010949399_Update_Tables_Teacher_Student.Designer.cs">
-      <DependentUpon>202210010949399_Update_Tables_Teacher_Student.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202210011021422_Update_Tables_Teacher.cs" />
-    <Compile Include="Migrations\202210011021422_Update_Tables_Teacher.Designer.cs">
-      <DependentUpon>202210011021422_Update_Tables_Teacher.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202210011034166_Update_Tables_Teacher_Student_Result.cs" />
-    <Compile Include="Migrations\202210011034166_Update_Tables_Teacher_Student_Result.Designer.cs">
-      <DependentUpon>202210011034166_Update_Tables_Teacher_Student_Result.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202210031339407_Tables_Updated_Result_Grade.cs" />
-    <Compile Include="Migrations\202210031339407_Tables_Updated_Result_Grade.Designer.cs">
-      <DependentUpon>202210031339407_Tables_Updated_Result_Grade.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202210031422100_Table_Updated_Grade.cs" />
-    <Compile Include="Migrations\202210031422100_Table_Updated_Grade.Designer.cs">
-      <DependentUpon>202210031422100_Table_Updated_Grade.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202210031736248_Table_Updated_Grade1.cs" />
-    <Compile Include="Migrations\202210031736248_Table_Updated_Grade1.Designer.cs">
-      <DependentUpon>202210031736248_Table_Updated_Grade1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202210040551144_Update_Table_Student.cs" />
-    <Compile Include="Migrations\202210040551144_Update_Table_Student.Designer.cs">
-      <DependentUpon>202210040551144_Update_Table_Student.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202210041019509_Table_Updated_Result.cs" />
-    <Compile Include="Migrations\202210041019509_Table_Updated_Result.Designer.cs">
-      <DependentUpon>202210041019509_Table_Updated_Result.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202210041505489_Table_Updated_Grade2.cs" />
-    <Compile Include="Migrations\202210041505489_Table_Updated_Grade2.Designer.cs">
-      <DependentUpon>202210041505489_Table_Updated_Grade2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202210050544250_Update_Table_Teacher.cs" />
-    <Compile Include="Migrations\202210050544250_Update_Table_Teacher.Designer.cs">
-      <DependentUpon>202210050544250_Update_Table_Teacher.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202210050704161_Update_Table_Student1.cs" />
-    <Compile Include="Migrations\202210050704161_Update_Table_Student1.Designer.cs">
-      <DependentUpon>202210050704161_Update_Table_Student1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Course.cs" />
     <Compile Include="Models\Grade.cs" />
     <Compile Include="Models\Student.cs" />
@@ -159,75 +75,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202209141052379_Add_Student_Table.resx">
-      <DependentUpon>202209141052379_Add_Student_Table.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202209161414106_Add_Teacher_Table.resx">
-      <DependentUpon>202209161414106_Add_Teacher_Table.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202209161652425_Add_Subject_Table.resx">
-      <DependentUpon>202209161652425_Add_Subject_Table.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202209161751358_Add_Course_Table.resx">
-      <DependentUpon>202209161751358_Add_Course_Table.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202209170622455_Add_Grade_Table.resx">
-      <DependentUpon>202209170622455_Add_Grade_Table.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202209171655170_Add_Tables_Relations.resx">
-      <DependentUpon>202209171655170_Add_Tables_Relations.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202209231545168_Add_NumberOfSubjectsAllowed_Column_To_Course_Table.resx">
-      <DependentUpon>202209231545168_Add_NumberOfSubjectsAllowed_Column_To_Course_Table.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202209240756189_Update_Course_Table_And_Subject_Table.resx">
-      <DependentUpon>202209240756189_Update_Course_Table_And_Subject_Table.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202209241008433_Update_Student_Table.resx">
-      <DependentUpon>202209241008433_Update_Student_Table.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202209241242326_Update_Student_Table1.resx">
-      <DependentUpon>202209241242326_Update_Student_Table1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202209241742217_Update_Teacher_Table.resx">
-      <DependentUpon>202209241742217_Update_Teacher_Table.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202210010949399_Update_Tables_Teacher_Student.resx">
-      <DependentUpon>202210010949399_Update_Tables_Teacher_Student.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202210011021422_Update_Tables_Teacher.resx">
-      <DependentUpon>202210011021422_Update_Tables_Teacher.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202210011034166_Update_Tables_Teacher_Student_Result.resx">
-      <DependentUpon>202210011034166_Update_Tables_Teacher_Student_Result.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202210031339407_Tables_Updated_Result_Grade.resx">
-      <DependentUpon>202210031339407_Tables_Updated_Result_Grade.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202210031422100_Table_Updated_Grade.resx">
-      <DependentUpon>202210031422100_Table_Updated_Grade.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202210031736248_Table_Updated_Grade1.resx">
-      <DependentUpon>202210031736248_Table_Updated_Grade1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202210040551144_Update_Table_Student.resx">
-      <DependentUpon>202210040551144_Update_Table_Student.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202210041019509_Table_Updated_Result.resx">
-      <DependentUpon>202210041019509_Table_Updated_Result.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202210041505489_Table_Updated_Grade2.resx">
-      <DependentUpon>202210041505489_Table_Updated_Grade2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202210050544250_Update_Table_Teacher.resx">
-      <DependentUpon>202210050544250_Update_Table_Teacher.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202210050704161_Update_Table_Student1.resx">
-      <DependentUpon>202210050704161_Update_Table_Student1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202210081355355_CreateDBShcema.resx">
+      <DependentUpon>202210081355355_CreateDBShcema.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

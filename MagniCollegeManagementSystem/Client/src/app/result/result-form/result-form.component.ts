@@ -36,91 +36,84 @@ export class ResultFormComponent implements OnInit {
 
   ngOnInit(): void {
   }
-   onSubmit(form: NgForm) {
+  onSubmit(form: NgForm) {
     if (this.service.formData.Id == 0) {
       this.inserRecord(form);
     }
     else {
       this.updateRecord(form);
     }
-   }
-  
-  calculateGrade()
-  {
+  }
+
+  calculateGrade() {
     let obMarks = this.service.formData.ObtainedMarks;
     let course = this.service.formData.Course;
 
-    if (course == null)
-    {
+    if (course == null) {
       this.gradeLabelText = "Select a Course, and a subject first";
       return;
     }
 
     let grades = this.gradeService.gradesList.filter(x => x.Course.Id == course.Id)
-    if (grades == null)
-    {
+    if (grades == null) {
       this.gradeLabelText = "No grades available for the selected subject";
       return;
     }
-    
+
     let grade = grades?.find(x => x.StartingMarks <= obMarks && x.EndingMarks >= obMarks);
-     if (grade == null)
-    {
+    if (grade == null) {
       this.gradeLabelText = "No grade available for given marks range ";
       return;
-     }
+    }
     this.service.formData.Grade = grade;
-    this.gradeLabelText= grade?.Title;
+    this.gradeLabelText = grade?.Title;
   }
-  
+
   onCourseSelect(course: Course) {
     this.service.formData.Course = course;
     this.subjectsInSelectedCourse = this.subjectService.subjectList.filter(x => x.Course.Id == course.Id);
-    this.gradesInSelectedCourse = this.gradeService.gradesList.filter(x => x.Course?.Id==course.Id);
+    this.gradesInSelectedCourse = this.gradeService.gradesList.filter(x => x.Course?.Id == course.Id);
 
     this.service.formData.Student = null;
     this.service.formData.Subject = null;
     this.selectedSubject.value = '';
   }
-  
+
   onStudentSelect(student: Student) {
-     this.service.formData.Student = student;
+    this.service.formData.Student = student;
   }
 
-   onSubjectSelect(subject: Subject) {
-     this.service.formData.Subject = subject;
-     this.studentsInSelectedSubject = this.studentService.studentsList.filter(x => x.Subjects.includes(subject.Id));
-    }
+  onSubjectSelect(subject: Subject) {
+    this.service.formData.Subject = subject;
+    this.studentsInSelectedSubject = this.studentService.studentsList.filter(x => x.Subjects.includes(subject.Id));
+  }
 
-  inserRecord(form: NgForm)
-  {
-     this.service.postResult().subscribe(
-      result =>{
-         this.resetForm(form);
-      }, error =>{
+  inserRecord(form: NgForm) {
+    this.service.postResult().subscribe(
+      result => {
+        this.resetForm(form);
+      }, error => {
         console.log(error);
       }
     );
   }
 
-  updateRecord(form: NgForm)
-  {
-     this.service.putResult().subscribe(
-      result =>{
-         this.resetForm(form);
-      }, error =>{
+  updateRecord(form: NgForm) {
+    this.service.putResult().subscribe(
+      result => {
+        this.resetForm(form);
+      }, error => {
         console.log(error);
       }
     );
   }
 
   resetForm(form: NgForm) {
-     form.form.reset();
-     this.resetFormData();
-   }
-  
-  resetFormData()
-  {
+    form.form.reset();
+    this.resetFormData();
+  }
+
+  resetFormData() {
     this.service.resetFormData();
   }
 }

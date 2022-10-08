@@ -1,6 +1,7 @@
 using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
+using MagniCollegeManagementSystem.App_Start;
 
 namespace MagniCollegeManagementSystem
 {
@@ -11,7 +12,7 @@ namespace MagniCollegeManagementSystem
             GlobalConfiguration.Configure(WebApiConfig.Register);
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-
+            DatabaseConfig.Initialize();
             HttpConfiguration config = GlobalConfiguration.Configuration;
 
             config.Formatters.JsonFormatter

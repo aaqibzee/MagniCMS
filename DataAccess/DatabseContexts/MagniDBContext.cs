@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using DataAccess.Models;
 
 namespace DataAccess.DatabseContexts
@@ -11,5 +12,15 @@ namespace DataAccess.DatabseContexts
         public DbSet<Course> Courses { get; set; }
         public DbSet<Grade> Grades { get; set; }
         public DbSet<Result> Results { get; set; }
+
+        public static MagniDBContext Create()
+        {
+            return new MagniDBContext();
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+           
+        }
     }
 }

@@ -6,6 +6,22 @@ namespace DataAccess.Models
 {
     public class Student
     {
+        public Student(Student student)
+        {
+            Id = student.Id;
+            Name = student.Name;
+            RegisterationNumber = student.RegisterationNumber;
+            Birthday = student.Birthday;
+            Subjects = student.Subjects;
+            Results = student.Results;
+            Course = student.Course;
+        }
+
+        public Student()
+        {
+
+        }
+
         public int Id { get; set; }
         public string Name { get; set; }
         public string RegisterationNumber { get; set; }

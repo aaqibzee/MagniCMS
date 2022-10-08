@@ -17,19 +17,6 @@ namespace MagniCollegeManagementSystem.Mappers
             grade.StartingMarks = source.StartingMarks;
             grade.EndingMarks = source.EndingMarks;
 
-            if (!(source.Students is null))
-            {
-                var dbStudents = db.Students;
-                grade.Students.Clear();
-                foreach (var item in source.Students)
-                {
-                    grade.Students.Add(dbStudents.FirstOrDefault
-                    (
-                        x => x.Id.Equals(item)
-                    ));
-                }
-            }
-
             if (!(source.Course is null))
                 grade.Course = db.Courses.FirstOrDefault(x => x.Id.Equals(source.Course.Id));
 
@@ -48,12 +35,6 @@ namespace MagniCollegeManagementSystem.Mappers
                 StartingMarks = source.StartingMarks,
                 EndingMarks=source.EndingMarks,
             };
-
-            if (!(source.Students is null))
-                foreach (var item in source.Students)
-                {
-                    grade.Students.Add(item.Id);
-                }
 
             if (!(source.Course is null))
                 grade.Course = CourseMapper.Map(source.Course);

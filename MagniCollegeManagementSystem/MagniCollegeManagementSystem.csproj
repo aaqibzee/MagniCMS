@@ -308,6 +308,7 @@
     <Compile Include="APIController\SubjectsController.cs" />
     <Compile Include="APIController\ResultsController.cs" />
     <Compile Include="APIController\TeachersController.cs" />
+    <Compile Include="App_Start\DatabaseConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\ServerRouteContraint.cs" />

@@ -16,7 +16,6 @@ namespace DataAccess.Interfaces
         public List<Grade> GetAll()
         {
             return dbContext.Grades
-                .Include(x => x.Students)
                 .ToList();
         }
 
