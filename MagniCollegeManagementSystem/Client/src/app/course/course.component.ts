@@ -52,7 +52,7 @@ export class CourseComponent implements OnInit {
           x.EndingMarks >= average
       );
     if (grade == null) {
-      return 'No average grade found. Please assign all grades to the course';
+      return 'N/A';
     }
     return grade?.Title;
   }

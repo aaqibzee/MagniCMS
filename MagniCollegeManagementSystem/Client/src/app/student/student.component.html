@@ -3,7 +3,6 @@
   <h1 class="display-4 text-center"> Students</h1>
 </div>
 
-<div class="row">
   <div class="col-md-3">
     <app-student-form></app-student-form>
   </div>
@@ -12,7 +11,7 @@
       <thead class="thead-light">
         <tr>
           <th>
-            Id
+            Reg. Number
           </th>
           <th>
              Name
@@ -41,7 +40,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let std of service.studentsList">
-          <td>{{std.Id}}</td>
+          <td>{{std.RegisterationNumber}</td>
           <td>{{std.Name}}</td>
           <td>{{std.Birthday}}</td>
           <td>{{std.Course?.Name}}</td>
@@ -68,7 +67,4 @@
       </tbody>  
     </table>
   </div>
-
-
-</div>
 

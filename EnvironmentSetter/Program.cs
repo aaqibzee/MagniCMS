@@ -19,7 +19,7 @@ namespace EnvironmentSetter
             if (!IsInAdminMode())
             {
                 Console.WriteLine("Please run the program as administrator.");
-                Console.WriteLine("Right click on icon (Visual Studio or Command Line)and choose 'Run as administrator'");
+                Console.WriteLine("Right click on icon (Visual Studio or Command Line) and choose 'Run as administrator'");
                 Console.WriteLine("Press Any key to exit");
                 Console.Read();
                 return;
@@ -121,7 +121,7 @@ namespace EnvironmentSetter
         {
             Console.WriteLine("1: Windows features activation for the IIS\n" +
                               "2: Creating the DB\n" +
-                              "3: Creating applicaiton on IIS\n" +
+                              "3: Creating application on IIS\n" +
                               "4: Modifying host file in driver / etc / hosts\n" +
                               "5: Creating a user login on SQL server, to allo IIS app pool, login into DB using Windows Authentication\n" +
                               "6: Launching the configured website\n");
@@ -134,7 +134,7 @@ namespace EnvironmentSetter
         }
         static bool IsSQLServerInstalled()
         {
-            return Registry.CurrentUser.OpenSubKey(Constants.SQLServerRegKey) != null;
+            return Registry.LocalMachine.OpenSubKey(Constants.SQLServerRegKey) != null;
         }
         static void EnableWindowsFeatures()
         {

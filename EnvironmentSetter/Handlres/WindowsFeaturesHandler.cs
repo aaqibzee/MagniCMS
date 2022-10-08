@@ -20,7 +20,7 @@ namespace Handlres
         public static void EnableFeatures()
         {
             var installedFeatures = GetInstalledFeatures();
-            Console.WriteLine("Activating features not activated previously ");
+            Console.WriteLine("\n Activating features not activated previously ");
             foreach (var feature in features)
             {
                 if (!installedFeatures.Contains(feature))
@@ -47,7 +47,6 @@ namespace Handlres
 
                     foreach (var feature in features)
                     {
-                        Console.Write(".");
                         if (feature.State == DismPackageFeatureState.Installed)
                             installedFeatures.Add(feature.FeatureName);
                     }
@@ -63,7 +62,7 @@ namespace Handlres
 
         private static void EnableFeature(string featureName)
         {
-            Console.WriteLine("Activating feature "+featureName+"\n Progress:");
+            Console.WriteLine("Activating feature "+featureName+"\nProgress:");
             DismApi.Initialize(DismLogLevel.LogErrorsWarningsInfo);
             try
             {
@@ -72,7 +71,7 @@ namespace Handlres
                     DismApi.EnableFeature(session, featureName, false, true, null, progress =>
                     {
                         Console.SetCursorPosition(Console.CursorLeft, Console.CursorTop);
-                        Console.Write($"{progress.Total} / {progress.Current}");
+                        Console.Write($"{progress.Current}/{progress.Total}");
                     });
                     Console.WriteLine();
                 }

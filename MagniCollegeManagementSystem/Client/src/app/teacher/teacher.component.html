@@ -11,9 +11,6 @@
             <thead class="thead-light">
                 <tr>
                     <th>
-                        Id
-                    </th>
-                    <th>
                        Name
                     </th>
                     <th>
@@ -31,7 +28,6 @@
             </thead>
             <tbody>
                 <tr *ngFor="let teacher of service.teacherList">
-                    <td>{{teacher.Id}}</td>
                     <td>{{teacher.Name}}</td>
                     <td>{{teacher.Birthday}}</td>
                     <td>${{teacher.Salary}}</td>

@@ -22,13 +22,13 @@
     </div>
     <label class="label label-default">Starting Marks</label>
     <div class="form-group">
-        <input type="number" min="0" min="100" class="form-control form-control-lg" placeholder="Starting Marks" name="startingMarks" #StartingMarks="ngModel"
+        <input type="number" min="0" max="100" class="form-control form-control-lg" placeholder="Starting Marks" name="startingMarks" #StartingMarks="ngModel"
             [(ngModel)]="service.formData.StartingMarks" required />
     </div>
 
     <label class="label label-default">Ending Marks</label>
     <div class="form-group">
-        <input type="number" min="0" min="100" class="form-control form-control-lg" placeholder="EndingMarks" name="endingMarks" #EndingMarks="ngModel"
+        <input type="number" min="0" max="100" class="form-control form-control-lg" placeholder="EndingMarks" name="endingMarks" #EndingMarks="ngModel"
             [(ngModel)]="service.formData.EndingMarks" required />
     </div>
     

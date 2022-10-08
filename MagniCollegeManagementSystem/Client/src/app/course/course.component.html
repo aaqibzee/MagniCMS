@@ -12,10 +12,7 @@
             <thead class="thead-light">
                 <tr>
                     <th>
-                        Course Id
-                    </th>
-                    <th>
-                        Course Name
+                        Name
                     </th>
                     <th>
                         Code
@@ -38,7 +35,6 @@
             </thead>
             <tbody>
                 <tr *ngFor="let course of service.courseList">
-                    <td>{{course.Id}}</td>
                     <td>{{course.Name}}</td>
                     <td>{{course.Code}}</td>
                     <td>{{course.TotalCreditHours}}</td>

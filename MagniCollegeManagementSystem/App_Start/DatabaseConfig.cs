@@ -5,7 +5,6 @@ using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.IO;
 using System.Linq;
-using System.Web.Security;
 using DataAccess.DatabseContexts;
 using DataAccess.Models;
 
@@ -57,7 +56,6 @@ namespace MagniCollegeManagementSystem.App_Start
                         lines[count] = lines[count].Replace("True", "False");
                         break;
                     }
-
                     lines[count] = lines[count].Replace("False", "True");
                     break;
                 }
@@ -86,12 +84,12 @@ namespace MagniCollegeManagementSystem.App_Start
                     new Subject() {Id = 3, Name = "Introduction To Computers", Code = "ITC-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
                     new Subject() {Id = 4, Name = "Digital Logic Design", Code = "DLD-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
                     new Subject() {Id = 5, Name = "Introduction To Maths", Code = "ITM-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
-                    new Subject() {Id = 6, Name = "Calculas", Code = "CAL-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
+                    new Subject() {Id = 6, Name = "Calculus", Code = "CAL-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
                     new Subject() {Id = 7, Name = "Algebra", Code = "ALG-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
                     new Subject() {Id = 8, Name = "Trigonometry", Code = "TRG-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
                     new Subject() {Id = 9, Name = "Object Oriented Programming", Code = "OOP-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
                     new Subject() {Id = 10, Name = "Operating Systems", Code = "OS-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
-                    new Subject() {Id = 11, Name = "Theroy Of Autometa", Code = "TOA-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
+                    new Subject() {Id = 11, Name = "Theory Of Auto-Meta", Code = "TOA-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
                     new Subject() {Id = 12, Name = "Machine Learning", Code = "ML-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
                     new Subject() {Id = 13, Name = "Enterprise Application Development", Code = "EAD-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
                     new Subject() {Id = 14, Name = "Business Communication", Code = "BC-"+courses[0].Code, CreditHours = 3, Course =courses[0] },
@@ -141,11 +139,11 @@ namespace MagniCollegeManagementSystem.App_Start
                 var students = new Student[]
                 {
                     new Student {Id = 1, Name = "John Smith", RegisterationNumber = courses[0].Code+"1", Course = courses[0],
-                        Subjects =new List<Subject>() {subjects[0],subjects[1]},},
+                        Subjects =new List<Subject>() {subjects[0],subjects[1]}, Birthday = new DateTime(2004,1,12)},
                     new Student {Id = 2, Name = "Green J", RegisterationNumber = courses[0].Code+"2", Course = courses[0],
-                        Subjects =new List<Subject>() {subjects[0],subjects[1]}},
+                        Subjects =new List<Subject>() {subjects[0],subjects[1]}, Birthday = new DateTime(2006,9,25)},
                     new Student {Id = 3, Name = "Walton", RegisterationNumber = courses[0].Code+"3", Course = courses[0],
-                        Subjects =new List<Subject>() {subjects[3],subjects[4],subjects[6]}, Birthday = new DateTime(2003,3,5)},
+                        Subjects =new List<Subject>() {subjects[3],subjects[4],subjects[6]}, Birthday = new DateTime(2005,3,5)},
                     new Student {Id = 4, Name = "Nick", RegisterationNumber = courses[0].Code+"4", Course = courses[0],
                         Subjects =new List<Subject>() {subjects[3],subjects[0],subjects[8]}, Birthday = new DateTime(2005,9,21)},
                 };
