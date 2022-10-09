@@ -3,6 +3,7 @@ using MagniCollegeManagementSystem.DTOs;
 using MagniCollegeManagementSystem.Mappers;
 using DataAccess.Models;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -11,6 +12,8 @@ using MagniCollegeManagementSystem.Hubs;
 using Microsoft.AspNet.SignalR;
 using DataAccess.DatabseContexts;
 using DataAccess.Interfaces;
+using NLog;
+using System.Text.Json;
 
 namespace MagniCollegeManagementSystem.APIController
 {
@@ -19,6 +22,7 @@ namespace MagniCollegeManagementSystem.APIController
         private readonly MagniDBContext dbContext;
         private readonly IHubContext magniSyncHub;
         private readonly ICourseRepository repository;
+        private readonly Logger logger = LogManager.GetLogger(ConfigurationManager.AppSettings.Get("LoggerName"));
         public CoursesController(MagniDBContext db)
         {
             this.dbContext = db;
@@ -31,17 +35,19 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
+                logger.Info("GetCourses call started");
                 var result = await repository.GetAll();
-
                 var response = new List<CourseDTO>();
                 foreach (var item in result)
                 {
                     response.Add(CourseMapper.Map(item));
                 }
+                logger.Info("GetCourses call completed. Result:" + JsonSerializer.Serialize(response));
                 return  Ok(response);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                logger.Error("GetCourses call failed  Exception:" + ex.Message);
                 return InternalServerError();
             }
         }
@@ -52,20 +58,23 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
-                Course dbEntity = await repository.Get(id);
-                if (dbEntity == null)
+                logger.Info("GetCourse call started Id:" + id);
+                Course response = await repository.Get(id);
+
+                if (response == null)
                 {
+                    logger.Info("GetCourse call completed. Result:" + "No content");
                     return NotFound();
                 }
 
-                return Ok(CourseMapper.Map(dbEntity));
+                logger.Info("GetCourse call completed. Result:" + JsonSerializer.Serialize(response));
+                return Ok(CourseMapper.Map(response));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                logger.Error("GetCourse call failed. Exception:" + ex.Message);
                 return InternalServerError();
             }
-
-           
         }
 
         // PUT: api/Courses/5
@@ -74,20 +83,37 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
+                logger.Info("PutCourse call started Request:" + JsonSerializer.Serialize(course));
+                
+                if (!ModelState.IsValid)
+                {
+                    logger.Info("PutCourse call aborted due to invalid model state. Model state:" + JsonSerializer.Serialize(ModelState));
+                    return BadRequest(ModelState);
+                }
+
+
+                if (id != course.Id)
+                {
+                    logger.Info("PutCourse call aborted due to invalid request. Id:" + id);
+                    return BadRequest();
+                }
+
                 var dbEntity = await repository.Get(id);
                 if (dbEntity is null)
                 {
+                    logger.Info("PutCourse call aborted due to invalid request. No DB entity was found for the given Id:" + id);
                     return BadRequest();
                 }
 
                 CourseMapper.Map(dbEntity, course, dbContext);
-
                 await repository.Update(dbEntity);
                 magniSyncHub.Clients.All.coursesUpdated();
+                logger.Info("PutCourse call completed successfully");
                 return StatusCode(HttpStatusCode.NoContent);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                logger.Error("PutCourse call failed. Exception:" + ex.Message);
                 return InternalServerError();
             }
         }
@@ -98,8 +124,10 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
+                logger.Info("PostCourse call started. Request:" + JsonSerializer.Serialize(request));
                 if (!ModelState.IsValid)
                 {
+                    logger.Info("PostCourse call aborted due to invalid model state. Model state:" + JsonSerializer.Serialize(ModelState));
                     return BadRequest(ModelState);
                 }
 
@@ -107,11 +135,12 @@ namespace MagniCollegeManagementSystem.APIController
 
                 await repository.Add(dbEntity);
                 magniSyncHub.Clients.All.coursesUpdated();
-
+                logger.Info("PostCourse call completed successfully");
                 return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                logger.Error("PostCourse call failed. Exception:" + ex.Message);
                 return InternalServerError();
             }
         }
@@ -122,19 +151,22 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
+                logger.Info("DeleteCourse call started. Id:" + id);
                 Course dbEntity = dbContext.Courses.Find(id);
                 if (dbEntity == null)
                 {
+                    logger.Info("DeleteCourse call completed. Result:No content. No db entity was found to delete");
                     return NotFound();
                 }
 
                 await repository.Delete(dbEntity);
                 magniSyncHub.Clients.All.coursesUpdated();
-
+                logger.Info("DeleteCourse call completed successfully for entiry" + JsonSerializer.Serialize(dbEntity));
                 return Ok(dbEntity);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                logger.Error("DeleteCourse call failed. Exception:" + ex.Message);
                 return InternalServerError();
             }
         }

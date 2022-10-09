@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -11,6 +12,8 @@ using DataAccess.Models;
 using Microsoft.AspNet.SignalR;
 using DataAccess.DatabseContexts;
 using DataAccess.Interfaces;
+using NLog;
+using System.Text.Json;
 
 namespace MagniCollegeManagementSystem.APIController
 {
@@ -19,6 +22,7 @@ namespace MagniCollegeManagementSystem.APIController
         private readonly MagniDBContext dbContext;
         private readonly IHubContext magniSyncHub;
         private readonly ISubjectRepository repository;
+        private readonly Logger logger = LogManager.GetLogger(ConfigurationManager.AppSettings.Get("LoggerName"));
         public SubjectsController(MagniDBContext db)
         {
             this.dbContext = db;
@@ -31,7 +35,7 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
-
+                logger.Info("GetSubjects call started");
                 var result = await repository.GetAll();
                 var response = new List<SubjectDTO>();
 
@@ -39,11 +43,12 @@ namespace MagniCollegeManagementSystem.APIController
                 {
                     response.Add(SubjectMapper.Map(item));
                 }
-
+                logger.Info("GetSubjects call completed. Result:" + JsonSerializer.Serialize(response));
                 return Ok(response);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                logger.Error("GetSubjects call failed  Exception:" + ex.Message);
                 return InternalServerError();
             }
         }
@@ -54,16 +59,19 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
-                Subject dbEntity = await repository.Get(id);
-                if (dbEntity == null)
+                logger.Info("GetSubject call started Id:" + id);
+                Subject response = await repository.Get(id);
+                if (response == null)
                 {
+                    logger.Info("GetSubject call completed. Result:" + "No content");
                     return NotFound();
                 }
-
-                return Ok(SubjectMapper.Map(dbEntity));
+                logger.Info("GetSubject call completed. Result:" + JsonSerializer.Serialize(response));
+                return Ok(SubjectMapper.Map(response));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                logger.Error("GetSubject call failed. Exception:" + ex.Message);
                 return InternalServerError();
             }
         }
@@ -74,29 +82,35 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
+                logger.Info("PutSubject call started Request:" + JsonSerializer.Serialize(subject));
                 if (!ModelState.IsValid)
                 {
+                    logger.Info("PutSubject call aborted due to invalid model state. Model state:" + JsonSerializer.Serialize(ModelState));
                     return BadRequest(ModelState);
                 }
 
                 if (id != subject.Id)
                 {
+                    logger.Info("PutSubject call aborted due to invalid request. Id:" + id);
                     return BadRequest();
                 }
 
                 var dbEntity = await repository.Get(id);
                 if (dbEntity is null)
                 {
+                    logger.Info("PutSubject call aborted due to invalid request. No DB entity was found for the given Id:" + id);
                     return BadRequest();
                 }
 
                 SubjectMapper.Map(dbEntity, subject, dbContext);
                 await repository.Update(dbEntity);
                 magniSyncHub.Clients.All.subjectsUpdated();
+                logger.Info("PutSubject call completed successfully");
                 return StatusCode(HttpStatusCode.NoContent);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                logger.Error("PutSubject call failed. Exception:" + ex.Message);
                 return InternalServerError();
             }
         }
@@ -107,18 +121,22 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
+                logger.Info("PostSubject call started. Request:" + JsonSerializer.Serialize(request));
                 if (!ModelState.IsValid)
                 {
+                    logger.Info("PostSubject call aborted due to invalid model state. Model state:" + JsonSerializer.Serialize(ModelState));
                     return BadRequest(ModelState);
                 }
 
                 var dbEntity = SubjectMapper.Map(new Subject(), request, dbContext);
                 await repository.Add(dbEntity);
                 magniSyncHub.Clients.All.subjectsUpdated();
+                logger.Info("PostSubject call completed successfully");
                 return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                logger.Error("PostSubject call failed. Exception:" + ex.Message);
                 return InternalServerError();
             }
         }
@@ -129,17 +147,21 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
+                logger.Info("DeleteSubject call started. Id:" + id);
                 Subject dbEntity = dbContext.Subjects.Find(id);
                 if (dbEntity == null)
                 {
+                    logger.Info("DeleteSubject call completed. Result:No content. No db entity was found to delete");
                     return NotFound();
                 }
                 await repository.Delete(dbEntity);
                 magniSyncHub.Clients.All.subjectsUpdated();
+                logger.Info("DeleteSubject call completed successfully for entiry" + JsonSerializer.Serialize(dbEntity));
                 return Ok(SubjectMapper.Map(dbEntity));
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                logger.Error("DeleteSubject call failed. Exception:" + ex.Message);
                 return InternalServerError();
             }
         }
