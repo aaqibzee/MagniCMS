@@ -12,10 +12,10 @@
             <thead class="thead-light">
                 <tr>
                     <th>
-                        Grade Id
+                        Id
                     </th>
                     <th>
-                        Grade Title
+                        Title
                     </th>
                     <th>
                         Starting Marks  
@@ -43,7 +43,8 @@
                      <!-- <td>{{grade.Subject?.Name}}</td> -->
                     
                     <td (click)="PopulateForm(grade)"> <button type="button" class="btn btn-info">Update</button>
-                    <td (click)="DeleteGrade(grade)"> <button type="button" class="btn btn-danger">Delete</button>
+                    <td (click)="DeleteGrade(grade)"> <button type="button" class="btn btn-danger" [disabled]="!IsDeleteable(grade)"
+                            data-toggle="tooltip" title={{this.GetTooltipForDeleteButton(grade)}}>Delete</button>
                     </td>
                 </tr>
             </tbody>

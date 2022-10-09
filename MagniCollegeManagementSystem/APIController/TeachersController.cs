@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using MagniCollegeManagementSystem.DTOs;
@@ -28,105 +27,121 @@ namespace MagniCollegeManagementSystem.APIController
         }
 
         // GET: api/Teachers
-        public List<TeacherDTO> GetTeachers()
+        public async Task<IHttpActionResult>GetTeachers()
         {
-            var result = repository.GetAll();
-            var response = new List<TeacherDTO>();
-
-            foreach (var item in result)
+            try
             {
-                response.Add(TeacherMapper.Map(item));
-            }
+                var result = await repository.GetAll();
+                var response = new List<TeacherDTO>();
 
-            return response;
+                foreach (var item in result)
+                {
+                    response.Add(TeacherMapper.Map(item));
+                }
+
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
         }
 
         // GET: api/Teachers/5
         [ResponseType(typeof(TeacherDTO))]
-        public IHttpActionResult GetTeacher(int id)
+        public async Task<IHttpActionResult> GetTeacher(int id)
         {
-            Teacher dbEntity = repository.Get(id);
-            if (dbEntity == null)
+            try
             {
-                return NotFound();
-            }
+                Teacher dbEntity = await repository.Get(id);
+                if (dbEntity == null)
+                {
+                    return NotFound();
+                }
 
-            return Ok(dbEntity);
+                return Ok(dbEntity);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
         }
 
         // PUT: api/Teachers/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutTeacher(int id, TeacherDTO teacher)
+        public async Task<IHttpActionResult> PutTeacher(int id, TeacherDTO teacher)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != teacher.Id)
-            {
-                return BadRequest();
-            }
-
-            var dbEntity = repository.Get(id);
-            if (dbEntity is null)
-            {
-                return BadRequest();
-            }
-
-            TeacherMapper.Map(dbEntity, teacher, dbContext);
-
             try
             {
-                repository.Update(dbEntity);
-                magniSyncHub.Clients.All.teachersUpdated();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (repository.Get(dbEntity.Id) is null)
+                if (!ModelState.IsValid)
                 {
-                    return NotFound();
+                    return BadRequest(ModelState);
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return StatusCode(HttpStatusCode.NoContent);
+                if (id != teacher.Id)
+                {
+                    return BadRequest();
+                }
+
+                var dbEntity = await repository.Get(id);
+                if (dbEntity is null)
+                {
+                    return BadRequest();
+                }
+
+                TeacherMapper.Map(dbEntity, teacher, dbContext);
+                await repository.Update(dbEntity);
+                magniSyncHub.Clients.All.teachersUpdated();
+                return StatusCode(HttpStatusCode.NoContent);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
         }
 
         // POST: api/Teachers
         [ResponseType(typeof(Teacher))]
-        public IHttpActionResult PostTeacher(TeacherDTO request)
+        public async Task<IHttpActionResult> PostTeacher(TeacherDTO request)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var dbEntity = TeacherMapper.Map(new Teacher(), request, dbContext);
+                await repository.Add(dbEntity);
+                magniSyncHub.Clients.All.teachersUpdated();
+                return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
             }
-
-            var dbEntity = TeacherMapper.Map(new Teacher(), request, dbContext);
-
-            repository.Add(dbEntity);
-            magniSyncHub.Clients.All.teachersUpdated();
-
-            return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
         }
 
         // DELETE: api/Teachers/5
         [ResponseType(typeof(Teacher))]
-        public IHttpActionResult DeleteTeacher(int id)
+        public async Task<IHttpActionResult> DeleteTeacher(int id)
         {
-            Teacher dbEntity = dbContext.Teachers.Find(id);
-            if (dbEntity == null)
+            try
             {
-                return NotFound();
+                Teacher dbEntity = dbContext.Teachers.Find(id);
+                if (dbEntity == null)
+                {
+                    return NotFound();
+                }
+
+                await repository.Delete(dbEntity);
+                magniSyncHub.Clients.All.teachersUpdated();
+                return Ok(dbEntity);
             }
-
-            repository.Delete(dbEntity);
-            magniSyncHub.Clients.All.teachersUpdated();
-
-            return Ok(dbEntity);
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
         }
 
         protected override void Dispose(bool disposing)

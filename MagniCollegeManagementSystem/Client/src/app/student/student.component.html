@@ -3,15 +3,16 @@
   <h1 class="display-4 text-center"> Students</h1>
 </div>
 
-  <div class="col-md-3">
+<div class="row">
+  <div class="col-lg-3">
     <app-student-form></app-student-form>
   </div>
-  <div class="col-md-9">
+  <div class="col-lg-9">
     <table class="table">
       <thead class="thead-light">
         <tr>
           <th>
-            Reg. Number
+            Registeration Number
           </th>
           <th>
              Name
@@ -40,7 +41,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let std of service.studentsList">
-          <td>{{std.RegisterationNumber}</td>
+          <td>{{std.RegisterationNumber}}</td>
           <td>{{std.Name}}</td>
           <td>{{std.Birthday}}</td>
           <td>{{std.Course?.Name}}</td>
@@ -61,10 +62,11 @@
           <td>{{std.Course?.TotalCreditHours}}</td>
           <td>{{std.Course?.TotalCreditHours-GetAvailedCreditHours(std)}}</td>
           <td (click)="UpdateStudent(std)"> <button type="button" class="btn btn-info">Update</button>
-          <td (click)="DeleteStudent(std)"> <button type="button" class="btn btn-danger">Delete</button>
+          <td (click)="DeleteStudent(std)"> <button type="button" class="btn btn-danger" 
+            [disabled]="!IsDeleteable(std)"  data-toggle="tooltip" title={{this.GetTooltipForDeleteButton(std)}}>Delete</button>
           </td>
         </tr>
       </tbody>  
     </table>
   </div>
-
+</div>

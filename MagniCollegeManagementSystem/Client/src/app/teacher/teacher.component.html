@@ -11,6 +11,9 @@
             <thead class="thead-light">
                 <tr>
                     <th>
+                        Id
+                    </th>
+                    <th>
                        Name
                     </th>
                     <th>
@@ -28,6 +31,7 @@
             </thead>
             <tbody>
                 <tr *ngFor="let teacher of service.teacherList">
+                    <td>{{teacher.Id}}</td>
                     <td>{{teacher.Name}}</td>
                     <td>{{teacher.Birthday}}</td>
                     <td>${{teacher.Salary}}</td>
@@ -39,7 +43,9 @@
                         </div>
                     </td>
                     <td (click)="PopulateForm(teacher)"> <button type="button" class="btn btn-info">Update</button>
-                    <td (click)="DeleteTeacher(teacher)"> <button type="button" class="btn btn-danger">Delete</button>
+                    <td (click)="DeleteTeacher(teacher)"> <button type="button" class="btn btn-danger"
+                        [disabled]="!IsDeleteable(teacher)"  data-toggle="tooltip" 
+                        title={{this.GetTooltipForDeleteButton(teacher)}}>Delete</button>
                     </td>
                 </tr>
             </tbody>

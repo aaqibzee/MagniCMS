@@ -10,23 +10,26 @@ import { ResultService } from './result.service';
 })
 export class CourseService {
 
-  constructor(private http: HttpClient) { 
-    
+  constructor(private http: HttpClient) {
+    this.refreshList();
   }
 
   formData: Course = new Course();
   courseList: Course[];
 
+  resetFormData() {
+    this.formData = new Course();
+  }
   postCourse() {
     return this.http.post(Constants.coursesBase, this.formData);
   }
-        
+
   putCourse() {
-    return this.http.put(Constants.coursesBase+'/' + this.formData.Id, this.formData);
+    return this.http.put(Constants.coursesBase + '/' + this.formData.Id, this.formData);
   }
 
-  deleteCourse(id:number) {
-    return this.http.delete(Constants.coursesBase+'/' + id);
+  deleteCourse(id: number) {
+    return this.http.delete(Constants.coursesBase + '/' + id);
   }
 
   refreshList() {
@@ -35,9 +38,7 @@ export class CourseService {
       .then(res => this.courseList = res as Course[]);
   }
 
-  getList()
-  {
-    this.refreshList();
+  getList() {
     return this.courseList;
   }
 }

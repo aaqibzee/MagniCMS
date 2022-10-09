@@ -8,8 +8,7 @@ import { TeacherService } from "../../shared/teacher.service";
 @Component({
   selector: 'app-teacher-form',
   templateUrl: './teacher-form.component.html',
-  styles: [
-  ]
+  styleUrls: ['./teacher-form.component.css'],
 })
 export class TeacherFormComponent implements OnInit {
   courses: Course[] = [];

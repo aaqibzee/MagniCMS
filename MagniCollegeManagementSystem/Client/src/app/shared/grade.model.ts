@@ -1,6 +1,5 @@
 
 import { Course } from "./course.model";
-import { Subject } from "./subject.model";
 
 export class Grade {
     Id: number = 0;

@@ -15,6 +15,7 @@ export class StudentFormComponent implements OnInit {
   selectedCourse: Course;
   isFormValid: boolean = true;
   subjectsSelectionClass: string = 'text-success';
+  courseSelectionClass: string = 'text-success';
 
   constructor(public service: StudentService) {
     this.subjectsDropdownSettings = {
@@ -23,7 +24,7 @@ export class StudentFormComponent implements OnInit {
       textField: 'Name',
       selectAllText: 'Select All',
       unSelectAllText: 'UnSelect All',
-      noDataAvailablePlaceholderText: 'Select A Course First',
+      noDataAvailablePlaceholderText: 'Select a course first',
       limitSelection: 6,
       itemsShowLimit: 6,
       allowSearchFilter: true
@@ -36,12 +37,19 @@ export class StudentFormComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    this.service.formData.Subjects = this.service.selectedSubjectsByStudent.map(a => a.Id);
-    if (this.service.formData.Id == 0) {
-      this.inserRecord(form);
+    if (this.isCourseSelectionValid()) {
+      this.courseSelectionClass = 'text-danger'
+      this.service.CourseSelcetValidationMesage = ' :Required';
     }
-    else {
-      this.updateRecord(form);
+
+    else if (this.isFormValid) {
+      this.service.formData.Subjects = this.service.selectedSubjectsByStudent.map(a => a.Id);
+      if (this.service.formData.Id == 0) {
+        this.inserRecord(form);
+      }
+      else {
+        this.updateRecord(form);
+      }
     }
   }
 
@@ -98,25 +106,21 @@ export class StudentFormComponent implements OnInit {
     if (availed < allowed) {
       this.subjectsSelectionClass = 'text-info'
       this.isFormValid = true;
-      this.service.MultiSelcetValidationMesage = difference + ' Credit Hourse Remained';
+      this.service.SubjectsSelcetValidationMesage = ': ' + difference + ' Credit hour(s) left';
     }
     else if (availed > allowed) {
       this.subjectsSelectionClass = 'text-danger'
       this.isFormValid = false;
-      this.service.MultiSelcetValidationMesage = (availed - allowed) + ' Extra Credit Hour(s) Availed, Remove Extra Subject(s)';
+      this.service.SubjectsSelcetValidationMesage = + (availed - allowed) + ' Extra credit hour(s), remove subject(s)';
     }
     else if (availed == allowed) {
       this.subjectsSelectionClass = 'text-info'
-      this.service.MultiSelcetValidationMesage = 'All Credit Hours Availed'
+      this.service.SubjectsSelcetValidationMesage = ' : All credit hours availed'
       this.isFormValid = true;
     }
   }
 
-  isFormInvalid(form: NgForm) {
-    return (form.invalid
-      || this.service.selectedCourseByStudent == this.service.courseDropDownDefaultValue
-      || this.service.selectedSubjectsByStudent?.length == 0
-      || this.service.selectedSubjectsByStudent == null
-      || (!this.isFormValid));
+  isCourseSelectionValid() {
+    return this.service.selectedCourseByStudent == this.service.courseDropDownDefaultValue
   }
 }

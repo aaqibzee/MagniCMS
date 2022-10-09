@@ -24,17 +24,30 @@ export class GradeFormComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    if (this.service.formData.Id == 0) {
-      this.inserRecord(form);
-    }
-    else {
-      this.updateRecord(form);
+    if (this.IsFormInvalid()) {
+      this.SetValidationMessages();
+      return;
     }
 
+    if (this.service.formData.Id == 0) {
+      this.inserRecord(form);
+      return;
+    }
+
+    this.updateRecord(form);
   }
+  IsFormInvalid() {
+    return this.service.formData.Course == null;
+  }
+
+  SetValidationMessages() {
+    this.service.CourseSelcetValidationMesage = ": Required"
+  }
+
 
   onCourseSelect(course: Course) {
     this.service.formData.Course = course;
+    this.service.CourseSelcetValidationMesage = "";
   }
 
   inserRecord(form: NgForm) {
@@ -63,6 +76,6 @@ export class GradeFormComponent implements OnInit {
   }
 
   resetFormData() {
-    this.service.formData = new Grade();
+    this.service.resetFormData();
   }
 }

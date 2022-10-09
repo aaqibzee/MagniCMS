@@ -138,13 +138,13 @@ namespace MagniCollegeManagementSystem.App_Start
 
                 var students = new Student[]
                 {
-                    new Student {Id = 1, Name = "John Smith", RegisterationNumber = courses[0].Code+"1", Course = courses[0],
+                    new Student {Id = 1, Name = "John Smith", RegisterationNumber = courses[0].Code+"-1", Course = courses[0],
                         Subjects =new List<Subject>() {subjects[0],subjects[1]}, Birthday = new DateTime(2004,1,12)},
-                    new Student {Id = 2, Name = "Green J", RegisterationNumber = courses[0].Code+"2", Course = courses[0],
+                    new Student {Id = 2, Name = "Green J", RegisterationNumber = courses[0].Code+"-2", Course = courses[0],
                         Subjects =new List<Subject>() {subjects[0],subjects[1]}, Birthday = new DateTime(2006,9,25)},
-                    new Student {Id = 3, Name = "Walton", RegisterationNumber = courses[0].Code+"3", Course = courses[0],
+                    new Student {Id = 3, Name = "Walton", RegisterationNumber = courses[0].Code+"-3", Course = courses[0],
                         Subjects =new List<Subject>() {subjects[3],subjects[4],subjects[6]}, Birthday = new DateTime(2005,3,5)},
-                    new Student {Id = 4, Name = "Nick", RegisterationNumber = courses[0].Code+"4", Course = courses[0],
+                    new Student {Id = 4, Name = "Nick", RegisterationNumber = courses[0].Code+"-4", Course = courses[0],
                         Subjects =new List<Subject>() {subjects[3],subjects[0],subjects[8]}, Birthday = new DateTime(2005,9,21)},
                 };
 

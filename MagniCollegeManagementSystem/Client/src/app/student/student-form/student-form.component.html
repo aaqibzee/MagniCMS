@@ -1,28 +1,26 @@
 <div class="row">
-<form novalidate #form="ngForm" (submit)="onSubmit(form)">
+<form ngNativeValidate #form="ngForm" (submit)="onSubmit(form)">
 <div class="col col-lg-12">
   <input type="hidden" name="id" [value]="service.formData.Id"/>
 
   <div class="form-group">
-    <label class="label label-default">Registeration Number</label>
-    <input class="form-control form-control-lg" placeholder="Registeration Number" name="registeration" #registeration="ngModel"
-      [(ngModel)]="service.formData.RegisterationNumber" required />
-  </div>
-
-  <div class="form-group">
-    <label class="label label-default">Name</label>
+    <label class="label label-default ">Name</label>
+    <label class="lbl-required">*</label>
     <input class="form-control form-control-lg" placeholder="Name" name="name" #Name="ngModel"
       [(ngModel)]="service.formData.Name" required />
   </div>
   
   <div class="form-group">
     <label class="label label-default">Birthday</label>
+    <label class="lbl-required">*</label>
     <input type="date" class="form-control form-control-lg" placeholder="Pick Date Of Birth" name="dob" #dob="ngModel"
-      [(ngModel)]="service.formData.Birthday" max="2010-01-01" />
+      [(ngModel)]="service.formData.Birthday" max="2010-12-31" required/>
   </div>
 
   <div class="form-group">
     <label class="label label-default">Course</label>
+    <label class="lbl-required">*</label>
+    <label class="label label-default {{courseSelectionClass}}">{{service.CourseSelcetValidationMesage}}</label>
     <div class="dropdown">
       <button class="btn btn-secondary dropdown-toggle drp-dwn" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
         aria-expanded="true">
@@ -39,18 +37,22 @@
 
   <div class="form-group">
     <label class="label label-default">Subjects</label>
-    <br />
-    <label class="label label-default {{subjectsSelectionClass}}">{{service.MultiSelcetValidationMesage}}</label>
+    <label class="label label-default {{subjectsSelectionClass}}">{{service.SubjectsSelcetValidationMesage}}</label>
     <ng-multiselect-dropdown [placeholder]="'Select Subject(s)'" name="subjectSelect"
       [settings]="this.subjectsDropdownSettings" [data]="this.service.subjectsInselcetedCourse"
       [(ngModel)]="this.service.selectedSubjectsByStudent" (onSelect)="onSubjectSelect($event)"
       (onSelectAll)="onSelectAllSubjects($event)" (onDeSelect)="onSubjectDeselect($event)">
     </ng-multiselect-dropdown>
   </div>
-  </div>
-  <div class="col col-md-12">
-  <div class="form-group">
-    <button class="btn btn-info btn-lg btn-block" type="submit" [disabled]="isFormInvalid(form)"> {{ service.formData.Id != 0 ? 'Update' : 'Add' }} </button>
+
+
+  <div class="row">
+    <div class="form-group col-md-6">
+      <button class="btn btn-info btn-lg btn-block" type="button" (click)="resetFormData()">Reset</button>
+    </div>
+    <div class="form-group col-md-6 ">
+      <button class="btn btn-info btn-lg btn-block" type="submit"> {{ service.formData.Id != 0 ? 'Update' : 'Add' }} </button>
+    </div>
   </div>
   </div>
 </form>

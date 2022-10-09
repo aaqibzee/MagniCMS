@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using DataAccess.Interfaces;
@@ -26,106 +28,124 @@ namespace MagniCollegeManagementSystem.APIController
         }
 
         // GET: api/Students
-        public List<StudentDTO> GetStudents()
+        public async Task<IHttpActionResult> GetStudents()
         {
-            var result = repository.GetAll();
-            var response = new List<StudentDTO>();
-
-            foreach (var item in result)
+            try
             {
-                response.Add(StudentMapper.Map(item));
-            }
 
-            return response;
+                var result = await repository.GetAll();
+                var response = new List<StudentDTO>();
+
+                foreach (var item in result)
+                {
+                    response.Add(StudentMapper.Map(item));
+                }
+
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
         }
 
         // GET: api/Students/5
         [ResponseType(typeof(StudentDTO))]
-        public IHttpActionResult GetStudent(int id)
+        public async Task<IHttpActionResult> GetStudent(int id)
         {
-            Student dbEntity = repository.Get(id);
-            if (dbEntity == null)
+            try
             {
-                return NotFound();
+                Student dbEntity = await repository.Get(id);
+                if (dbEntity == null)
+                {
+                    return NotFound();
+                }
+                return Ok(StudentMapper.Map(dbEntity));
             }
-
-            return Ok(StudentMapper.Map(dbEntity));
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
         }
 
         // PUT: api/Students/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutStudent(int id, StudentDTO student)
+        public async Task<IHttpActionResult> PutStudent(int id, StudentDTO student)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != student.Id)
-            {
-                return BadRequest();
-            }
-
-            var dbEntity = repository.Get(id);
-            if (dbEntity is null)
-            {
-                return BadRequest();
-            }
-
-            StudentMapper.Map(dbEntity, student, dbContext);
-
             try
             {
-                repository.Update(dbEntity);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                if (id != student.Id)
+                {
+                    return BadRequest();
+                }
+
+                var dbEntity = await repository.Get(id);
+                if (dbEntity is null)
+                {
+                    return BadRequest();
+                }
+
+                StudentMapper.Map(dbEntity, student, dbContext);
+                await repository.Update(dbEntity);
                 magniSyncHub.Clients.All.studentsUpdated();
-
+                return StatusCode(HttpStatusCode.NoContent);
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception e)
             {
-                if (repository.Get(id) is null)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return InternalServerError();
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/Students
         [ResponseType(typeof(StudentDTO))]
-        public IHttpActionResult PostStudent(StudentDTO request)
+        public async Task<IHttpActionResult> PostStudent(StudentDTO request)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var dbEntity = StudentMapper.Map(new Student(), request, dbContext);
+                await repository.Add(dbEntity);
+                magniSyncHub.Clients.All.studentsUpdated();
+                return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError();
             }
 
-            var dbEntity = StudentMapper.Map(new Student(), request, dbContext);
-
-            repository.Add(dbEntity);
-            magniSyncHub.Clients.All.studentsUpdated();
-
-            return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
         }
 
         // DELETE: api/Students/5
         [ResponseType(typeof(StudentDTO))]
-        public IHttpActionResult DeleteStudent(int id)
+        public async Task<IHttpActionResult> DeleteStudent(int id)
         {
-            Student dbEntity = dbContext.Students.Find(id);
-            if (dbEntity == null)
+            try
             {
-                return NotFound();
+                Student dbEntity = dbContext.Students.Find(id);
+                if (dbEntity == null)
+                {
+                    return NotFound();
+                }
+
+                await repository.Delete(dbEntity);
+                magniSyncHub.Clients.All.studentsUpdated();
+                return Ok(StudentMapper.Map(dbEntity));
+            }
+            catch (Exception e)
+            {
+                return InternalServerError();
             }
 
-            repository.Delete(dbEntity);
-            magniSyncHub.Clients.All.studentsUpdated();
-
-            return Ok(StudentMapper.Map(dbEntity));
         }
 
         protected override void Dispose(bool disposing)

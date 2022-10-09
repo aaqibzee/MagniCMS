@@ -12,6 +12,9 @@
             <thead class="thead-light">
                 <tr>
                     <th>
+                        Id
+                    </th>
+                    <th>
                         Name
                     </th>
                     <th>
@@ -35,6 +38,7 @@
             </thead>
             <tbody>
                 <tr *ngFor="let course of service.courseList">
+                    <td>{{course.Id}}</td>
                     <td>{{course.Name}}</td>
                     <td>{{course.Code}}</td>
                     <td>{{course.TotalCreditHours}}</td>
@@ -42,8 +46,8 @@
                     <td>{{course.Teachers?.length}}</td>
                     <td>{{GetAverageGrade(course)}}</td>
                     <td (click)="PopulateForm(course)"> <button type="button" class="btn btn-info">Update</button>
-                    <td (click)="DeleteCourse(course)"> <button type="button" class="btn btn-danger" 
-                        [disabled]="course.Students?.length>0 || course.Subjects?.length>0 ">Delete</button>
+                    <td (click)="DeleteCourse(course)"> <button type="button" class="btn btn-danger" [disabled]="!IsDeleteable(course)"
+                            data-toggle="tooltip" title={{this.GetTooltipForDeleteButton(course)}}>Delete</button>
                     </td>
                 </tr>
             </tbody>

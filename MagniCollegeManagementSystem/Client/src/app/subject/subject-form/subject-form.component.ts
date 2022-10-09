@@ -20,13 +20,25 @@ export class SubjectFormComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    if (this.service.formData.Id == 0) {
-      this.inserRecord(form);
+    if (this.IsFormInvalid()) {
+      this.SetValidationMessages();
     }
     else {
-      this.updateRecord(form);
+      if (this.service.formData.Id == 0) {
+        this.inserRecord(form);
+      }
+      else {
+        this.updateRecord(form);
+      }
     }
+  }
 
+  IsFormInvalid() {
+    return this.service.formData.Course == null;
+  }
+
+  SetValidationMessages() {
+    this.service.CourseSelcetValidationMesage = ": Required"
   }
 
   inserRecord(form: NgForm) {

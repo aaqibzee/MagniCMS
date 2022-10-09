@@ -13,9 +13,10 @@ import { Constants } from './Constants';
 export class StudentService {
   readonly courseDropDownDefaultValue = 'Select Course';
   readonly genderDropDownDefaultValue = 'Select Gender';
-  readonly genderOptions: string []= ['Male','Female','Other'];
-  subjectsInselcetedCourse: Subject[];  
-  MultiSelcetValidationMesage: string = '';
+  readonly genderOptions: string[] = ['Male', 'Female', 'Other'];
+  subjectsInselcetedCourse: Subject[];
+  SubjectsSelcetValidationMesage: string = '';
+  CourseSelcetValidationMesage: string = '';
   selectedSubjectsByStudent: Subject[];
   selectedCourseByStudent: string = this.courseDropDownDefaultValue;
   studentsList: Student[];
@@ -25,20 +26,16 @@ export class StudentService {
     private http: HttpClient,
     public courseService: CourseService,
     public subjectService: SubjectService
-  )
-  {
-    courseService.refreshList();
-    subjectService.refreshList();
-   
-   }
+  ) {
+    this.refreshList();
+  }
 
-  resetFormData()
-  {
+  resetFormData() {
     this.formData = new Student();
     this.selectedCourseByStudent = this.courseDropDownDefaultValue;
     this.selectedSubjectsByStudent = null;
     this.subjectsInselcetedCourse = null;
-    this.MultiSelcetValidationMesage = ''; 
+    this.SubjectsSelcetValidationMesage = '';
   }
 
   onSelectCourse(course: Course) {
@@ -47,25 +44,23 @@ export class StudentService {
       this.formData.Course = course;
       this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => x.Course?.Id == course?.Id);
       this.selectedSubjectsByStudent = [];
-      this.MultiSelcetValidationMesage = course.TotalCreditHours+ ' Credit Hours Left';
+      this.SubjectsSelcetValidationMesage = course.TotalCreditHours + ' Credit Hours Left';
+      this.CourseSelcetValidationMesage = '';
     }
   }
-  
+
   populateForm(student: Student) {
     this.selectedCourseByStudent = student.Course.Name;
     this.formData = Object.assign({}, student);
-    this.subjectsInselcetedCourse = this.subjectService.getList().filter(x=>x.Course?.Id==student.Course?.Id);
+    this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => x.Course?.Id == student.Course?.Id);
     this.selectedSubjectsByStudent = this.getSelctedSubjectListWithAllDetails();
   }
 
-  getSelctedSubjectListWithAllDetails()
-  {
-    let list: Subject[]=[];
+  getSelctedSubjectListWithAllDetails() {
+    let list: Subject[] = [];
     let form = this.formData;
-    this.subjectsInselcetedCourse.filter(function (x)
-    {
-      if (form?.Subjects?.includes(x.Id))
-      {
+    this.subjectsInselcetedCourse.filter(function (x) {
+      if (form?.Subjects?.includes(x.Id)) {
         list.push(x);
       }
     });
@@ -80,7 +75,7 @@ export class StudentService {
     return this.http.put(Constants.studentsBase + '/' + this.formData.Id, this.formData);
   }
 
-  deleteStudent(id:number) {
+  deleteStudent(id: number) {
     return this.http.delete(Constants.studentsBase + '/' + id);
   }
 
@@ -88,5 +83,9 @@ export class StudentService {
     this.http.get(Constants.studentsBase)
       .toPromise()
       .then(res => this.studentsList = res as Student[]);
+  }
+
+  getList() {
+    return this.studentsList;
   }
 }

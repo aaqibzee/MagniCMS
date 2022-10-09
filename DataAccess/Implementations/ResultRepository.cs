@@ -3,6 +3,7 @@ using System.Linq;
 using DataAccess.Models;
 using DataAccess.DatabseContexts;
 using System.Data.Entity;
+using System.Threading.Tasks;
 
 namespace DataAccess.Interfaces
 {
@@ -13,34 +14,34 @@ namespace DataAccess.Interfaces
         {
             dbContext = db;
         }
-        public List<Result> GetAll()
+        public  Task<List<Result>> GetAll()
         {
-            return dbContext.Results.ToList();
+            return dbContext.Results.ToListAsync();
         }
 
-        public Result Get(int id)
+        public Task<Result> Get(int id)
         {
-            return dbContext.Results.Find(id);
+            return dbContext.Results.FindAsync(id);
         }
 
-        public void Delete(Result result)
+        public Task<int>Delete(Result result)
         {
             dbContext.Results.Remove(result);
-            dbContext.SaveChanges();
+            return dbContext.SaveChangesAsync();
         }
 
-        public void Add(Result result)
+        public Task<int> Add(Result result)
         {
             dbContext.Entry(result).State = EntityState.Modified;
             dbContext.Results.Add(result);
-            dbContext.SaveChanges();
+            return dbContext.SaveChangesAsync();
         }
 
-        public void Update(Result result)
+        public Task<int> Update(Result result)
         {
             dbContext.Results.Attach(result);
             dbContext.Entry(result).State = EntityState.Modified;
-            dbContext.SaveChanges();
+            return dbContext.SaveChangesAsync();
         }
     }
 }

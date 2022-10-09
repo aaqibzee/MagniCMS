@@ -1,11 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Constants } from './Constants';
-import { CourseService } from './course.service';
-import { GradeService } from './grade.service';
 import { Result } from './result.model';
-import { StudentService } from './student.service';
-import { SubjectService } from './subject.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +9,30 @@ import { SubjectService } from './subject.service';
 export class ResultService {
 
   constructor(
-    private http: HttpClient) { 
-    }
+    private http: HttpClient) {
+    this.refreshList();
+  }
 
   formData: Result = new Result();
   resultsList: Result[];
+  SubjectSelcetValidationMesage: string = '';
+  CourseSelcetValidationMesage: string = '';
+  StudentSelcetValidationMesage: string = '';
 
-   populateForm(student: Result) {
+  IsFormInvalid() {
+    return this.formData.Course == null
+      || this.formData.Student == null
+      || this.formData.Subject == null
+      || this.formData.Grade == null;
+  }
+
+  SetValidationMessages() {
+    this.SubjectSelcetValidationMesage = this.formData.Subject == null ? ": Required" : '';
+    this.CourseSelcetValidationMesage = this.formData.Course == null ? ": Required" : '';
+    this.StudentSelcetValidationMesage = this.formData.Student == null ? ": Required" : '';
+  }
+
+  populateForm(student: Result) {
     this.formData = Object.assign({}, student);
   }
 
@@ -28,10 +41,10 @@ export class ResultService {
   }
 
   putResult() {
-    return this.http.put(Constants.resultsBase+'/' + this.formData.Id, this.formData);
+    return this.http.put(Constants.resultsBase + '/' + this.formData.Id, this.formData);
   }
 
-  deleteResult(id:number) {
+  deleteResult(id: number) {
     return this.http.delete(Constants.resultsBase + '/' + id);
   }
 
@@ -41,14 +54,13 @@ export class ResultService {
       .then(res => this.resultsList = res as Result[]);
   }
 
-  resetFormData()
-  {
+  resetFormData() {
     this.formData = new Result();
+    this.SubjectSelcetValidationMesage = '';
+    this.CourseSelcetValidationMesage = '';
+    this.StudentSelcetValidationMesage = '';
   }
-
-   getList()
-  {
-    this.refreshList();
+  getList() {
     return this.resultsList;
   }
 }

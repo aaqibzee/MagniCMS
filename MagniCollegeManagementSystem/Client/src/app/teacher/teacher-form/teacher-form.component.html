@@ -3,18 +3,21 @@
 
     <div class="form-group">
         <label class="label label-default">Name</label>
+        <label class="lbl-required">*</label>
         <input class="form-control form-control-lg" placeholder=" Name" name="name" #Name="ngModel"
             [(ngModel)]="service.formData.Name" required />
     </div>
 
     <div class="form-group">
         <label class="label label-default">Birthday</label>
+        <label class="lbl-required">*</label>
         <input type="date" class="form-control form-control-lg" placeholder="Pick Date Of Birth" name="dob" #dob="ngModel"
-            [(ngModel)]="service.formData.Birthday" max="2010-01-01" />
+            [(ngModel)]="service.formData.Birthday" max="2005-12-31" required />
     </div>
 
     <div class="form-group">
         <label class="label label-default">Salary $</label>
+        <label class="lbl-required">*</label>
         <input class="form-control form-control-lg" placeholder="Salary" name="salary" #salary="ngModel"
            type="number" min="0" [(ngModel)]="service.formData.Salary" required />
     </div>
@@ -39,8 +42,14 @@
         </ng-multiselect-dropdown>
     </div>    
     
-    <div class="form-group">
-        <button class="btn btn-info btn-lg btn-block" type="submit"> {{ service.formData.Id !=
-            0 ? 'Update' : 'Add' }} </button>
+    <div class="row">
+        <div class="form-group col-md-6 ">
+            <button class="btn btn-info btn-lg btn-block" type="button" (click)="resetFormData()">Reset</button>
+        </div>
+        <div class="form-group col-md-6">
+            <button class="btn btn-info btn-lg btn-block" type="submit"> {{ service.formData.Id !=
+                0 ? 'Update' : 'Add' }} </button>
+        </div>
     </div>
+    
 </form>

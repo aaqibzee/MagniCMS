@@ -12,10 +12,14 @@ import { ResultService } from '../shared/result.service';
 })
 export class StudentComponent implements OnInit {
 
-  constructor(public service: StudentService, private ngZone: NgZone, public resultService: ResultService) {
+  constructor(
+    private ngZone: NgZone,
+    public service: StudentService,
+    public resultService: ResultService) {
     this.service.refreshList();
     this.resultService.refreshList();
   }
+  deleteButtonToolTip: string = '';
   @Input() selectedItem: string = '';
 
   ngOnInit(): void {
@@ -55,6 +59,14 @@ export class StudentComponent implements OnInit {
   GetGrade(subjectId: number, stdId: number) {
     let subject = this.service?.subjectService?.subjectList?.find(x => x.Id == subjectId);
     let result = this.resultService.resultsList?.find(x => x.Student?.Id == stdId && x.Subject?.Id == subject.Id);
-    return result?.Grade?.Title ? result?.Grade?.Title : "TBD";
+    return result?.Grade?.Title ? "(" + result?.Grade?.Title + ")" : "TBD";
+  }
+
+  IsDeleteable(std: Student) {
+    return std.Results?.length <= 0;
+  }
+
+  GetTooltipForDeleteButton(std: Student) {
+    return this.IsDeleteable(std) ? "" : "Delete Results associated to this Student first";
   }
 }

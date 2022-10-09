@@ -3,6 +3,7 @@ using System.Linq;
 using DataAccess.Models;
 using DataAccess.DatabseContexts;
 using System.Data.Entity;
+using System.Threading.Tasks;
 
 namespace DataAccess.Interfaces
 {
@@ -13,35 +14,34 @@ namespace DataAccess.Interfaces
         {
             dbContext = db;
         }
-        public List<Grade> GetAll()
+        public Task<List<Grade>> GetAll()
         {
             return dbContext.Grades
-                .ToList();
+                .ToListAsync();
         }
 
-        public Grade Get(int id)
+        public Task<Grade> Get(int id)
         {
-            return dbContext.Grades.Find(id);
+            return dbContext.Grades.FindAsync(id);
         }
 
-        public void Delete(Grade grade)
+        public Task<int> Delete(Grade grade)
         {
             dbContext.Grades.Remove(grade);
-            dbContext.SaveChanges();
+            return dbContext.SaveChangesAsync();
         }
 
-        public void Add(Grade grade)
+        public Task<int> Add(Grade grade)
         {
             dbContext.Entry(grade).State = EntityState.Modified;
             dbContext.Grades.Add(grade);
-            dbContext.SaveChanges();
-
+            return dbContext.SaveChangesAsync();
         }
 
-        public void Update(Grade grade)
+        public Task<int> Update(Grade grade)
         {
             dbContext.Entry(grade).State = EntityState.Modified;
-            dbContext.SaveChanges();
+            return dbContext.SaveChangesAsync();
         }
     }
 }

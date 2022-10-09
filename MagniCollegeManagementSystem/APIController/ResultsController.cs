@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using MagniCollegeManagementSystem.DTOs;
@@ -26,105 +28,120 @@ namespace MagniCollegeManagementSystem.APIController
         }
 
         // GET: api/Results
-        public List<ResultDTO> GetResults()
+        public async Task<IHttpActionResult> GetResults()
         {
-            var result = repository.GetAll();
-            var response = new List<ResultDTO>();
-
-            foreach (var item in result)
+            try
             {
-                response.Add(ResultMapper.Map(item));
-            }
+                var result = await repository.GetAll();
+                var response = new List<ResultDTO>();
 
-            return response;
+                foreach (var item in result)
+                {
+                    response.Add(ResultMapper.Map(item));
+                }
+
+                return Ok(response);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
         }
 
         // GET: api/Results/5
         [ResponseType(typeof(ResultDTO))]
-        public IHttpActionResult GetResult(int id)
+        public async Task<IHttpActionResult> GetResult(int id)
         {
-            Result dbEntity = repository.Get(id);
-            if (dbEntity == null)
+            try
             {
-                return NotFound();
-            }
+                Result dbEntity = await repository.Get(id);
+                if (dbEntity == null)
+                {
+                    return NotFound();
+                }
 
-            return Ok(dbEntity);
+                return Ok(dbEntity);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
         }
 
         // PUT: api/Results/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutResult(int id, ResultDTO Result)
+        public async Task<IHttpActionResult> PutResult(int id, ResultDTO Result)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (id != Result.Id)
-            {
-                return BadRequest();
-            }
-
-            var dbEntity = repository.Get(id);
-            if (dbEntity is null)
-            {
-                return BadRequest();
-            }
-
-            ResultMapper.Map(dbEntity, Result, dbContext);
-
             try
             {
-                repository.Update(dbEntity);
-                magniSyncHub.Clients.All.resultsUpdated();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (repository.Get(dbEntity.Id) is null)
+                if (!ModelState.IsValid)
                 {
-                    return NotFound();
+                    return BadRequest(ModelState);
                 }
-                else
-                {
-                    throw;
-                }
-            }
 
-            return StatusCode(HttpStatusCode.NoContent);
+                if (id != Result.Id)
+                {
+                    return BadRequest();
+                }
+
+                var dbEntity = await repository.Get(id);
+                if (dbEntity is null)
+                {
+                    return BadRequest();
+                }
+
+                ResultMapper.Map(dbEntity, Result, dbContext);
+                await repository.Update(dbEntity);
+                magniSyncHub.Clients.All.resultsUpdated();
+                return StatusCode(HttpStatusCode.NoContent);
+            }
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
         }
 
         // POST: api/Results
         [ResponseType(typeof(Result))]
-        public IHttpActionResult PostResult(ResultDTO request)
+        public async Task<IHttpActionResult> PostResult(ResultDTO request)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var dbEntity = ResultMapper.Map(new Result(), request, dbContext);
+                repository.Add(dbEntity);
+                magniSyncHub.Clients.All.resultsUpdated();
+                return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
             }
-
-            var dbEntity = ResultMapper.Map(new Result(), request, dbContext);
-
-            repository.Add(dbEntity);
-            magniSyncHub.Clients.All.resultsUpdated();
-
-            return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
         }
 
         // DELETE: api/Results/5
         [ResponseType(typeof(Result))]
-        public IHttpActionResult DeleteResult(int id)
+        public async Task<IHttpActionResult> DeleteResult(int id)
         {
-            Result dbEntity = dbContext.Results.Find(id);
-            if (dbEntity == null)
+            try
             {
-                return NotFound();
+                Result dbEntity = await repository.Get(id);
+                if (dbEntity == null)
+                {
+                    return NotFound();
+                }
+                await repository.Delete(dbEntity);
+                magniSyncHub.Clients.All.resultsUpdated();
+                return Ok(dbEntity);
             }
-
-            repository.Delete(dbEntity);
-            magniSyncHub.Clients.All.resultsUpdated();
-
-            return Ok(dbEntity);
+            catch (Exception e)
+            {
+                return InternalServerError();
+            }
         }
 
         protected override void Dispose(bool disposing)

@@ -43,6 +43,19 @@ namespace MagniCollegeManagementSystem.Mappers
                 }
             }
 
+            if (!(source.Results is null))
+            {
+                var dbResults = db.Results;
+                student.Results.Clear();
+                foreach (var item in source.Results)
+                {
+                    student.Results.Add(dbResults.FirstOrDefault
+                    (
+                        x => x.Id.Equals(item)
+                    ));
+                }
+            }
+
             return student;
         }
         public static StudentDTO Map(Student source)
@@ -57,7 +70,7 @@ namespace MagniCollegeManagementSystem.Mappers
                 RegisterationNumber = source.RegisterationNumber,
                 Birthday = source.Birthday.Date.ToString("yyyy-MM-dd"),
                 Subjects = new List<int>(),
-                Teachers = new List<int>(),
+                Results = new List<int>(),
 
             };
 
@@ -68,6 +81,12 @@ namespace MagniCollegeManagementSystem.Mappers
                 foreach (var item in source.Subjects)
                 {
                     student.Subjects.Add(item.Id);
+                }
+
+            if (!(source.Results is null))
+                foreach (var item in source.Results)
+                {
+                    student.Results.Add(item.Id);
                 }
 
             return student;

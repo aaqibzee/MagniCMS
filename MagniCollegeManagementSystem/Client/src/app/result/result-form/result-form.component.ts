@@ -21,6 +21,7 @@ export class ResultFormComponent implements OnInit {
   studentsInSelectedSubject: Student[];
   gradesInSelectedCourse: Grade[];
   gradeLabelText: string = 'Enter obtained marks to calculate grade';
+  gradeLabelTextClass: string = "text-info";
   @ViewChild('selectedSubject') selectedSubject;
   constructor(public service: ResultService,
     public studentService: StudentService,
@@ -37,11 +38,16 @@ export class ResultFormComponent implements OnInit {
   ngOnInit(): void {
   }
   onSubmit(form: NgForm) {
-    if (this.service.formData.Id == 0) {
-      this.inserRecord(form);
+    if (this.service.IsFormInvalid()) {
+      this.service.SetValidationMessages();
     }
     else {
-      this.updateRecord(form);
+      if (this.service.formData.Id == 0) {
+        this.inserRecord(form);
+      }
+      else {
+        this.updateRecord(form);
+      }
     }
   }
 
@@ -51,18 +57,21 @@ export class ResultFormComponent implements OnInit {
 
     if (course == null) {
       this.gradeLabelText = "Select a Course, and a subject first";
+      this.gradeLabelTextClass = "text-danger";
       return;
     }
 
     let grades = this.gradeService.gradesList.filter(x => x.Course.Id == course.Id)
     if (grades == null) {
       this.gradeLabelText = "No grades available for the selected subject";
+      this.gradeLabelTextClass = "text-info";
       return;
     }
 
     let grade = grades?.find(x => x.StartingMarks <= obMarks && x.EndingMarks >= obMarks);
     if (grade == null) {
       this.gradeLabelText = "No grade available for given marks range ";
+      this.gradeLabelTextClass = "text-info";
       return;
     }
     this.service.formData.Grade = grade;
@@ -73,19 +82,21 @@ export class ResultFormComponent implements OnInit {
     this.service.formData.Course = course;
     this.subjectsInSelectedCourse = this.subjectService.subjectList.filter(x => x.Course.Id == course.Id);
     this.gradesInSelectedCourse = this.gradeService.gradesList.filter(x => x.Course?.Id == course.Id);
-
     this.service.formData.Student = null;
     this.service.formData.Subject = null;
     this.selectedSubject.value = '';
+    this.service.CourseSelcetValidationMesage = '';
   }
 
   onStudentSelect(student: Student) {
     this.service.formData.Student = student;
+    this.service.StudentSelcetValidationMesage = '';
   }
 
   onSubjectSelect(subject: Subject) {
     this.service.formData.Subject = subject;
     this.studentsInSelectedSubject = this.studentService.studentsList.filter(x => x.Subjects.includes(subject.Id));
+    this.service.SubjectSelcetValidationMesage = '';
   }
 
   inserRecord(form: NgForm) {
@@ -110,10 +121,13 @@ export class ResultFormComponent implements OnInit {
 
   resetForm(form: NgForm) {
     form.form.reset();
-    this.resetFormData();
+    this.service.resetFormData();
+    this.gradeLabelText = 'Enter obtained marks to calculate grade';
+    this.gradeLabelTextClass = "text-info";
+
   }
 
-  resetFormData() {
-    this.service.resetFormData();
+  SetValidationMessages() {
+    this.service.CourseSelcetValidationMesage = ": Required"
   }
 }

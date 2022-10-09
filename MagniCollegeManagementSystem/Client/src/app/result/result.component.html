@@ -11,6 +11,9 @@
             <thead class="thead-light">
                 <tr>
                     <th>
+                        Id
+                    </th>
+                    <th>
                         Student
                     </th>
                     <th>
@@ -29,6 +32,7 @@
             </thead>
             <tbody>
                 <tr *ngFor="let result of service.resultsList">
+                    <td>{{result.Student?.Id}}</td>
                     <td>{{result.Student?.Name}}</td>
                     <td>{{result.Subject?.Name}}</td>
                     <td>{{result.ObtainedMarks}}</td>

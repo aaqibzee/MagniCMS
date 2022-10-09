@@ -11,7 +11,7 @@
             <thead class="thead-light">
                 <tr>
                     <th>
-                        Subject Id
+                        Id
                     </th>
                     <th>
                         Subject Name
@@ -31,6 +31,9 @@
                     <th>
                         Students Enrolled
                     </th>
+                    <th>
+                        Average Grade
+                    </th>
                     <th>Action</th>
                     <th>Action</th>
                 </tr>
@@ -42,13 +45,13 @@
                     <td>{{subj.Code}}</td>
                     <td>{{subj.Course?.Name}}</td>
                     <td>{{subj.CreditHours}}</td>
-                    <td>{{subj.Teacher?.FirstName}}</td>
+                    <td>{{subj.Teacher?.Name?subj.Teacher?.Name:"N/A"}}</td>
                     <td>{{subj.Students?.length}}</td>
+                    <td>{{GetAverageGrade(subj)}}</td>
                     <td (click)="UpdateSubject(subj)"> <button type="button" class="btn btn-info">Update</button>
-                    <td (click)="DeleteSubject(subj)"> 
-                        <div class="tooltip-wrapper disabled" data-title="Deletion not allowed. There's data linked to this item">
-                            <button type="button" class="btn btn-danger" [disabled]="subj.Students?.length>0">Delete</button>
-                        </div>
+                    <td (click)="DeleteSubject(subj)"> <button type="button" class="btn btn-danger" 
+                        [disabled]="!IsDeleteable(subj)" data-toggle="tooltip" 
+                        title={{this.GetTooltipForDeleteButton(subj)}}>Delete</button>
                     </td>
                 </tr>
             </tbody>

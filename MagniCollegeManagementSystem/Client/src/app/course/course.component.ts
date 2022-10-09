@@ -36,7 +36,7 @@ export class CourseComponent implements OnInit {
   }
 
   GetAverageGrade(course: Course) {
-    let resultsForTheCourse = this.resultService.resultsList.filter(x => x.Course.Id == course.Id);
+    let resultsForTheCourse = this.resultService.getList()?.filter(x => x.Course.Id == course.Id);
     let sum = 0;
     if (resultsForTheCourse == null) {
       return 'Grades not assigned yet';
@@ -45,7 +45,7 @@ export class CourseComponent implements OnInit {
       sum += x.ObtainedMarks;
     });
     let average = sum / resultsForTheCourse.length;
-    let grade = this.gradeService.gradesList.find
+    let grade = this.gradeService.getList()?.find
       (
         x => x.Course.Id == course.Id &&
           x.StartingMarks <= average &&
@@ -63,5 +63,16 @@ export class CourseComponent implements OnInit {
       }, error => {
         console.log(error);
       });
+  }
+
+  IsDeleteable(course: Course) {
+    var result = course.Students?.length <= 0
+      && course.Teachers?.length <= 0
+      && course.Subjects?.length <= 0;
+    return result;
+  }
+
+  GetTooltipForDeleteButton(course: Course) {
+    return this.IsDeleteable(course) ? "" : "Delete Students, Teachers and Subjects associated to this Course first";
   }
 }

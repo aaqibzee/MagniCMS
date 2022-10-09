@@ -13,7 +13,9 @@ export class TeacherService {
 
   constructor(
     private http: HttpClient,
-    public subjectService: SubjectService) { }
+    public subjectService: SubjectService) {
+    subjectService.refreshList();
+  }
 
   formData: Teacher = new Teacher();
   teacherList: Teacher[] = [];

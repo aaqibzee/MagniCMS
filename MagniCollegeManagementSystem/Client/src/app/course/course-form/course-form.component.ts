@@ -6,12 +6,11 @@ import { CourseService } from "../../shared/course.service";
 @Component({
   selector: 'app-course-form',
   templateUrl: './course-form.component.html',
-  styles: [
-  ]
+  styleUrls: ['./course-form.component.css'],
 })
 export class CourseFormComponent implements OnInit {
 
-  constructor(public service:CourseService) { }
+  constructor(public service: CourseService) { }
 
   ngOnInit(): void {
     this.resetFormData();
@@ -24,39 +23,36 @@ export class CourseFormComponent implements OnInit {
     else {
       this.updateRecord(form);
     }
-     
+
   }
 
-  inserRecord(form: NgForm)
-  {
-     this.service.postCourse().subscribe(
-      result =>{
-         this.resetForm(form);
-      }, error =>{
+  inserRecord(form: NgForm) {
+    this.service.postCourse().subscribe(
+      result => {
+        this.resetForm(form);
+      }, error => {
         console.log(error);
       }
     );
   }
 
-  updateRecord(form: NgForm)
-  {
-     this.service.putCourse().subscribe(
-      result =>{
-         this.resetForm(form);
-      }, error =>{
+  updateRecord(form: NgForm) {
+    this.service.putCourse().subscribe(
+      result => {
+        this.resetForm(form);
+      }, error => {
         console.log(error);
       }
     );
   }
 
-   resetForm(form: NgForm) {
-     form.form.reset();
-     this.resetFormData();
-   }
-  
-  resetFormData()
-  {
-    this.service.formData = new Course();
+  resetForm(form: NgForm) {
+    form.form.reset();
+    this.resetFormData();
+  }
+
+  resetFormData() {
+    this.service.resetFormData();
   }
 }
 
