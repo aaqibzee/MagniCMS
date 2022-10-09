@@ -31,7 +31,7 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
-                var result = repository.GetAll();
+                var result = await repository.GetAll();
 
                 var response = new List<CourseDTO>();
                 foreach (var item in result)
@@ -52,7 +52,7 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
-                Course dbEntity = repository.Get(id);
+                Course dbEntity = await repository.Get(id);
                 if (dbEntity == null)
                 {
                     return NotFound();
@@ -74,7 +74,7 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
-                var dbEntity = repository.Get(id);
+                var dbEntity = await repository.Get(id);
                 if (dbEntity is null)
                 {
                     return BadRequest();
@@ -82,7 +82,7 @@ namespace MagniCollegeManagementSystem.APIController
 
                 CourseMapper.Map(dbEntity, course, dbContext);
 
-                repository.Update(dbEntity);
+                await repository.Update(dbEntity);
                 magniSyncHub.Clients.All.coursesUpdated();
                 return StatusCode(HttpStatusCode.NoContent);
             }
@@ -105,7 +105,7 @@ namespace MagniCollegeManagementSystem.APIController
 
                 var dbEntity = CourseMapper.Map(new Course(), request, dbContext);
 
-                repository.Add(dbEntity);
+                await repository.Add(dbEntity);
                 magniSyncHub.Clients.All.coursesUpdated();
 
                 return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
@@ -128,7 +128,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return NotFound();
                 }
 
-                repository.Delete(dbEntity);
+                await repository.Delete(dbEntity);
                 magniSyncHub.Clients.All.coursesUpdated();
 
                 return Ok(dbEntity);
