@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Course } from 'src/app/shared/course.model';
 import { CourseService } from 'src/app/shared/course.service';
-import { Grade } from 'src/app/shared/grade.model';
 import { Subject } from 'src/app/shared/subject.model';
 import { GradeService } from "../../shared/grade.service";
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-grade-form',
@@ -15,7 +15,10 @@ import { GradeService } from "../../shared/grade.service";
 })
 export class GradeFormComponent implements OnInit {
 
-  constructor(public service: GradeService, public courseService: CourseService) { }
+  constructor(
+    public service: GradeService,
+    public courseService: CourseService,
+    private toastr: ToastrService) { }
 
   subjectsInSelectedCourse: Subject[];
 
@@ -24,8 +27,8 @@ export class GradeFormComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    if (this.IsFormInvalid()) {
-      this.SetValidationMessages();
+    if (this.isFormInvalid()) {
+      this.setValidationMessages();
       return;
     }
 
@@ -36,11 +39,11 @@ export class GradeFormComponent implements OnInit {
 
     this.updateRecord(form);
   }
-  IsFormInvalid() {
+  isFormInvalid() {
     return this.service.formData.Course == null;
   }
 
-  SetValidationMessages() {
+  setValidationMessages() {
     this.service.CourseSelcetValidationMesage = ": Required"
   }
 
@@ -53,8 +56,10 @@ export class GradeFormComponent implements OnInit {
   inserRecord(form: NgForm) {
     this.service.postGrade().subscribe(
       result => {
+        this.toastr.success('Grade added successfully', 'Success');
         this.resetForm(form);
       }, error => {
+        this.toastr.error('An error occured while adding the new grade', 'Error');
         console.log(error);
       }
     );
@@ -63,8 +68,10 @@ export class GradeFormComponent implements OnInit {
   updateRecord(form: NgForm) {
     this.service.putGrade().subscribe(
       result => {
+        this.toastr.success('Grade updated successfully', 'Success');
         this.resetForm(form);
       }, error => {
+        this.toastr.error('An error occured while updating the new grade', 'Error');
         console.log(error);
       }
     );

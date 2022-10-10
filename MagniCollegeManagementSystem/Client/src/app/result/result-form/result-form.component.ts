@@ -9,6 +9,7 @@ import { Student } from 'src/app/shared/student.model';
 import { StudentService } from 'src/app/shared/student.service';
 import { Subject } from 'src/app/shared/subject.model';
 import { SubjectService } from 'src/app/shared/subject.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-result-form',
@@ -27,8 +28,8 @@ export class ResultFormComponent implements OnInit {
     public studentService: StudentService,
     public subjectService: SubjectService,
     public gradeService: GradeService,
-    public courseService: CourseService
-  ) {
+    public courseService: CourseService,
+    private toastr: ToastrService) {
     this.studentService.refreshList();
     this.subjectService.refreshList();
     this.gradeService.refreshList();
@@ -102,8 +103,10 @@ export class ResultFormComponent implements OnInit {
   inserRecord(form: NgForm) {
     this.service.postResult().subscribe(
       result => {
+        this.toastr.success('Result added successfully', 'Success');
         this.resetForm(form);
       }, error => {
+        this.toastr.error('An error occured while adding the new result', 'Error');
         console.log(error);
       }
     );
@@ -112,8 +115,10 @@ export class ResultFormComponent implements OnInit {
   updateRecord(form: NgForm) {
     this.service.putResult().subscribe(
       result => {
+        this.toastr.success('Result updated successfully', 'Success');
         this.resetForm(form);
       }, error => {
+        this.toastr.error('An error occured while updating the new result', 'Error');
         console.log(error);
       }
     );
@@ -124,10 +129,5 @@ export class ResultFormComponent implements OnInit {
     this.service.resetFormData();
     this.gradeLabelText = 'Enter obtained marks to calculate grade';
     this.gradeLabelTextClass = "text-info";
-
-  }
-
-  SetValidationMessages() {
-    this.service.CourseSelcetValidationMesage = ": Required"
   }
 }

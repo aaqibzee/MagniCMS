@@ -6,6 +6,7 @@ import { Subject } from '../shared/subject.model';
 import { SubjectService } from '../shared/subject.service';
 import { Teacher } from '../shared/teacher.model';
 import { TeacherService } from '../shared/teacher.service'
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-teacher',
@@ -18,7 +19,8 @@ export class TeacherComponent implements OnInit {
     public subjectService: SubjectService,
     public service: TeacherService,
     public courseService: CourseService,
-    private ngZone: NgZone) { }
+    private ngZone: NgZone,
+    private toastr: ToastrService) { }
 
 
   ngOnInit(): void {
@@ -26,15 +28,16 @@ export class TeacherComponent implements OnInit {
     window[Constants.teacherComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
   }
 
-  GetSubjectName(subjectId: number) {
+  getSubjectName(subjectId: number) {
     return this.subjectService.getList()?.find(x => x.Id == subjectId)?.Name;
   }
 
-  PopulateForm(record: Teacher) {
+  populateForm(record: Teacher) {
     this.service.formData = Object.assign({}, record);
     this.service.selectedSubjects = this.getSelctedSubjectListWithAllDetails();
     this.service.selectedCourses = this.getSelctedCourseListWithAllDetails();
     this.service.subjectsForSelectedCourses = this.getSubjectsForSelectedCourses();
+    this.toastr.info('Data populated to form', 'Info');
   }
 
   getSubjectsForSelectedCourses() {
@@ -72,21 +75,23 @@ export class TeacherComponent implements OnInit {
     return list;
   }
 
-  DeleteTeacher(record: Teacher) {
+  deleteTeacher(record: Teacher) {
     this.service.deleteTeacher(record.Id).subscribe(
       result => {
+        this.toastr.success('Teacher deleted successfully', 'Success');
       }, error => {
+        this.toastr.error('An error occured, while deleting teacher', 'Error');
         console.log(error);
       });
     if (record.Id == this.service.formData.Id) {
       this.service.resetFormData();
     }
   }
-  IsDeleteable(record: Teacher) {
+  isDeleteable(record: Teacher) {
     return record.Subjects?.length <= 0;
   }
 
-  GetTooltipForDeleteButton(std: Teacher) {
-    return this.IsDeleteable(std) ? "" : "Delete Subjects associated to this Teacher first";
+  getTooltipForDeleteButton(std: Teacher) {
+    return this.isDeleteable(std) ? "" : "Delete Subjects associated to this Teacher first";
   }
 }

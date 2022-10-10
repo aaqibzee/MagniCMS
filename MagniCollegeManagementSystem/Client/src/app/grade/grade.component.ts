@@ -3,6 +3,7 @@ import { Constants } from '../shared/Constants';
 import { Grade } from '../shared/grade.model';
 import { GradeService } from '../shared/grade.service'
 import { ResultService } from '../shared/result.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-grade',
@@ -15,32 +16,34 @@ export class GradeComponent implements OnInit {
   constructor(
     public service: GradeService,
     public resultService: ResultService,
-    private ngZone: NgZone) { }
+    private ngZone: NgZone,
+    private toastr: ToastrService) { }
 
   ngOnInit(): void {
     this.service.refreshList();
     window[Constants.gradeComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
   }
 
-  PopulateForm(grade: Grade) {
-    //assign the object copy and not the original object
+  populateForm(grade: Grade) {
+    this.toastr.info('Data populated to form', 'Info');
     this.service.formData = Object.assign({}, grade);
   }
 
-  DeleteGrade(grade: Grade) {
+  deleteGrade(grade: Grade) {
     this.service.deleteGrade(grade.Id).subscribe(
       result => {
-
+        this.toastr.success('Grade deleted successfully', 'Success');
       }, error => {
+        this.toastr.error('An error occured, while deleting grade', 'Error');
         console.log(error);
       });
   }
 
-  IsDeleteable(grade: Grade) {
+  isDeleteable(grade: Grade) {
     return this.resultService.getList()?.filter(x => x.Grade?.Id == grade.Id)?.length <= 0;
   }
 
-  GetTooltipForDeleteButton(grade: Grade) {
-    return this.IsDeleteable(grade) ? "" : "Delete Results associated to this Grade first";
+  getTooltipForDeleteButton(grade: Grade) {
+    return this.isDeleteable(grade) ? "" : "Delete 'Results' associated to this 'Grade' first";
   }
 }

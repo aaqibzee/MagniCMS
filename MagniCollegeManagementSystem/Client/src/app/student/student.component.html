@@ -48,22 +48,22 @@
           <td>
             <div *ngFor="let subject of std.Subjects; let counter = index">
               <div>
-                {{counter+1}}:{{GetSubjectName(subject)}}
+                {{counter+1}}:{{getSubjectName(subject)}}
               </div>
             </div>
           </td>
           <td>
             <div *ngFor="let subject of std.Subjects; let counter = index">
               <div>
-                {{counter+1}}:{{GetGrade(subject,std.Id)}}
+                {{counter+1}}:{{getGrade(subject,std.Id)}}
               </div>
             </div>
           </td>
           <td>{{std.Course?.TotalCreditHours}}</td>
-          <td>{{std.Course?.TotalCreditHours-GetAvailedCreditHours(std)}}</td>
-          <td (click)="UpdateStudent(std)"> <button type="button" class="btn btn-info">Update</button>
-          <td (click)="DeleteStudent(std)"> <button type="button" class="btn btn-danger" 
-            [disabled]="!IsDeleteable(std)"  data-toggle="tooltip" title={{this.GetTooltipForDeleteButton(std)}}>Delete</button>
+          <td>{{std.Course?.TotalCreditHours-getAvailedCreditHours(std)}}</td>
+          <td (click)="updateStudent(std)"> <button type="button" class="btn btn-info">Update</button>
+          <td (click)="deleteStudent(std)"> <button type="button" class="btn btn-danger" 
+            [disabled]="!isDeleteable(std)"  data-toggle="tooltip" title={{this.getTooltipForDeleteButton(std)}}>Delete</button>
           </td>
         </tr>
       </tbody>  

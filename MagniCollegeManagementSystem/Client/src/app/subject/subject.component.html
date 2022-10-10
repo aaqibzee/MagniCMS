@@ -47,11 +47,11 @@
                     <td>{{subj.CreditHours}}</td>
                     <td>{{subj.Teacher?.Name?subj.Teacher?.Name:"N/A"}}</td>
                     <td>{{subj.Students?.length}}</td>
-                    <td>{{GetAverageGrade(subj)}}</td>
-                    <td (click)="UpdateSubject(subj)"> <button type="button" class="btn btn-info">Update</button>
-                    <td (click)="DeleteSubject(subj)"> <button type="button" class="btn btn-danger" 
-                        [disabled]="!IsDeleteable(subj)" data-toggle="tooltip" 
-                        title={{this.GetTooltipForDeleteButton(subj)}}>Delete</button>
+                    <td>{{getAverageGrade(subj)}}</td>
+                    <td (click)="updateSubject(subj)"> <button type="button" class="btn btn-info">Update</button>
+                    <td (click)="deleteSubject(subj)"> <button type="button" class="btn btn-danger" 
+                        [disabled]="!isDeleteable(subj)" data-toggle="tooltip" 
+                        title={{this.getTooltipForDeleteButton(subj)}}>Delete</button>
                     </td>
                 </tr>
             </tbody>

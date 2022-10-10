@@ -1,7 +1,6 @@
 <div class="jumbotron py-3">
     <h5 class="display-4 text-center"> Teachers</h5>
 </div>
-
 <div class="row">
     <div class="col-md-3">
         <app-teacher-form></app-teacher-form>
@@ -38,19 +37,17 @@
                     <td>
                         <div *ngFor="let subject of teacher.Subjects; let counter = index">
                             <div>
-                                {{counter+1}}:{{GetSubjectName(subject)}}
+                                {{counter+1}}:{{getSubjectName(subject)}}
                             </div>
                         </div>
                     </td>
-                    <td (click)="PopulateForm(teacher)"> <button type="button" class="btn btn-info">Update</button>
-                    <td (click)="DeleteTeacher(teacher)"> <button type="button" class="btn btn-danger"
-                        [disabled]="!IsDeleteable(teacher)"  data-toggle="tooltip" 
-                        title={{this.GetTooltipForDeleteButton(teacher)}}>Delete</button>
+                    <td (click)="populateForm(teacher)"> <button type="button" class="btn btn-info">Update</button>
+                    <td (click)="deleteTeacher(teacher)"> <button type="button" class="btn btn-danger"
+                        [disabled]="!isDeleteable(teacher)"  data-toggle="tooltip" 
+                        title={{this.getTooltipForDeleteButton(teacher)}}>Delete</button>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
-
-
 </div>

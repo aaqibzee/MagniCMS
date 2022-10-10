@@ -37,8 +37,8 @@
                     <td>{{result.Subject?.Name}}</td>
                     <td>{{result.ObtainedMarks}}</td>
                     <td>{{result.Grade?.Title}}</td>
-                    <td (click)="UpdateResult(result)"> <button type="button" class="btn btn-info">Update</button></td>
-                    <td (click)="DeleteResult(result)"> <button type="button" class="btn btn-danger">Delete</button></td>
+                    <td (click)="updateResult(result)"> <button type="button" class="btn btn-info">Update</button></td>
+                    <td (click)="deleteResult(result)"> <button type="button" class="btn btn-danger">Delete</button></td>
                 </tr>
             </tbody>
         </table>

@@ -3,6 +3,7 @@ import { Student } from '../shared/student.model';
 import { StudentService } from '../shared/student.service';
 import { Constants } from '../shared/Constants';
 import { ResultService } from '../shared/result.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-student',
@@ -15,7 +16,9 @@ export class StudentComponent implements OnInit {
   constructor(
     private ngZone: NgZone,
     public service: StudentService,
-    public resultService: ResultService) {
+    public resultService: ResultService,
+    private toastr: ToastrService
+  ) {
     this.service.refreshList();
     this.resultService.refreshList();
   }
@@ -23,30 +26,32 @@ export class StudentComponent implements OnInit {
   @Input() selectedItem: string = '';
 
   ngOnInit(): void {
-
     window[Constants.studentComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
   }
-  UpdateStudent(record: Student) {
+  updateStudent(record: Student) {
     this.service.populateForm(record);
+    this.toastr.info('Data populated to form', 'Info');
   }
 
-  DeleteStudent(record: Student) {
+  deleteStudent(record: Student) {
     this.service.deleteStudent(record.Id).subscribe(
       result => {
+        this.toastr.success('Student deleted successfully', 'Success');
       }, error => {
         console.log(error);
+        this.toastr.error('An error occured, while deleting student', 'Error');
       });
     if (record.Id == this.service.formData.Id) {
       this.service.resetFormData();
     }
 
   }
-  GetSubjectName(subjectId: number, stdId: number) {
+  getSubjectName(subjectId: number, stdId: number) {
     let subject = this.service?.subjectService?.subjectList?.find(x => x.Id == subjectId);
     return subject?.Name;
   }
 
-  GetAvailedCreditHours(student: Student) {
+  getAvailedCreditHours(student: Student) {
     let availedCreditHourse = 0;
     let subjects = this.service?.subjectService?.subjectList?.
       filter(x => student.Subjects?.includes(x.Id));
@@ -56,17 +61,17 @@ export class StudentComponent implements OnInit {
     });
     return availedCreditHourse
   }
-  GetGrade(subjectId: number, stdId: number) {
+  getGrade(subjectId: number, stdId: number) {
     let subject = this.service?.subjectService?.subjectList?.find(x => x.Id == subjectId);
     let result = this.resultService.resultsList?.find(x => x.Student?.Id == stdId && x.Subject?.Id == subject.Id);
     return result?.Grade?.Title ? "(" + result?.Grade?.Title + ")" : "TBD";
   }
 
-  IsDeleteable(std: Student) {
+  isDeleteable(std: Student) {
     return std.Results?.length <= 0;
   }
 
-  GetTooltipForDeleteButton(std: Student) {
-    return this.IsDeleteable(std) ? "" : "Delete Results associated to this Student first";
+  getTooltipForDeleteButton(std: Student) {
+    return this.isDeleteable(std) ? "" : "Delete Results associated to this Student first";
   }
 }

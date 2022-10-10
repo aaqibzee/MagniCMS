@@ -4,6 +4,7 @@ import { Course } from '../shared/course.model';
 import { CourseService } from '../shared/course.service'
 import { GradeService } from '../shared/grade.service';
 import { ResultService } from '../shared/result.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-course',
@@ -17,7 +18,8 @@ export class CourseComponent implements OnInit {
     public service: CourseService,
     private ngZone: NgZone,
     public resultService: ResultService,
-    public gradeService: GradeService) {
+    public gradeService: GradeService,
+    private toastr: ToastrService) {
 
     gradeService.refreshList();
     resultService.refreshList();
@@ -30,12 +32,12 @@ export class CourseComponent implements OnInit {
     window[Constants.courseComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
   }
 
-  PopulateForm(course: Course) {
-    //assign the object copy and not the original object
+  populateForm(course: Course) {
+    this.toastr.info('Data populated to form', 'Info');
     this.service.formData = Object.assign({}, course);
   }
 
-  GetAverageGrade(course: Course) {
+  getAverageGrade(course: Course) {
     let resultsForTheCourse = this.resultService.getList()?.filter(x => x.Course.Id == course.Id);
     let sum = 0;
     if (resultsForTheCourse == null) {
@@ -57,22 +59,24 @@ export class CourseComponent implements OnInit {
     return grade?.Title;
   }
 
-  DeleteCourse(course: Course) {
+  deleteCourse(course: Course) {
     this.service.deleteCourse(course.Id).subscribe(
       result => {
+        this.toastr.success('Course deleted successfully', 'Success');
       }, error => {
+        this.toastr.error('An error occured, while deleting course', 'Error');
         console.log(error);
       });
   }
 
-  IsDeleteable(course: Course) {
+  isDeleteable(course: Course) {
     var result = course.Students?.length <= 0
       && course.Teachers?.length <= 0
       && course.Subjects?.length <= 0;
     return result;
   }
 
-  GetTooltipForDeleteButton(course: Course) {
-    return this.IsDeleteable(course) ? "" : "Delete Students, Teachers and Subjects associated to this Course first";
+  getTooltipForDeleteButton(course: Course) {
+    return this.isDeleteable(course) ? "" : "Delete Students, Teachers and Subjects associated to this Course first";
   }
 }

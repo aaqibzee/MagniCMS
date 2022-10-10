@@ -42,9 +42,9 @@
                     <td>{{grade.Course?.Name}}</td>
                      <!-- <td>{{grade.Subject?.Name}}</td> -->
                     
-                    <td (click)="PopulateForm(grade)"> <button type="button" class="btn btn-info">Update</button>
-                    <td (click)="DeleteGrade(grade)"> <button type="button" class="btn btn-danger" [disabled]="!IsDeleteable(grade)"
-                            data-toggle="tooltip" title={{this.GetTooltipForDeleteButton(grade)}}>Delete</button>
+                    <td (click)="populateForm(grade)"> <button type="button" class="btn btn-info">Update</button>
+                    <td (click)="deleteGrade(grade)"> <button type="button" class="btn btn-danger" [disabled]="!isDeleteable(grade)"
+                            data-toggle="tooltip" title={{this.getTooltipForDeleteButton(grade)}}>Delete</button>
                     </td>
                 </tr>
             </tbody>

@@ -4,6 +4,7 @@ import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Course } from 'src/app/shared/course.model';
 import { CourseService } from 'src/app/shared/course.service';
 import { TeacherService } from "../../shared/teacher.service";
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-teacher-form',
@@ -13,7 +14,10 @@ import { TeacherService } from "../../shared/teacher.service";
 export class TeacherFormComponent implements OnInit {
   courses: Course[] = [];
 
-  constructor(public service: TeacherService, public courseService: CourseService) {
+  constructor(
+    public service: TeacherService,
+    public courseService: CourseService,
+    private toastr: ToastrService) {
     this.subjectsDropdownSettings = {
       singleSelection: false,
       idField: 'Id',
@@ -56,8 +60,10 @@ export class TeacherFormComponent implements OnInit {
   inserRecord(form: NgForm) {
     this.service.postTeacher().subscribe(
       result => {
+        this.toastr.success('Teacher added successfully', 'Success');
         this.resetForm(form);
       }, error => {
+        this.toastr.error('An error occured while adding the new teacher', 'Error');
         console.log(error);
       }
     );
@@ -66,8 +72,10 @@ export class TeacherFormComponent implements OnInit {
   updateRecord(form: NgForm) {
     this.service.putTeacher().subscribe(
       result => {
+        this.toastr.success('Teacher updated successfully', 'Success');
         this.resetForm(form);
       }, error => {
+        this.toastr.error('An error occured while updating the new teacher', 'Error');
         console.log(error);
       }
     );

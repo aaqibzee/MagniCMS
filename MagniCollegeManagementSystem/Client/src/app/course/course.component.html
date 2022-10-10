@@ -44,10 +44,10 @@
                     <td>{{course.TotalCreditHours}}</td>
                     <td>{{course.Students?.length}}</td>
                     <td>{{course.Teachers?.length}}</td>
-                    <td>{{GetAverageGrade(course)}}</td>
-                    <td (click)="PopulateForm(course)"> <button type="button" class="btn btn-info">Update</button>
-                    <td (click)="DeleteCourse(course)"> <button type="button" class="btn btn-danger" [disabled]="!IsDeleteable(course)"
-                            data-toggle="tooltip" title={{this.GetTooltipForDeleteButton(course)}}>Delete</button>
+                    <td>{{getAverageGrade(course)}}</td>
+                    <td (click)="populateForm(course)"> <button type="button" class="btn btn-info">Update</button>
+                    <td (click)="deleteCourse(course)"> <button type="button" class="btn btn-danger" [disabled]="!isDeleteable(course)"
+                            data-toggle="tooltip" title={{this.getTooltipForDeleteButton(course)}}>Delete</button>
                     </td>
                 </tr>
             </tbody>

@@ -20,6 +20,9 @@ import { GradeComponent } from './grade/grade.component';
 import { DpDatePickerModule } from 'ng2-date-picker';
 import { ResultFormComponent } from './result/result-form/result-form.component';
 import { ResultComponent } from './result/result.component';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 @NgModule({
   declarations: [
@@ -36,7 +39,7 @@ import { ResultComponent } from './result/result.component';
     GradeComponent,
     ResultFormComponent,
     ResultComponent,
-    
+
   ],
   imports: [
     BrowserModule,
@@ -45,7 +48,9 @@ import { ResultComponent } from './result/result.component';
     HttpClientModule,
     NgSelectModule,
     NgMultiSelectDropDownModule.forRoot(),
-    DpDatePickerModule
+    DpDatePickerModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent]

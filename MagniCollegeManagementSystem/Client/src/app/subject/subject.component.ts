@@ -4,6 +4,7 @@ import { GradeService } from '../shared/grade.service';
 import { ResultService } from '../shared/result.service';
 import { Subject } from '../shared/subject.model';
 import { SubjectService } from '../shared/subject.service'
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-subject',
@@ -17,35 +18,39 @@ export class SubjectComponent implements OnInit {
     public service: SubjectService,
     public resultService: ResultService,
     public gradeService: GradeService,
-    private ngZone: NgZone) { }
+    private ngZone: NgZone,
+    private toastr: ToastrService) { }
 
   ngOnInit(): void {
     this.service.refreshList();
     window[Constants.subjectComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
   }
 
-  UpdateSubject(record: Subject) {
+  updateSubject(record: Subject) {
+    this.toastr.info('Data populated to form', 'Info');
     this.service.populateForm(record);
   }
 
-  DeleteSubject(record: Subject) {
+  deleteSubject(record: Subject) {
     this.service.deleteSubject(record.Id).subscribe(
       result => {
+        this.toastr.success('Subject deleted successfully', 'Success');
         this.service.refreshList();
       }, error => {
+        this.toastr.error('An error occured, while deleting subject', 'Error');
         console.log(error);
       });
   }
 
-  IsDeleteable(record: Subject) {
+  isDeleteable(record: Subject) {
     return record.Students?.length <= 0 && record.Teacher == null;
   }
 
-  GetTooltipForDeleteButton(std: Subject) {
-    return this.IsDeleteable(std) ? "" : "Delete Students and Teacher associated to this Subject first";
+  getTooltipForDeleteButton(std: Subject) {
+    return this.isDeleteable(std) ? "" : "Delete Students and Teacher associated to this Subject first";
   }
 
-  GetAverageGrade(subject: Subject) {
+  getAverageGrade(subject: Subject) {
     let resultsForTheSubject = this.resultService?.getList()?.filter(x => x.Subject?.Id == subject.Id);
     let sum = 0;
     if (resultsForTheSubject == null) {

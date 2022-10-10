@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { Course } from 'src/app/shared/course.model';
 import { CourseService } from "../../shared/course.service";
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-course-form',
@@ -10,7 +10,9 @@ import { CourseService } from "../../shared/course.service";
 })
 export class CourseFormComponent implements OnInit {
 
-  constructor(public service: CourseService) { }
+  constructor(
+    public service: CourseService,
+    private toastr: ToastrService) { }
 
   ngOnInit(): void {
     this.resetFormData();
@@ -18,29 +20,33 @@ export class CourseFormComponent implements OnInit {
 
   onSubmit(form: NgForm) {
     if (this.service.formData.Id == 0) {
-      this.inserRecord(form);
+      this.insertCourse(form);
     }
     else {
-      this.updateRecord(form);
+      this.updateCourse(form);
     }
 
   }
 
-  inserRecord(form: NgForm) {
+  insertCourse(form: NgForm) {
     this.service.postCourse().subscribe(
       result => {
+        this.toastr.success('Course added successfully', 'Success');
         this.resetForm(form);
       }, error => {
+        this.toastr.error('An error occured while adding the new course', 'Error');
         console.log(error);
       }
     );
   }
 
-  updateRecord(form: NgForm) {
+  updateCourse(form: NgForm) {
     this.service.putCourse().subscribe(
       result => {
+        this.toastr.success('Course updated successfully', 'Success');
         this.resetForm(form);
       }, error => {
+        this.toastr.error('An error occured while updating the new course', 'Error');
         console.log(error);
       }
     );
@@ -55,5 +61,3 @@ export class CourseFormComponent implements OnInit {
     this.service.resetFormData();
   }
 }
-
-
