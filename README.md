@@ -1,5 +1,5 @@
 # MagniCMS
-Is a college management system, porviding basic functionality for these modeules: 
+Acollege management system, porviding basic functionality for these modeules: 
 
 * Stuent
 * Teacher
@@ -41,9 +41,9 @@ Method 1(In Visual Studio):
     <br/>c. Any browser
     
 2) Open project in Visual Studio
-3) Build the main solution and let the Nugest restore all the packages
-4) Set <MagniCollegeManagementSystem> as startup project and run the solution.
-5) The browser should have the site browsed and you can use the applicaiton
+3) Build the solution and let the Nuget restore the packages
+4) Set "MagniCollegeManagementSystem" as startup project and run the solution.
+5) Application will run after setting up the DB and seed data
     
 Method 2 (On IIS):
 1) Isntall these dependencies:
@@ -52,13 +52,12 @@ Method 2 (On IIS):
     <br/>c. Any browser
     
 2) Open project in Visual Studio (Must be opened as Administrator)
-3) Build the main solution and let the Nugest restore all the packages
-4) Set <EnvironmentSetter> as startup project and run the solution.
+3) Build the main solution and let the Nuget restore the packages.
+4) Set "EnvironmentSetter" as startup project and run the solution.
 5) The program will take care of setting up everything and it will launch application in browser
 
 # Setup guidelines (To contribute as a developer):
 
-Method 1(In Visual Studio):
 1) Isntall these dependencies:
     <br/>a. SQL Server
     <br/>b. Visual Studio
@@ -67,17 +66,17 @@ Method 1(In Visual Studio):
     <br/>e. Angular CLI
 
 2) Open project in Visual Studio
-3) Build the main solution and let the Nugest restore all the packages
-4) For .Net side developemnt, explore the proejct <MagniCollegeManagementSystem> except the folder 'Client'
-5) For Angular side developemnt, explore the folder 'Client' in <MagniCollegeManagementSystem> web project. This folder has all code related to Angular applciation
+3) Build the solution and let the Nuget restore the packages.
+4) For .Net side developemnt, explore the proejct "MagniCollegeManagementSystem" except the folder 'Client'
+5) For Angular side developemnt, explore the folder 'Client' in "MagniCollegeManagementSystem" web project. This folder has all code related to Angular applciation
 
 
 # How overall aplicaiton works:
 The applicaiton makes use of ASP.NET MVC 5 and Angular architecture.
 
-When angular applciaiton is built, its generated output files are places in Script folder inside MVC proejct.
+When angular applciaiton is built, it's generated output files are placed in Script folder inside MVC proejct.
 
-When MVC project runs, it opens it index view, inside that, "app-root" component (Basic building block of angular applicaiton inside browser)
+When MVC project runs, it launches it's index view, inside which, "app-root" component (Basic building block of angular applicaiton inside browser)
 is rendered, which makes Angular application run inside the MVC view.
 
 Every time, applicaiton starts, it does starts the Angular applicaiton along. 
