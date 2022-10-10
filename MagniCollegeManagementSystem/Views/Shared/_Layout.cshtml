@@ -11,13 +11,13 @@
     @Scripts.Render(Constants.ScriptBundleKeys.Jquery)
 </head>
 <body>
-    <div class="container body-content">
+    
         @RenderBody()
         <hr />
         <footer>
             <p>&copy; @DateTime.Now.Year - Magni Colleges</p>
         </footer>
-    </div>
+   
     @RenderSection("scripts", required: false)
     @Scripts.Render(Constants.ScriptBundleKeys.Angular)
     @Scripts.Render(Constants.ScriptBundleKeys.Bootstrap)

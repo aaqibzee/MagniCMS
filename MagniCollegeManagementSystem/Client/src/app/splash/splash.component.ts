@@ -34,5 +34,4 @@ export class SplashComponent implements OnInit {
       this.hideSplashAnimation();
     });
   }
-
 }
