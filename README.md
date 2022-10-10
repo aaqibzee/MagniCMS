@@ -34,31 +34,31 @@ Lnk: https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472
 * Angular cli "~11.0.2" Command: npm install -g @angular/cli@11.0.2
     
 # Setup guidelines (To only run the project):
-Method 1(In Visual Studio):
-1) Isntall these dependencies:
+Method 1 (In Visual Studio):
+1) Install these dependencies:
     <br/>a. SQL Server
     <br/>b. Visual Studio
     <br/>c. Any browser
     
 2) Open project in Visual Studio
-3) Build the solution and let the Nuget restore the packages
-4) Set "MagniCollegeManagementSystem" as startup project and run the solution.
+3) Build the solution and let the NueGt restore the packages
+4) Set "MagniCollegeManagementSystem" as startup project and run the solution
 5) Application will run after setting up the DB and seed data
     
 Method 2 (On IIS):
-1) Isntall these dependencies:
+1) Install these dependencies:
     <br/>a. SQL Server
     <br/>b. Visual Studio
     <br/>c. Any browser
     
 2) Open project in Visual Studio (Must be opened as Administrator)
-3) Build the main solution and let the Nuget restore the packages.
-4) Set "EnvironmentSetter" as startup project and run the solution.
+3) Build the main solution and let the Nuget restore the packages
+4) Set "EnvironmentSetter" as startup project and run the solution
 5) The program will take care of setting up everything and it will launch application in browser
 
 # Setup guidelines (To contribute as a developer):
 
-1) Isntall these dependencies:
+1) Install these dependencies:
     <br/>a. SQL Server
     <br/>b. Visual Studio
     <br/>c. Any browser
@@ -66,7 +66,7 @@ Method 2 (On IIS):
     <br/>e. Angular CLI
 
 2) Open project in Visual Studio
-3) Build the solution and let the Nuget restore the packages.
+3) Build the solution and let the NuGet restore the packages.
 4) For .Net side developemnt, explore the proejct "MagniCollegeManagementSystem" except the folder 'Client'
 5) For Angular side developemnt, explore the folder 'Client' in "MagniCollegeManagementSystem" web project. This folder has all code related to Angular applciation
 
@@ -81,4 +81,4 @@ is rendered, which makes Angular application run inside the MVC view.
 
 Every time, applicaiton starts, it does starts the Angular applicaiton along. 
 
-(To be updated furhter..)
+(Will be updated furhter..)
