@@ -52,13 +52,16 @@ export class SubjectComponent implements OnInit {
 
   getAverageGrade(subject: Subject) {
     let resultsForTheSubject = this.resultService?.getList()?.filter(x => x.Subject?.Id == subject.Id);
-    let sum = 0;
+
     if (resultsForTheSubject == null) {
       return 'Grades not assigned yet';
     }
+
+    let sum = 0;
     resultsForTheSubject?.forEach(function (x) {
       sum += x.ObtainedMarks;
     });
+
     let average = sum / resultsForTheSubject.length;
     let grade = this.gradeService.getList()?.find
       (
@@ -66,6 +69,7 @@ export class SubjectComponent implements OnInit {
           x.StartingMarks <= average &&
           x.EndingMarks >= average
       );
+
     if (grade == null) {
       return 'N/A';
     }

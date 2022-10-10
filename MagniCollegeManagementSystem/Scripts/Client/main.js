@@ -349,10 +349,10 @@ class SubjectComponent {
     getAverageGrade(subject) {
         var _a, _b, _c;
         let resultsForTheSubject = (_b = (_a = this.resultService) === null || _a === void 0 ? void 0 : _a.getList()) === null || _b === void 0 ? void 0 : _b.filter(x => { var _a; return ((_a = x.Subject) === null || _a === void 0 ? void 0 : _a.Id) == subject.Id; });
-        let sum = 0;
         if (resultsForTheSubject == null) {
             return 'Grades not assigned yet';
         }
+        let sum = 0;
         resultsForTheSubject === null || resultsForTheSubject === void 0 ? void 0 : resultsForTheSubject.forEach(function (x) {
             sum += x.ObtainedMarks;
         });
@@ -714,19 +714,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Constants */ "z9QB");
 /* harmony import */ var _result_model__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./result.model */ "u9X8");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
+/* harmony import */ var _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./splash-screen-state.service */ "C8wY");
+
 
 
 
 
 
 class ResultService {
-    constructor(http) {
+    constructor(http, splashScreenStateService) {
         this.http = http;
+        this.splashScreenStateService = splashScreenStateService;
         this.formData = new _result_model__WEBPACK_IMPORTED_MODULE_2__["Result"]();
         this.SubjectSelcetValidationMesage = '';
         this.CourseSelcetValidationMesage = '';
         this.StudentSelcetValidationMesage = '';
         this.refreshList();
+        setTimeout(() => {
+            this.splashScreenStateService.stop();
+        }, 1);
     }
     IsFormInvalid() {
         return this.formData.Course == null
@@ -766,14 +772,14 @@ class ResultService {
         return this.resultsList;
     }
 }
-ResultService.ɵfac = function ResultService_Factory(t) { return new (t || ResultService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"])); };
+ResultService.ɵfac = function ResultService_Factory(t) { return new (t || ResultService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__["SplashScreenStateService"])); };
 ResultService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: ResultService, factory: ResultService.ɵfac, providedIn: 'root' });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ResultService, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
         args: [{
                 providedIn: 'root'
             }]
-    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }]; }, null); })();
+    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__["SplashScreenStateService"] }]; }, null); })();
 
 
 /***/ }),

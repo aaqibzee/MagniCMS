@@ -7,6 +7,7 @@ namespace MagniCollegeManagementSystem.Common
 {
     public static class Constants
     {
+        public const string SeedCheckKey="IsSeedNeeded";
         public static class ScriptBundleKeys
         {
             public const string Jquery = "~/bundles/jquery";

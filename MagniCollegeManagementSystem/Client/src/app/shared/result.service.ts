@@ -2,15 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Constants } from './Constants';
 import { Result } from './result.model';
+import { SplashScreenStateService } from './splash-screen-state.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ResultService {
-
   constructor(
-    private http: HttpClient) {
+    private http: HttpClient,
+    private splashScreenStateService: SplashScreenStateService,) {
     this.refreshList();
+
+    setTimeout(() => {
+      this.splashScreenStateService.stop();
+    }, 1);
   }
 
   formData: Result = new Result();

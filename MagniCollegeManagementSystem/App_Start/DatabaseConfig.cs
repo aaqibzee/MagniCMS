@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using DataAccess.DatabseContexts;
 using DataAccess.Models;
+using MagniCollegeManagementSystem.Common;
 
 namespace MagniCollegeManagementSystem.App_Start
 {
@@ -31,7 +32,7 @@ namespace MagniCollegeManagementSystem.App_Start
         }
         bool IsSeedNeeded()
         {
-            var value = ConfigurationManager.AppSettings["IsSeedNeeded"];
+            var value = ConfigurationManager.AppSettings[Constants.SeedCheckKey];
             bool result;
             bool.TryParse(value, out result);
             return result;
@@ -176,7 +177,7 @@ namespace MagniCollegeManagementSystem.App_Start
                 context.Results.AddRange(results);
 
                 base.Seed(context);
-                ChangeSeedConfigKey("IsSeedNeeded", "False");
+                ChangeSeedConfigKey(Constants.SeedCheckKey, "False");
             }
         }
     }
