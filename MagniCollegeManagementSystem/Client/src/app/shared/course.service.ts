@@ -4,14 +4,19 @@ import { HttpClient } from '@angular/common/http';
 import { Constants } from '../shared/Constants';
 import { GradeService } from './grade.service';
 import { ResultService } from './result.service';
+import { SplashScreenStateService } from './splash-screen-state.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CourseService {
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+    private splashScreenStateService: SplashScreenStateService) {
     this.refreshList();
+    setTimeout(() => {
+      this.splashScreenStateService.stop();
+    }, 1);
   }
 
   formData: Course = new Course();

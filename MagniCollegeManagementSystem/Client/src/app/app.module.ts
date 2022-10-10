@@ -22,6 +22,8 @@ import { ResultFormComponent } from './result/result-form/result-form.component'
 import { ResultComponent } from './result/result.component';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SplashScreenStateService } from './shared/splash-screen-state.service';
+import { SplashComponent } from './splash/splash.component';
 
 
 @NgModule({
@@ -39,6 +41,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     GradeComponent,
     ResultFormComponent,
     ResultComponent,
+    SplashComponent,
 
   ],
   imports: [
@@ -51,8 +54,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     DpDatePickerModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
+
   ],
-  providers: [],
+  providers: [SplashScreenStateService,],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

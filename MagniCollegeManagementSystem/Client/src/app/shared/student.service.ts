@@ -6,6 +6,7 @@ import { Course } from './course.model';
 import { SubjectService } from './subject.service';
 import { Subject } from './subject.model';
 import { Constants } from './Constants';
+import { SplashScreenStateService } from './splash-screen-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,9 +26,13 @@ export class StudentService {
   constructor(
     private http: HttpClient,
     public courseService: CourseService,
-    public subjectService: SubjectService
+    public subjectService: SubjectService,
+    private splashScreenStateService: SplashScreenStateService,
   ) {
     this.refreshList();
+    setTimeout(() => {
+      this.splashScreenStateService.stop();
+    }, 1);
   }
 
   resetFormData() {

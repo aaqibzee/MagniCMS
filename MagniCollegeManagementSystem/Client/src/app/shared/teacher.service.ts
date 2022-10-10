@@ -5,6 +5,7 @@ import { Subject } from './subject.model';
 import { SubjectService } from './subject.service';
 import { Constants } from './Constants';
 import { Course } from './course.model';
+import { SplashScreenStateService } from './splash-screen-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,17 +14,16 @@ export class TeacherService {
 
   constructor(
     private http: HttpClient,
-    public subjectService: SubjectService) {
+    public subjectService: SubjectService,
+    private splashScreenStateService: SplashScreenStateService,) {
     subjectService.refreshList();
+    setTimeout(() => {
+      this.splashScreenStateService.stop();
+    }, 1);
   }
-
   formData: Teacher = new Teacher();
   teacherList: Teacher[] = [];
-
-
   readonly genderOptions: string[] = ['Male', 'Female', 'Other'];
-
-
   selectedCourses: Course[] = [];
   selectedSubjects: Subject[] = [];
   subjectsForSelectedCourses: Subject[] = [];

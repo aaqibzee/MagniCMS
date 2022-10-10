@@ -4,14 +4,20 @@ import { HttpClient } from '@angular/common/http';
 import { CourseService } from './course.service';
 import { Course } from './course.model';
 import { Constants } from './Constants';
+import { SplashScreenStateService } from './splash-screen-state.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SubjectService {
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private splashScreenStateService: SplashScreenStateService,) {
     this.refreshList();
+    setTimeout(() => {
+      this.splashScreenStateService.stop();
+    }, 1);
   }
 
   formData: Subject = new Subject();

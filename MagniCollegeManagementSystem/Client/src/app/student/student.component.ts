@@ -4,6 +4,7 @@ import { StudentService } from '../shared/student.service';
 import { Constants } from '../shared/Constants';
 import { ResultService } from '../shared/result.service';
 import { ToastrService } from 'ngx-toastr';
+import { SplashScreenStateService } from '../shared/splash-screen-state.service';
 
 @Component({
   selector: 'app-student',

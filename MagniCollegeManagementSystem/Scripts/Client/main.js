@@ -659,6 +659,45 @@ const environment = {
 
 /***/ }),
 
+/***/ "C8wY":
+/*!*******************************************************!*\
+  !*** ./src/app/shared/splash-screen-state.service.ts ***!
+  \*******************************************************/
+/*! exports provided: SplashScreenStateService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SplashScreenStateService", function() { return SplashScreenStateService; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "qCKp");
+
+
+
+class SplashScreenStateService {
+    constructor() {
+        this.isStopped = false;
+        this.subject = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+    }
+    subscribe(onNext) {
+        return this.subject.subscribe(onNext);
+    }
+    stop() {
+        if (!this.isStopped) {
+            this.subject.next(false);
+            this.isStopped = true;
+        }
+    }
+}
+SplashScreenStateService.ɵfac = function SplashScreenStateService_Factory(t) { return new (t || SplashScreenStateService)(); };
+SplashScreenStateService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: SplashScreenStateService, factory: SplashScreenStateService.ɵfac });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](SplashScreenStateService, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"]
+    }], null, null); })();
+
+
+/***/ }),
+
 /***/ "CLH5":
 /*!******************************************!*\
   !*** ./src/app/shared/result.service.ts ***!
@@ -889,16 +928,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _course_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./course.model */ "vQy0");
 /* harmony import */ var _shared_Constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/Constants */ "z9QB");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
+/* harmony import */ var _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./splash-screen-state.service */ "C8wY");
+
 
 
 
 
 
 class CourseService {
-    constructor(http) {
+    constructor(http, splashScreenStateService) {
         this.http = http;
+        this.splashScreenStateService = splashScreenStateService;
         this.formData = new _course_model__WEBPACK_IMPORTED_MODULE_1__["Course"]();
         this.refreshList();
+        setTimeout(() => {
+            this.splashScreenStateService.stop();
+        }, 1);
     }
     resetFormData() {
         this.formData = new _course_model__WEBPACK_IMPORTED_MODULE_1__["Course"]();
@@ -921,14 +966,14 @@ class CourseService {
         return this.courseList;
     }
 }
-CourseService.ɵfac = function CourseService_Factory(t) { return new (t || CourseService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"])); };
+CourseService.ɵfac = function CourseService_Factory(t) { return new (t || CourseService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__["SplashScreenStateService"])); };
 CourseService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: CourseService, factory: CourseService.ɵfac, providedIn: 'root' });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](CourseService, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
         args: [{
                 providedIn: 'root'
             }]
-    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }]; }, null); })();
+    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__["SplashScreenStateService"] }]; }, null); })();
 
 
 /***/ }),
@@ -1246,19 +1291,29 @@ webpackContext.id = "RnhZ";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "AppComponent", function() { return AppComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "tyNb");
+/* harmony import */ var _shared_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./shared/splash-screen-state.service */ "C8wY");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/router */ "tyNb");
+/* harmony import */ var _splash_splash_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./splash/splash.component */ "eR5p");
+
+
 
 
 
 
 class AppComponent {
-    constructor() {
+    constructor(splashScreenStateService) {
+        this.splashScreenStateService = splashScreenStateService;
         this.title = 'Client';
     }
+    ngOnInit() {
+        setTimeout(() => {
+            this.splashScreenStateService.stop();
+        }, 2);
+    }
 }
-AppComponent.ɵfac = function AppComponent_Factory(t) { return new (t || AppComponent)(); };
-AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: AppComponent, selectors: [["app-root"]], decls: 15, vars: 0, consts: [[1, "navbar", "navbar-light", "bg-light"], [1, "form-inline"], ["type", "button", "routerLink", "Student", 1, "btn", "btn-outline-success"], ["type", "button", "routerLink", "Teacher", 1, "btn", "btn-outline-success"], ["type", "button", "routerLink", "Subject", 1, "btn", "btn-outline-success"], ["type", "button", "routerLink", "Course", 1, "btn", "btn-outline-success"], ["type", "button", "routerLink", "Results", 1, "btn", "btn-outline-success"], ["type", "button", "routerLink", "Grade", 1, "btn", "btn-outline-success"]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
+AppComponent.ɵfac = function AppComponent_Factory(t) { return new (t || AppComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_1__["SplashScreenStateService"])); };
+AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: AppComponent, selectors: [["app-root"]], decls: 16, vars: 0, consts: [[1, "navbar", "navbar-light", "bg-light"], [1, "form-inline"], ["type", "button", "routerLink", "Student", 1, "btn", "btn-outline-success"], ["type", "button", "routerLink", "Teacher", 1, "btn", "btn-outline-success"], ["type", "button", "routerLink", "Subject", 1, "btn", "btn-outline-success"], ["type", "button", "routerLink", "Course", 1, "btn", "btn-outline-success"], ["type", "button", "routerLink", "Results", 1, "btn", "btn-outline-success"], ["type", "button", "routerLink", "Grade", 1, "btn", "btn-outline-success"]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "nav", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "form", 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "button", 2);
@@ -1281,8 +1336,9 @@ AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCompo
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](14, "router-outlet");
-    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_1__["ɵangular_packages_forms_forms_y"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_1__["NgForm"], _angular_router__WEBPACK_IMPORTED_MODULE_2__["RouterLink"], _angular_router__WEBPACK_IMPORTED_MODULE_2__["RouterOutlet"]], styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJhcHAuY29tcG9uZW50LmNzcyJ9 */"] });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](14, "app-splash");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](15, "router-outlet");
+    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_2__["ɵangular_packages_forms_forms_y"], _angular_forms__WEBPACK_IMPORTED_MODULE_2__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_2__["NgForm"], _angular_router__WEBPACK_IMPORTED_MODULE_3__["RouterLink"], _splash_splash_component__WEBPACK_IMPORTED_MODULE_4__["SplashComponent"], _angular_router__WEBPACK_IMPORTED_MODULE_3__["RouterOutlet"]], styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJhcHAuY29tcG9uZW50LmNzcyJ9 */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](AppComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -1290,7 +1346,7 @@ AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCompo
                 templateUrl: './app.component.html',
                 styleUrls: ['./app.component.css']
             }]
-    }], null, null); })();
+    }], function () { return [{ type: _shared_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_1__["SplashScreenStateService"] }]; }, null); })();
 
 
 /***/ }),
@@ -1311,6 +1367,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
 /* harmony import */ var _course_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./course.service */ "Pv0z");
 /* harmony import */ var _subject_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./subject.service */ "lLrn");
+/* harmony import */ var _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./splash-screen-state.service */ "C8wY");
+
 
 
 
@@ -1319,10 +1377,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class StudentService {
-    constructor(http, courseService, subjectService) {
+    constructor(http, courseService, subjectService, splashScreenStateService) {
         this.http = http;
         this.courseService = courseService;
         this.subjectService = subjectService;
+        this.splashScreenStateService = splashScreenStateService;
         this.courseDropDownDefaultValue = 'Select Course';
         this.genderDropDownDefaultValue = 'Select Gender';
         this.genderOptions = ['Male', 'Female', 'Other'];
@@ -1331,6 +1390,9 @@ class StudentService {
         this.selectedCourseByStudent = this.courseDropDownDefaultValue;
         this.formData = new _student_model__WEBPACK_IMPORTED_MODULE_1__["Student"]();
         this.refreshList();
+        setTimeout(() => {
+            this.splashScreenStateService.stop();
+        }, 1);
     }
     resetFormData() {
         this.formData = new _student_model__WEBPACK_IMPORTED_MODULE_1__["Student"]();
@@ -1385,14 +1447,14 @@ class StudentService {
         return this.studentsList;
     }
 }
-StudentService.ɵfac = function StudentService_Factory(t) { return new (t || StudentService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_course_service__WEBPACK_IMPORTED_MODULE_4__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_subject_service__WEBPACK_IMPORTED_MODULE_5__["SubjectService"])); };
+StudentService.ɵfac = function StudentService_Factory(t) { return new (t || StudentService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_course_service__WEBPACK_IMPORTED_MODULE_4__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_subject_service__WEBPACK_IMPORTED_MODULE_5__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_6__["SplashScreenStateService"])); };
 StudentService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: StudentService, factory: StudentService.ɵfac, providedIn: 'root' });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](StudentService, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
         args: [{
                 providedIn: 'root'
             }]
-    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: _course_service__WEBPACK_IMPORTED_MODULE_4__["CourseService"] }, { type: _subject_service__WEBPACK_IMPORTED_MODULE_5__["SubjectService"] }]; }, null); })();
+    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: _course_service__WEBPACK_IMPORTED_MODULE_4__["CourseService"] }, { type: _subject_service__WEBPACK_IMPORTED_MODULE_5__["SubjectService"] }, { type: _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_6__["SplashScreenStateService"] }]; }, null); })();
 
 
 /***/ }),
@@ -1430,6 +1492,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _result_result_component__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! ./result/result.component */ "nNT0");
 /* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_21__ = __webpack_require__(/*! ngx-toastr */ "EApP");
 /* harmony import */ var _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_22__ = __webpack_require__(/*! @angular/platform-browser/animations */ "omvX");
+/* harmony import */ var _shared_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_23__ = __webpack_require__(/*! ./shared/splash-screen-state.service */ "C8wY");
+/* harmony import */ var _splash_splash_component__WEBPACK_IMPORTED_MODULE_24__ = __webpack_require__(/*! ./splash/splash.component */ "eR5p");
+
+
 
 
 
@@ -1459,7 +1525,7 @@ __webpack_require__.r(__webpack_exports__);
 class AppModule {
 }
 AppModule.ɵmod = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineNgModule"]({ type: AppModule, bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_7__["AppComponent"]] });
-AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector"]({ factory: function AppModule_Factory(t) { return new (t || AppModule)(); }, providers: [], imports: [[
+AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector"]({ factory: function AppModule_Factory(t) { return new (t || AppModule)(); }, providers: [_shared_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_23__["SplashScreenStateService"],], imports: [[
             _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
             _app_routing_module__WEBPACK_IMPORTED_MODULE_6__["AppRoutingModule"],
             _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormsModule"],
@@ -1482,7 +1548,8 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
         _grade_grade_form_grade_form_component__WEBPACK_IMPORTED_MODULE_16__["GradeFormComponent"],
         _grade_grade_component__WEBPACK_IMPORTED_MODULE_17__["GradeComponent"],
         _result_result_form_result_form_component__WEBPACK_IMPORTED_MODULE_19__["ResultFormComponent"],
-        _result_result_component__WEBPACK_IMPORTED_MODULE_20__["ResultComponent"]], imports: [_angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
+        _result_result_component__WEBPACK_IMPORTED_MODULE_20__["ResultComponent"],
+        _splash_splash_component__WEBPACK_IMPORTED_MODULE_24__["SplashComponent"]], imports: [_angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
         _app_routing_module__WEBPACK_IMPORTED_MODULE_6__["AppRoutingModule"],
         _angular_forms__WEBPACK_IMPORTED_MODULE_2__["FormsModule"],
         _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClientModule"],
@@ -1505,6 +1572,7 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
                     _grade_grade_component__WEBPACK_IMPORTED_MODULE_17__["GradeComponent"],
                     _result_result_form_result_form_component__WEBPACK_IMPORTED_MODULE_19__["ResultFormComponent"],
                     _result_result_component__WEBPACK_IMPORTED_MODULE_20__["ResultComponent"],
+                    _splash_splash_component__WEBPACK_IMPORTED_MODULE_24__["SplashComponent"],
                 ],
                 imports: [
                     _angular_platform_browser__WEBPACK_IMPORTED_MODULE_0__["BrowserModule"],
@@ -1517,10 +1585,83 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
                     _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_22__["BrowserAnimationsModule"],
                     ngx_toastr__WEBPACK_IMPORTED_MODULE_21__["ToastrModule"].forRoot(),
                 ],
-                providers: [],
+                providers: [_shared_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_23__["SplashScreenStateService"],],
                 bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_7__["AppComponent"]]
             }]
     }], null, null); })();
+
+
+/***/ }),
+
+/***/ "eR5p":
+/*!********************************************!*\
+  !*** ./src/app/splash/splash.component.ts ***!
+  \********************************************/
+/*! exports provided: SplashComponent */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SplashComponent", function() { return SplashComponent; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
+/* harmony import */ var _shared_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/splash-screen-state.service */ "C8wY");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common */ "ofXK");
+
+
+
+
+const _c0 = function (a0, a1) { return { "opacity": a0, "transition": a1 }; };
+function SplashComponent_div_0_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3, "Loading ... ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngStyle", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction2"](1, _c0, ctx_r0.opacityChange, ctx_r0.splashTransition));
+} }
+class SplashComponent {
+    constructor(splashScreenStateService) {
+        this.splashScreenStateService = splashScreenStateService;
+        // The screen starts with the maximum opacity
+        this.opacityChange = 0.6;
+        // First access the splash is visible
+        this.showSplash = true;
+        this.ANIMATION_DURATION = 1;
+    }
+    hideSplashAnimation() {
+        // Setting the transition
+        this.splashTransition = `opacity ${this.ANIMATION_DURATION}s`;
+        this.opacityChange = 0;
+        setTimeout(() => {
+            // After the transition is ended the showSplash will be hided
+            this.showSplash = !this.showSplash;
+        }, 1000);
+    }
+    ngOnInit() {
+        // Somewhere the stop method has been invoked
+        this.splashScreenStateService.subscribe(res => {
+            this.hideSplashAnimation();
+        });
+    }
+}
+SplashComponent.ɵfac = function SplashComponent_Factory(t) { return new (t || SplashComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_1__["SplashScreenStateService"])); };
+SplashComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: SplashComponent, selectors: [["app-splash"]], decls: 1, vars: 1, consts: [["class", "app-splash-screen", 3, "ngStyle", 4, "ngIf"], [1, "app-splash-screen", 3, "ngStyle"], [1, "app-splash-content"], ["data-text", "Loading ...", 1, "loading-text"]], template: function SplashComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, SplashComponent_div_0_Template, 4, 4, "div", 0);
+    } if (rf & 2) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.showSplash);
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_2__["NgIf"], _angular_common__WEBPACK_IMPORTED_MODULE_2__["NgStyle"]], styles: [".app-splash-screen[_ngcontent-%COMP%] {\r\n   background: #20221b;\r\n   position: fixed;\r\n   top: 0;\r\n   left: 0;\r\n   right: 0;\r\n   bottom: 0;\r\n   display: flex;\r\n   justify-content: center;\r\n   align-items: center;\r\n   width: 100%;\r\n   height: 100%;\r\n   z-index: 1;\r\n   opacity: 0.2;\r\n}\r\n.loading-text[_ngcontent-%COMP%] {\r\n   position: relative;\r\n   color: rgba(0, 0, 0, 0.3);\r\n   font-size: 5em;\r\n}\r\n.loading-text[_ngcontent-%COMP%]:before {\r\n   content: attr(data-text);\r\n   position: absolute;\r\n   overflow: hidden;\r\n   max-width: 7em;\r\n   white-space: nowrap;\r\n   color: #fff;\r\n   animation: loading 8s linear;\r\n}\r\n@keyframes loading {\r\n   0% {\r\n      max-width: 0;\r\n   }\r\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNwbGFzaC5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0dBQ0csbUJBQW1CO0dBQ25CLGVBQWU7R0FDZixNQUFNO0dBQ04sT0FBTztHQUNQLFFBQVE7R0FDUixTQUFTO0dBQ1QsYUFBYTtHQUNiLHVCQUF1QjtHQUN2QixtQkFBbUI7R0FDbkIsV0FBVztHQUNYLFlBQVk7R0FDWixVQUFVO0dBQ1YsWUFBWTtBQUNmO0FBQ0E7R0FDRyxrQkFBa0I7R0FDbEIseUJBQXlCO0dBQ3pCLGNBQWM7QUFDakI7QUFDQTtHQUNHLHdCQUF3QjtHQUN4QixrQkFBa0I7R0FDbEIsZ0JBQWdCO0dBQ2hCLGNBQWM7R0FDZCxtQkFBbUI7R0FDbkIsV0FBVztHQUNYLDRCQUE0QjtBQUMvQjtBQUNBO0dBQ0c7TUFDRyxZQUFZO0dBQ2Y7QUFDSCIsImZpbGUiOiJzcGxhc2guY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5hcHAtc3BsYXNoLXNjcmVlbiB7XHJcbiAgIGJhY2tncm91bmQ6ICMyMDIyMWI7XHJcbiAgIHBvc2l0aW9uOiBmaXhlZDtcclxuICAgdG9wOiAwO1xyXG4gICBsZWZ0OiAwO1xyXG4gICByaWdodDogMDtcclxuICAgYm90dG9tOiAwO1xyXG4gICBkaXNwbGF5OiBmbGV4O1xyXG4gICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjtcclxuICAgYWxpZ24taXRlbXM6IGNlbnRlcjtcclxuICAgd2lkdGg6IDEwMCU7XHJcbiAgIGhlaWdodDogMTAwJTtcclxuICAgei1pbmRleDogMTtcclxuICAgb3BhY2l0eTogMC4yO1xyXG59XHJcbi5sb2FkaW5nLXRleHQge1xyXG4gICBwb3NpdGlvbjogcmVsYXRpdmU7XHJcbiAgIGNvbG9yOiByZ2JhKDAsIDAsIDAsIDAuMyk7XHJcbiAgIGZvbnQtc2l6ZTogNWVtO1xyXG59XHJcbi5sb2FkaW5nLXRleHQ6YmVmb3JlIHtcclxuICAgY29udGVudDogYXR0cihkYXRhLXRleHQpO1xyXG4gICBwb3NpdGlvbjogYWJzb2x1dGU7XHJcbiAgIG92ZXJmbG93OiBoaWRkZW47XHJcbiAgIG1heC13aWR0aDogN2VtO1xyXG4gICB3aGl0ZS1zcGFjZTogbm93cmFwO1xyXG4gICBjb2xvcjogI2ZmZjtcclxuICAgYW5pbWF0aW9uOiBsb2FkaW5nIDhzIGxpbmVhcjtcclxufVxyXG5Aa2V5ZnJhbWVzIGxvYWRpbmcge1xyXG4gICAwJSB7XHJcbiAgICAgIG1heC13aWR0aDogMDtcclxuICAgfVxyXG59Il19 */"] });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](SplashComponent, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
+        args: [{
+                selector: 'app-splash',
+                templateUrl: './splash.component.html',
+                styleUrls: ['./splash.component.css']
+            }]
+    }], function () { return [{ type: _shared_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_1__["SplashScreenStateService"] }]; }, null); })();
 
 
 /***/ }),
@@ -2258,19 +2399,25 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _subject_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./subject.model */ "f3Tx");
 /* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Constants */ "z9QB");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
+/* harmony import */ var _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./splash-screen-state.service */ "C8wY");
+
 
 
 
 
 
 class SubjectService {
-    constructor(http) {
+    constructor(http, splashScreenStateService) {
         this.http = http;
+        this.splashScreenStateService = splashScreenStateService;
         this.formData = new _subject_model__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
         this.subjectList = null;
         this.courseDropDownCelectedValue = 'Select Course';
         this.CourseSelcetValidationMesage = ': Required';
         this.refreshList();
+        setTimeout(() => {
+            this.splashScreenStateService.stop();
+        }, 1);
     }
     resetFormData() {
         this.formData = new _subject_model__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
@@ -2304,14 +2451,14 @@ class SubjectService {
         return this.subjectList;
     }
 }
-SubjectService.ɵfac = function SubjectService_Factory(t) { return new (t || SubjectService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"])); };
+SubjectService.ɵfac = function SubjectService_Factory(t) { return new (t || SubjectService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__["SplashScreenStateService"])); };
 SubjectService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: SubjectService, factory: SubjectService.ɵfac, providedIn: 'root' });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](SubjectService, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
         args: [{
                 providedIn: 'root'
             }]
-    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }]; }, null); })();
+    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__["SplashScreenStateService"] }]; }, null); })();
 
 
 /***/ }),
@@ -2867,6 +3014,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Constants */ "z9QB");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
 /* harmony import */ var _subject_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./subject.service */ "lLrn");
+/* harmony import */ var _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./splash-screen-state.service */ "C8wY");
+
 
 
 
@@ -2874,9 +3023,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class TeacherService {
-    constructor(http, subjectService) {
+    constructor(http, subjectService, splashScreenStateService) {
         this.http = http;
         this.subjectService = subjectService;
+        this.splashScreenStateService = splashScreenStateService;
         this.formData = new _teacher_model__WEBPACK_IMPORTED_MODULE_1__["Teacher"]();
         this.teacherList = [];
         this.genderOptions = ['Male', 'Female', 'Other'];
@@ -2884,6 +3034,9 @@ class TeacherService {
         this.selectedSubjects = [];
         this.subjectsForSelectedCourses = [];
         subjectService.refreshList();
+        setTimeout(() => {
+            this.splashScreenStateService.stop();
+        }, 1);
     }
     resetFormData() {
         this.formData = new _teacher_model__WEBPACK_IMPORTED_MODULE_1__["Teacher"]();
@@ -2932,14 +3085,14 @@ class TeacherService {
             .then(res => this.teacherList = res);
     }
 }
-TeacherService.ɵfac = function TeacherService_Factory(t) { return new (t || TeacherService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"])); };
+TeacherService.ɵfac = function TeacherService_Factory(t) { return new (t || TeacherService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_5__["SplashScreenStateService"])); };
 TeacherService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: TeacherService, factory: TeacherService.ɵfac, providedIn: 'root' });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](TeacherService, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
         args: [{
                 providedIn: 'root'
             }]
-    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: _subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"] }]; }, null); })();
+    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: _subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"] }, { type: _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_5__["SplashScreenStateService"] }]; }, null); })();
 
 
 /***/ }),
