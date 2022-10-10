@@ -38,7 +38,8 @@ Method 1 (In Visual Studio):
 1) Install these dependencies:
     <br/>a. SQL Server
     <br/>b. Visual Studio
-    <br/>c. Any browser
+    <br/>d. .Net Framework
+    <br/>d. Any browser
     
 2) Open project in Visual Studio
 3) Build the solution and let the NueGt restore the packages
@@ -49,7 +50,8 @@ Method 2 (On IIS):
 1) Install these dependencies:
     <br/>a. SQL Server
     <br/>b. Visual Studio
-    <br/>c. Any browser
+    <br/>c. .Net Framework
+    <br/>d. Any browser
     
 2) Open project in Visual Studio (Must be opened as Administrator)
 3) Build the main solution and let the Nuget restore the packages
@@ -62,8 +64,9 @@ Method 2 (On IIS):
     <br/>a. SQL Server
     <br/>b. Visual Studio
     <br/>c. Any browser
-    <br/>d. Node Js
-    <br/>e. Angular CLI
+    <br/>d. .Net Framework
+    <br/>e. Node Js
+    <br/>f. Angular CLI
 
 2) Open project in Visual Studio
 3) Build the solution and let the NuGet restore the packages.
