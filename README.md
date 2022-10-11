@@ -74,6 +74,29 @@ Method 2 (On IIS):
 4) For .Net side developemnt, explore the proejct "MagniCollegeManagementSystem" except the folder 'Client'
 5) For Angular side developemnt, explore the folder 'Client' in "MagniCollegeManagementSystem" web project. This folder has all code related to Angular applciation
 
+# Projects
+
+* <b>  DataAccess:</b>
+<br> Responsible for:
+<br> a: Creating the DB at first run
+<br> b: Adding seed data
+<br> c: Performing DB operations
+<br> d: Providing abstration around DB operations
+
+
+ * <b> EnvironmentSetter:</b>
+<br> Responsible for setting environment to run applicaiton on IIS by
+<br> a: Activating windows features required for the IIS
+<br> b: Creating applicaiotn pool and applicaiton in IIS
+<br> c: Creating DB in SQL server and assigining DB access rights to IIS pool login
+<br> d: Running application
+
+* <b>  MagniCollegeManagementSystem:</b>
+<br> Conatains web application including
+<br> a: Routing logic
+<br> b: Views
+<br> c: Angular code
+<br> d: ASP.NET code
 
 # How overall aplicaiton works:
 The applicaiton makes use of ASP.NET MVC 5 and Angular architecture.
