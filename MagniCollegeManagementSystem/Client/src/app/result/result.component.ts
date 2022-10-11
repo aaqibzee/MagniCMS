@@ -17,7 +17,7 @@ export class ResultComponent implements OnInit {
     public service: ResultService,
     public subjectService: SubjectService,
     private ngZone: NgZone,
-    private toastr: ToastrService) { }
+    private toaster: ToastrService) { }
 
   ngOnInit(): void {
     this.service.refreshList();
@@ -25,16 +25,16 @@ export class ResultComponent implements OnInit {
   }
 
   updateResult(record: Result) {
-    this.toastr.info('Data populated to form', 'Info');
+    this.toaster.info('Data populated to form', 'Info', { closeButton: true });
     this.service.populateForm(record);
   }
 
   deleteResult(record: Result) {
     this.service.deleteResult(record.Id).subscribe(
       result => {
-        this.toastr.success('Result deleted successfully', 'Success');
+        this.toaster.success('Result deleted successfully', 'Success', { closeButton: true });
       }, error => {
-        this.toastr.error('An error occured, while deleting result', 'Error');
+        this.toaster.error('An error occured, while deleting result', 'Error', { closeButton: true });
         console.log(error);
       });
     if (record.Id == this.service.formData.Id) {

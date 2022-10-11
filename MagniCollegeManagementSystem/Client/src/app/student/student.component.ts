@@ -18,7 +18,7 @@ export class StudentComponent implements OnInit {
     private ngZone: NgZone,
     public service: StudentService,
     public resultService: ResultService,
-    private toastr: ToastrService
+    private toaster: ToastrService
   ) {
     this.service.refreshList();
     this.resultService.refreshList();
@@ -31,16 +31,16 @@ export class StudentComponent implements OnInit {
   }
   updateStudent(record: Student) {
     this.service.populateForm(record);
-    this.toastr.info('Data populated to form', 'Info');
+    this.toaster.info('Data populated to form', 'Info', { closeButton: true });
   }
 
   deleteStudent(record: Student) {
     this.service.deleteStudent(record.Id).subscribe(
       result => {
-        this.toastr.success('Student deleted successfully', 'Success');
+        this.toaster.success('Student deleted successfully', 'Success', { closeButton: true });
       }, error => {
         console.log(error);
-        this.toastr.error('An error occured, while deleting student', 'Error');
+        this.toaster.error('An error occured, while deleting student', 'Error', { closeButton: true });
       });
     if (record.Id == this.service.formData.Id) {
       this.service.resetFormData();

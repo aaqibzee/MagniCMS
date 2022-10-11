@@ -19,7 +19,7 @@ export class SubjectComponent implements OnInit {
     public resultService: ResultService,
     public gradeService: GradeService,
     private ngZone: NgZone,
-    private toastr: ToastrService) { }
+    private toaster: ToastrService) { }
 
   ngOnInit(): void {
     this.service.refreshList();
@@ -27,17 +27,17 @@ export class SubjectComponent implements OnInit {
   }
 
   updateSubject(record: Subject) {
-    this.toastr.info('Data populated to form', 'Info');
+    this.toaster.info('Data populated to form', 'Info', { closeButton: true });
     this.service.populateForm(record);
   }
 
   deleteSubject(record: Subject) {
     this.service.deleteSubject(record.Id).subscribe(
       result => {
-        this.toastr.success('Subject deleted successfully', 'Success');
+        this.toaster.success('Subject deleted successfully', 'Success', { closeButton: true });
         this.service.refreshList();
       }, error => {
-        this.toastr.error('An error occured, while deleting subject', 'Error');
+        this.toaster.error('An error occured, while deleting subject', 'Error', { closeButton: true });
         console.log(error);
       });
   }

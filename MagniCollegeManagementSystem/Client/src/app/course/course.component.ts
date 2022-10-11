@@ -33,7 +33,7 @@ export class CourseComponent implements OnInit {
   }
 
   populateForm(course: Course) {
-    this.toastr.info('Data populated to form', 'Info');
+    this.toastr.info('Data populated to form', 'Info', { closeButton: true });
     this.service.formData = Object.assign({}, course);
   }
 
@@ -62,9 +62,9 @@ export class CourseComponent implements OnInit {
   deleteCourse(course: Course) {
     this.service.deleteCourse(course.Id).subscribe(
       result => {
-        this.toastr.success('Course deleted successfully', 'Success');
+        this.toastr.success('Course deleted successfully', 'Success', { closeButton: true });
       }, error => {
-        this.toastr.error('An error occured, while deleting course', 'Error');
+        this.toastr.error('An error occured, while deleting course', 'Error', { closeButton: true });
         console.log(error);
       });
   }

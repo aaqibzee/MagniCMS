@@ -47,7 +47,7 @@ export class TeacherFormComponent implements OnInit {
 
   onSubmit(form: NgForm) {
     if (this.isDuplicateRecord()) {
-      this.toaster.error("Teacher already exists", "Error");
+      this.toaster.error("Teacher already exists", "Error", { closeButton: true });
     }
     else {
       this.service.formData.Subjects = this.service.selectedSubjects.map(x => x.Id);
@@ -71,10 +71,10 @@ export class TeacherFormComponent implements OnInit {
   inserRecord(form: NgForm) {
     this.service.postTeacher().subscribe(
       result => {
-        this.toaster.success('Teacher added successfully', 'Success');
+        this.toaster.success('Teacher added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
       }, error => {
-        this.toaster.error('An error occured while adding the new teacher', 'Error');
+        this.toaster.error('An error occured while adding the new teacher', 'Error', { closeButton: true });
         console.log(error);
       }
     );
@@ -83,10 +83,10 @@ export class TeacherFormComponent implements OnInit {
   updateRecord(form: NgForm) {
     this.service.putTeacher().subscribe(
       result => {
-        this.toaster.success('Teacher updated successfully', 'Success');
+        this.toaster.success('Teacher updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
       }, error => {
-        this.toaster.error('An error occured while updating the new teacher', 'Error');
+        this.toaster.error('An error occured while updating the new teacher', 'Error', { closeButton: true });
         console.log(error);
       }
     );

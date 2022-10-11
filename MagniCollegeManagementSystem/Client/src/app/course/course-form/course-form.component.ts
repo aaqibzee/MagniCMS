@@ -20,7 +20,7 @@ export class CourseFormComponent implements OnInit {
 
   onSubmit(form: NgForm) {
     if (this.isDuplicateRecord()) {
-      this.toastr.error("Course already exists", "Error");
+      this.toastr.error("Course already exists", "Error", { closeButton: true });
     }
     else if (this.service.formData.Id == 0) {
       this.insertCourse(form);
@@ -42,10 +42,10 @@ export class CourseFormComponent implements OnInit {
   insertCourse(form: NgForm) {
     this.service.postCourse().subscribe(
       result => {
-        this.toastr.success('Course added successfully', 'Success');
+        this.toastr.success('Course added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
       }, error => {
-        this.toastr.error('An error occured while adding the new course', 'Error');
+        this.toastr.error('An error occured while adding the new course', 'Error', { closeButton: true });
         console.log(error);
       }
     );
@@ -54,10 +54,10 @@ export class CourseFormComponent implements OnInit {
   updateCourse(form: NgForm) {
     this.service.putCourse().subscribe(
       result => {
-        this.toastr.success('Course updated successfully', 'Success');
+        this.toastr.success('Course updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
       }, error => {
-        this.toastr.error('An error occured while updating the new course', 'Error');
+        this.toastr.error('An error occured while updating the new course', 'Error', { closeButton: true });
         console.log(error);
       }
     );

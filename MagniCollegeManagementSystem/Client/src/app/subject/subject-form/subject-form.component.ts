@@ -52,7 +52,7 @@ export class SubjectFormComponent implements OnInit {
 
   setValidationMessages() {
     if (this.isDuplicateRecord()) {
-      this.toaster.error("Subject already exists", "Error");
+      this.toaster.error("Subject already exists", "Error", { closeButton: true });
     }
     else {
       this.service.CourseSelcetValidationMesage = ": Required"
@@ -63,11 +63,11 @@ export class SubjectFormComponent implements OnInit {
   inserRecord(form: NgForm) {
     this.service.postSubject().subscribe(
       result => {
-        this.toaster.success('Subject added successfully', 'Success');
+        this.toaster.success('Subject added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
         this.service.refreshList();
       }, error => {
-        this.toaster.error('An error occured while adding the new subject', 'Error');
+        this.toaster.error('An error occured while adding the new subject', 'Error', { closeButton: true });
         console.log(error);
       }
     );
@@ -76,11 +76,11 @@ export class SubjectFormComponent implements OnInit {
   updateRecord(form: NgForm) {
     this.service.putSubject().subscribe(
       result => {
-        this.toaster.success('Subject updated successfully', 'Success');
+        this.toaster.success('Subject updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
         this.service.refreshList();
       }, error => {
-        this.toaster.error('An error occured while updating the new subject', 'Error');
+        this.toaster.error('An error occured while updating the new subject', 'Error', { closeButton: true });
         console.log(error);
       }
     );

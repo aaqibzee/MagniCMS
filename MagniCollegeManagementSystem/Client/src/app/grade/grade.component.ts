@@ -25,16 +25,16 @@ export class GradeComponent implements OnInit {
   }
 
   populateForm(grade: Grade) {
-    this.toastr.info('Data populated to form', 'Info');
+    this.toastr.info('Data populated to form', 'Info', { closeButton: true });
     this.service.formData = Object.assign({}, grade);
   }
 
   deleteGrade(grade: Grade) {
     this.service.deleteGrade(grade.Id).subscribe(
       result => {
-        this.toastr.success('Grade deleted successfully', 'Success');
+        this.toastr.success('Grade deleted successfully', 'Success', { closeButton: true });
       }, error => {
-        this.toastr.error('An error occured, while deleting grade', 'Error');
+        this.toastr.error('An error occured, while deleting grade', 'Error', { closeButton: true });
         console.log(error);
       });
   }

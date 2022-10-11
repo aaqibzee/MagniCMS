@@ -56,7 +56,7 @@ class TeacherFormComponent {
     }
     onSubmit(form) {
         if (this.isDuplicateRecord()) {
-            this.toaster.error("Teacher already exists", "Error");
+            this.toaster.error("Teacher already exists", "Error", { closeButton: true });
         }
         else {
             this.service.formData.Subjects = this.service.selectedSubjects.map(x => x.Id);
@@ -77,19 +77,19 @@ class TeacherFormComponent {
     }
     inserRecord(form) {
         this.service.postTeacher().subscribe(result => {
-            this.toaster.success('Teacher added successfully', 'Success');
+            this.toaster.success('Teacher added successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
-            this.toaster.error('An error occured while adding the new teacher', 'Error');
+            this.toaster.error('An error occured while adding the new teacher', 'Error', { closeButton: true });
             console.log(error);
         });
     }
     updateRecord(form) {
         this.service.putTeacher().subscribe(result => {
-            this.toaster.success('Teacher updated successfully', 'Success');
+            this.toaster.success('Teacher updated successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
-            this.toaster.error('An error occured while updating the new teacher', 'Error');
+            this.toaster.error('An error occured while updating the new teacher', 'Error', { closeButton: true });
             console.log(error);
         });
     }
@@ -326,27 +326,27 @@ function SubjectComponent_tr_32_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", !ctx_r0.isDeleteable(subj_r1));
 } }
 class SubjectComponent {
-    constructor(service, resultService, gradeService, ngZone, toastr) {
+    constructor(service, resultService, gradeService, ngZone, toaster) {
         this.service = service;
         this.resultService = resultService;
         this.gradeService = gradeService;
         this.ngZone = ngZone;
-        this.toastr = toastr;
+        this.toaster = toaster;
     }
     ngOnInit() {
         this.service.refreshList();
         window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].subjectComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
     }
     updateSubject(record) {
-        this.toastr.info('Data populated to form', 'Info');
+        this.toaster.info('Data populated to form', 'Info', { closeButton: true });
         this.service.populateForm(record);
     }
     deleteSubject(record) {
         this.service.deleteSubject(record.Id).subscribe(result => {
-            this.toastr.success('Subject deleted successfully', 'Success');
+            this.toaster.success('Subject deleted successfully', 'Success', { closeButton: true });
             this.service.refreshList();
         }, error => {
-            this.toastr.error('An error occured, while deleting subject', 'Error');
+            this.toaster.error('An error occured, while deleting subject', 'Error', { closeButton: true });
             console.log(error);
         });
     }
@@ -521,7 +521,7 @@ class GradeFormComponent {
     }
     setValidationMessages() {
         if (this.isDuplicateRecord()) {
-            this.toaster.error("Grade already exists", "Error");
+            this.toaster.error("Grade already exists", "Error", { closeButton: true });
         }
         else {
             this.service.CourseSelcetValidationMesage = ": Required";
@@ -533,19 +533,19 @@ class GradeFormComponent {
     }
     inserRecord(form) {
         this.service.postGrade().subscribe(result => {
-            this.toaster.success('Grade added successfully', 'Success');
+            this.toaster.success('Grade added successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
-            this.toaster.error('An error occured while adding the new grade', 'Error');
+            this.toaster.error('An error occured while adding the new grade', 'Error', { closeButton: true });
             console.log(error);
         });
     }
     updateRecord(form) {
         this.service.putGrade().subscribe(result => {
-            this.toaster.success('Grade updated successfully', 'Success');
+            this.toaster.success('Grade updated successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
-            this.toaster.error('An error occured while updating the new grade', 'Error');
+            this.toaster.error('An error occured while updating the new grade', 'Error', { closeButton: true });
             console.log(error);
         });
     }
@@ -785,7 +785,7 @@ class ResultService {
         this.CourseSelcetValidationMesage = this.formData.Course == null ? ": Required" : '';
         this.StudentSelcetValidationMesage = this.formData.Student == null ? ": Required" : '';
         if (this.isDuplicateRecord()) {
-            this.toaster.error("Result already exists", "Error");
+            this.toaster.error("Result already exists", "Error", { closeButton: true });
         }
     }
     populateForm(student) {
@@ -856,7 +856,7 @@ class CourseFormComponent {
     }
     onSubmit(form) {
         if (this.isDuplicateRecord()) {
-            this.toastr.error("Course already exists", "Error");
+            this.toastr.error("Course already exists", "Error", { closeButton: true });
         }
         else if (this.service.formData.Id == 0) {
             this.insertCourse(form);
@@ -873,19 +873,19 @@ class CourseFormComponent {
     }
     insertCourse(form) {
         this.service.postCourse().subscribe(result => {
-            this.toastr.success('Course added successfully', 'Success');
+            this.toastr.success('Course added successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
-            this.toastr.error('An error occured while adding the new course', 'Error');
+            this.toastr.error('An error occured while adding the new course', 'Error', { closeButton: true });
             console.log(error);
         });
     }
     updateCourse(form) {
         this.service.putCourse().subscribe(result => {
-            this.toastr.success('Course updated successfully', 'Success');
+            this.toastr.success('Course updated successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
-            this.toastr.error('An error occured while updating the new course', 'Error');
+            this.toastr.error('An error occured while updating the new course', 'Error', { closeButton: true });
             console.log(error);
         });
     }
@@ -1871,11 +1871,11 @@ function StudentComponent_tr_32_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", !ctx_r0.isDeleteable(std_r1));
 } }
 class StudentComponent {
-    constructor(ngZone, service, resultService, toastr) {
+    constructor(ngZone, service, resultService, toaster) {
         this.ngZone = ngZone;
         this.service = service;
         this.resultService = resultService;
-        this.toastr = toastr;
+        this.toaster = toaster;
         this.deleteButtonToolTip = '';
         this.selectedItem = '';
         this.service.refreshList();
@@ -1886,14 +1886,14 @@ class StudentComponent {
     }
     updateStudent(record) {
         this.service.populateForm(record);
-        this.toastr.info('Data populated to form', 'Info');
+        this.toaster.info('Data populated to form', 'Info', { closeButton: true });
     }
     deleteStudent(record) {
         this.service.deleteStudent(record.Id).subscribe(result => {
-            this.toastr.success('Student deleted successfully', 'Success');
+            this.toaster.success('Student deleted successfully', 'Success', { closeButton: true });
         }, error => {
             console.log(error);
-            this.toastr.error('An error occured, while deleting student', 'Error');
+            this.toaster.error('An error occured, while deleting student', 'Error', { closeButton: true });
         });
         if (record.Id == this.service.formData.Id) {
             this.service.resetFormData();
@@ -2100,7 +2100,7 @@ class CourseComponent {
         window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].courseComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
     }
     populateForm(course) {
-        this.toastr.info('Data populated to form', 'Info');
+        this.toastr.info('Data populated to form', 'Info', { closeButton: true });
         this.service.formData = Object.assign({}, course);
     }
     getAverageGrade(course) {
@@ -2124,9 +2124,9 @@ class CourseComponent {
     }
     deleteCourse(course) {
         this.service.deleteCourse(course.Id).subscribe(result => {
-            this.toastr.success('Course deleted successfully', 'Success');
+            this.toastr.success('Course deleted successfully', 'Success', { closeButton: true });
         }, error => {
-            this.toastr.error('An error occured, while deleting course', 'Error');
+            this.toastr.error('An error occured, while deleting course', 'Error', { closeButton: true });
             console.log(error);
         });
     }
@@ -2320,12 +2320,12 @@ function TeacherComponent_tr_26_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", !ctx_r0.isDeleteable(teacher_r1));
 } }
 class TeacherComponent {
-    constructor(subjectService, service, courseService, ngZone, toastr) {
+    constructor(subjectService, service, courseService, ngZone, toaster) {
         this.subjectService = subjectService;
         this.service = service;
         this.courseService = courseService;
         this.ngZone = ngZone;
-        this.toastr = toastr;
+        this.toaster = toaster;
     }
     ngOnInit() {
         this.service.refreshList();
@@ -2340,7 +2340,7 @@ class TeacherComponent {
         this.service.selectedSubjects = this.getSelctedSubjectListWithAllDetails();
         this.service.selectedCourses = this.getSelctedCourseListWithAllDetails();
         this.service.subjectsForSelectedCourses = this.getSubjectsForSelectedCourses();
-        this.toastr.info('Data populated to form', 'Info');
+        this.toaster.info('Data populated to form', 'Info', { closeButton: true });
     }
     getSubjectsForSelectedCourses() {
         let list = [];
@@ -2377,9 +2377,9 @@ class TeacherComponent {
     }
     deleteTeacher(record) {
         this.service.deleteTeacher(record.Id).subscribe(result => {
-            this.toastr.success('Teacher deleted successfully', 'Success');
+            this.toaster.success('Teacher deleted successfully', 'Success', { closeButton: true });
         }, error => {
-            this.toastr.error('An error occured, while deleting teacher', 'Error');
+            this.toaster.error('An error occured, while deleting teacher', 'Error', { closeButton: true });
             console.log(error);
         });
         if (record.Id == this.service.formData.Id) {
@@ -2628,7 +2628,7 @@ class SubjectFormComponent {
     }
     setValidationMessages() {
         if (this.isDuplicateRecord()) {
-            this.toaster.error("Subject already exists", "Error");
+            this.toaster.error("Subject already exists", "Error", { closeButton: true });
         }
         else {
             this.service.CourseSelcetValidationMesage = ": Required";
@@ -2636,21 +2636,21 @@ class SubjectFormComponent {
     }
     inserRecord(form) {
         this.service.postSubject().subscribe(result => {
-            this.toaster.success('Subject added successfully', 'Success');
+            this.toaster.success('Subject added successfully', 'Success', { closeButton: true });
             this.resetForm(form);
             this.service.refreshList();
         }, error => {
-            this.toaster.error('An error occured while adding the new subject', 'Error');
+            this.toaster.error('An error occured while adding the new subject', 'Error', { closeButton: true });
             console.log(error);
         });
     }
     updateRecord(form) {
         this.service.putSubject().subscribe(result => {
-            this.toaster.success('Subject updated successfully', 'Success');
+            this.toaster.success('Subject updated successfully', 'Success', { closeButton: true });
             this.resetForm(form);
             this.service.refreshList();
         }, error => {
-            this.toaster.error('An error occured while updating the new subject', 'Error');
+            this.toaster.error('An error occured while updating the new subject', 'Error', { closeButton: true });
             console.log(error);
         });
     }
@@ -2850,14 +2850,14 @@ class GradeComponent {
         window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].gradeComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
     }
     populateForm(grade) {
-        this.toastr.info('Data populated to form', 'Info');
+        this.toastr.info('Data populated to form', 'Info', { closeButton: true });
         this.service.formData = Object.assign({}, grade);
     }
     deleteGrade(grade) {
         this.service.deleteGrade(grade.Id).subscribe(result => {
-            this.toastr.success('Grade deleted successfully', 'Success');
+            this.toastr.success('Grade deleted successfully', 'Success', { closeButton: true });
         }, error => {
-            this.toastr.error('An error occured, while deleting grade', 'Error');
+            this.toastr.error('An error occured, while deleting grade', 'Error', { closeButton: true });
             console.log(error);
         });
     }
@@ -3001,25 +3001,25 @@ function ResultComponent_tr_26_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](result_r1.Grade == null ? null : result_r1.Grade.Title);
 } }
 class ResultComponent {
-    constructor(service, subjectService, ngZone, toastr) {
+    constructor(service, subjectService, ngZone, toaster) {
         this.service = service;
         this.subjectService = subjectService;
         this.ngZone = ngZone;
-        this.toastr = toastr;
+        this.toaster = toaster;
     }
     ngOnInit() {
         this.service.refreshList();
         window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].resultComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
     }
     updateResult(record) {
-        this.toastr.info('Data populated to form', 'Info');
+        this.toaster.info('Data populated to form', 'Info', { closeButton: true });
         this.service.populateForm(record);
     }
     deleteResult(record) {
         this.service.deleteResult(record.Id).subscribe(result => {
-            this.toastr.success('Result deleted successfully', 'Success');
+            this.toaster.success('Result deleted successfully', 'Success', { closeButton: true });
         }, error => {
-            this.toastr.error('An error occured, while deleting result', 'Error');
+            this.toaster.error('An error occured, while deleting result', 'Error', { closeButton: true });
             console.log(error);
         });
         if (record.Id == this.service.formData.Id) {
@@ -3254,7 +3254,7 @@ class StudentFormComponent {
         }
         else if (this.isFormValid) {
             if (this.isDuplicateRecord()) {
-                this.toaster.error("Student already exists", "Error");
+                this.toaster.error("Student already exists", "Error", { closeButton: true });
             }
             else {
                 this.service.formData.Subjects = this.service.selectedSubjectsByStudent.map(a => a.Id);
@@ -3274,19 +3274,19 @@ class StudentFormComponent {
     }
     inserRecord(form) {
         this.service.postStudent().subscribe(result => {
-            this.toaster.success('Student added successfully', 'Success');
+            this.toaster.success('Student added successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
-            this.toaster.error('An error occured while adding the new student', 'Error');
+            this.toaster.error('An error occured while adding the new student', 'Error', { closeButton: true });
             console.log(error);
         });
     }
     updateRecord(form) {
         this.service.putStudent().subscribe(result => {
-            this.toaster.success('Student updated successfully', 'Success');
+            this.toaster.success('Student updated successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
-            this.toaster.error('An error occured while updating the new student', 'Error');
+            this.toaster.error('An error occured while updating the new student', 'Error', { closeButton: true });
             console.log(error);
         });
     }
@@ -3538,13 +3538,13 @@ function ResultFormComponent_button_41_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", student_r18.Name, " ");
 } }
 class ResultFormComponent {
-    constructor(service, studentService, subjectService, gradeService, courseService, toastr) {
+    constructor(service, studentService, subjectService, gradeService, courseService, toaster) {
         this.service = service;
         this.studentService = studentService;
         this.subjectService = subjectService;
         this.gradeService = gradeService;
         this.courseService = courseService;
-        this.toastr = toastr;
+        this.toaster = toaster;
         this.gradeLabelText = 'Enter obtained marks to calculate grade';
         this.gradeLabelTextClass = "text-info";
         this.studentService.refreshList();
@@ -3610,19 +3610,19 @@ class ResultFormComponent {
     }
     inserRecord(form) {
         this.service.postResult().subscribe(result => {
-            this.toastr.success('Result added successfully', 'Success');
+            this.toaster.success('Result added successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
-            this.toastr.error('An error occured while adding the new result', 'Error');
+            this.toaster.error('An error occured while adding the new result', 'Error', { closeButton: true });
             console.log(error);
         });
     }
     updateRecord(form) {
         this.service.putResult().subscribe(result => {
-            this.toastr.success('Result updated successfully', 'Success');
+            this.toaster.success('Result updated successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
-            this.toastr.error('An error occured while updating the new result', 'Error');
+            this.toaster.error('An error occured while updating the new result', 'Error', { closeButton: true });
             console.log(error);
         });
     }

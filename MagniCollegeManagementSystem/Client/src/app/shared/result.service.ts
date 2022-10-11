@@ -47,7 +47,7 @@ export class ResultService {
     this.CourseSelcetValidationMesage = this.formData.Course == null ? ": Required" : '';
     this.StudentSelcetValidationMesage = this.formData.Student == null ? ": Required" : '';
     if (this.isDuplicateRecord()) {
-      this.toaster.error("Result already exists", "Error");
+      this.toaster.error("Result already exists", "Error", { closeButton: true });
     }
   }
 

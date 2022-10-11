@@ -29,7 +29,7 @@ export class ResultFormComponent implements OnInit {
     public subjectService: SubjectService,
     public gradeService: GradeService,
     public courseService: CourseService,
-    private toastr: ToastrService) {
+    private toaster: ToastrService) {
     this.studentService.refreshList();
     this.subjectService.refreshList();
     this.gradeService.refreshList();
@@ -103,10 +103,10 @@ export class ResultFormComponent implements OnInit {
   inserRecord(form: NgForm) {
     this.service.postResult().subscribe(
       result => {
-        this.toastr.success('Result added successfully', 'Success');
+        this.toaster.success('Result added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
       }, error => {
-        this.toastr.error('An error occured while adding the new result', 'Error');
+        this.toaster.error('An error occured while adding the new result', 'Error', { closeButton: true });
         console.log(error);
       }
     );
@@ -115,10 +115,10 @@ export class ResultFormComponent implements OnInit {
   updateRecord(form: NgForm) {
     this.service.putResult().subscribe(
       result => {
-        this.toastr.success('Result updated successfully', 'Success');
+        this.toaster.success('Result updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
       }, error => {
-        this.toastr.error('An error occured while updating the new result', 'Error');
+        this.toaster.error('An error occured while updating the new result', 'Error', { closeButton: true });
         console.log(error);
       }
     );

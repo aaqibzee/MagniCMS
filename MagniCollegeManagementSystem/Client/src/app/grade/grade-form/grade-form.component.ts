@@ -57,7 +57,7 @@ export class GradeFormComponent implements OnInit {
   setValidationMessages() {
 
     if (this.isDuplicateRecord()) {
-      this.toaster.error("Grade already exists", "Error");
+      this.toaster.error("Grade already exists", "Error", { closeButton: true });
     }
     else {
       this.service.CourseSelcetValidationMesage = ": Required"
@@ -73,10 +73,10 @@ export class GradeFormComponent implements OnInit {
   inserRecord(form: NgForm) {
     this.service.postGrade().subscribe(
       result => {
-        this.toaster.success('Grade added successfully', 'Success');
+        this.toaster.success('Grade added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
       }, error => {
-        this.toaster.error('An error occured while adding the new grade', 'Error');
+        this.toaster.error('An error occured while adding the new grade', 'Error', { closeButton: true });
         console.log(error);
       }
     );
@@ -85,10 +85,10 @@ export class GradeFormComponent implements OnInit {
   updateRecord(form: NgForm) {
     this.service.putGrade().subscribe(
       result => {
-        this.toaster.success('Grade updated successfully', 'Success');
+        this.toaster.success('Grade updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
       }, error => {
-        this.toaster.error('An error occured while updating the new grade', 'Error');
+        this.toaster.error('An error occured while updating the new grade', 'Error', { closeButton: true });
         console.log(error);
       }
     );

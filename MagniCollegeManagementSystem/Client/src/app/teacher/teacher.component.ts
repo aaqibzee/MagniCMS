@@ -20,7 +20,7 @@ export class TeacherComponent implements OnInit {
     public service: TeacherService,
     public courseService: CourseService,
     private ngZone: NgZone,
-    private toastr: ToastrService) { }
+    private toaster: ToastrService) { }
 
 
   ngOnInit(): void {
@@ -37,7 +37,7 @@ export class TeacherComponent implements OnInit {
     this.service.selectedSubjects = this.getSelctedSubjectListWithAllDetails();
     this.service.selectedCourses = this.getSelctedCourseListWithAllDetails();
     this.service.subjectsForSelectedCourses = this.getSubjectsForSelectedCourses();
-    this.toastr.info('Data populated to form', 'Info');
+    this.toaster.info('Data populated to form', 'Info', { closeButton: true });
   }
 
   getSubjectsForSelectedCourses() {
@@ -78,9 +78,9 @@ export class TeacherComponent implements OnInit {
   deleteTeacher(record: Teacher) {
     this.service.deleteTeacher(record.Id).subscribe(
       result => {
-        this.toastr.success('Teacher deleted successfully', 'Success');
+        this.toaster.success('Teacher deleted successfully', 'Success', { closeButton: true });
       }, error => {
-        this.toastr.error('An error occured, while deleting teacher', 'Error');
+        this.toaster.error('An error occured, while deleting teacher', 'Error', { closeButton: true });
         console.log(error);
       });
     if (record.Id == this.service.formData.Id) {
