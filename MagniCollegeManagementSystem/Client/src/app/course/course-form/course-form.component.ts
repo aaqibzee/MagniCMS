@@ -19,13 +19,24 @@ export class CourseFormComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    if (this.service.formData.Id == 0) {
+    if (this.isDuplicateRecord()) {
+      this.toastr.error("Course already exists", "Error");
+    }
+    else if (this.service.formData.Id == 0) {
       this.insertCourse(form);
     }
     else {
       this.updateCourse(form);
     }
 
+  }
+
+  isDuplicateRecord() {
+    return this.service.getList().filter(
+      x => x.Code == this.service.formData.Code
+        && x.Name == this.service.formData.Name
+        && x.TotalCreditHours == this.service.formData.TotalCreditHours
+        && this.service.formData.Id == 0).length > 0;
   }
 
   insertCourse(form: NgForm) {

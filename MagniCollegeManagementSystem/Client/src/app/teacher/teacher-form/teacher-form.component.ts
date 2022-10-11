@@ -17,7 +17,7 @@ export class TeacherFormComponent implements OnInit {
   constructor(
     public service: TeacherService,
     public courseService: CourseService,
-    private toastr: ToastrService) {
+    private toaster: ToastrService) {
     this.subjectsDropdownSettings = {
       singleSelection: false,
       idField: 'Id',
@@ -46,24 +46,35 @@ export class TeacherFormComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-    this.service.formData.Subjects = this.service.selectedSubjects.map(x => x.Id);
-    this.service.formData.Courses = this.service.selectedCourses.map(x => x.Id);
-    if (this.service.formData.Id == 0) {
-      this.inserRecord(form);
+    if (this.isDuplicateRecord()) {
+      this.toaster.error("Teacher already exists", "Error");
     }
     else {
-      this.updateRecord(form);
+      this.service.formData.Subjects = this.service.selectedSubjects.map(x => x.Id);
+      this.service.formData.Courses = this.service.selectedCourses.map(x => x.Id);
+      if (this.service.formData.Id == 0) {
+        this.inserRecord(form);
+      }
+      else {
+        this.updateRecord(form);
+      }
     }
-
+  }
+  isDuplicateRecord() {
+    return this.service.getList().filter(
+      x => x.Birthday == this.service.formData.Birthday
+        && x.Name == this.service.formData.Name
+        && x.Salary == this.service.formData.Salary
+        && this.service.formData.Id == 0).length > 0;
   }
 
   inserRecord(form: NgForm) {
     this.service.postTeacher().subscribe(
       result => {
-        this.toastr.success('Teacher added successfully', 'Success');
+        this.toaster.success('Teacher added successfully', 'Success');
         this.resetForm(form);
       }, error => {
-        this.toastr.error('An error occured while adding the new teacher', 'Error');
+        this.toaster.error('An error occured while adding the new teacher', 'Error');
         console.log(error);
       }
     );
@@ -72,10 +83,10 @@ export class TeacherFormComponent implements OnInit {
   updateRecord(form: NgForm) {
     this.service.putTeacher().subscribe(
       result => {
-        this.toastr.success('Teacher updated successfully', 'Success');
+        this.toaster.success('Teacher updated successfully', 'Success');
         this.resetForm(form);
       }, error => {
-        this.toastr.error('An error occured while updating the new teacher', 'Error');
+        this.toaster.error('An error occured while updating the new teacher', 'Error');
         console.log(error);
       }
     );

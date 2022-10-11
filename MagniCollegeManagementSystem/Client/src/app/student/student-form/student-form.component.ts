@@ -20,7 +20,7 @@ export class StudentFormComponent implements OnInit {
 
   constructor(
     public service: StudentService,
-    private toastr: ToastrService) {
+    private toaster: ToastrService) {
     this.subjectsDropdownSettings = {
       singleSelection: false,
       idField: 'Id',
@@ -46,23 +46,35 @@ export class StudentFormComponent implements OnInit {
     }
 
     else if (this.isFormValid) {
-      this.service.formData.Subjects = this.service.selectedSubjectsByStudent.map(a => a.Id);
-      if (this.service.formData.Id == 0) {
-        this.inserRecord(form);
+      if (this.isDuplicateRecord()) {
+        this.toaster.error("Student already exists", "Error");
       }
       else {
-        this.updateRecord(form);
+        this.service.formData.Subjects = this.service.selectedSubjectsByStudent.map(a => a.Id);
+        if (this.service.formData.Id == 0) {
+          this.inserRecord(form);
+        }
+        else {
+          this.updateRecord(form);
+        }
       }
     }
+  }
+
+  isDuplicateRecord() {
+    return this.service.getList().filter(
+      x => x.Birthday == this.service.formData.Birthday
+        && x.Name == this.service.formData.Name
+        && this.service.formData.Id == 0).length > 0;
   }
 
   inserRecord(form: NgForm) {
     this.service.postStudent().subscribe(
       result => {
-        this.toastr.success('Student added successfully', 'Success');
+        this.toaster.success('Student added successfully', 'Success');
         this.resetForm(form);
       }, error => {
-        this.toastr.error('An error occured while adding the new student', 'Error');
+        this.toaster.error('An error occured while adding the new student', 'Error');
         console.log(error);
       }
     );
@@ -71,10 +83,10 @@ export class StudentFormComponent implements OnInit {
   updateRecord(form: NgForm) {
     this.service.putStudent().subscribe(
       result => {
-        this.toastr.success('Student updated successfully', 'Success');
+        this.toaster.success('Student updated successfully', 'Success');
         this.resetForm(form);
       }, error => {
-        this.toastr.error('An error occured while updating the new student', 'Error');
+        this.toaster.error('An error occured while updating the new student', 'Error');
         console.log(error);
       }
     );

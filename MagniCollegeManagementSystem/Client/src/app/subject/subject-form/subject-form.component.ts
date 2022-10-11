@@ -17,7 +17,7 @@ export class SubjectFormComponent implements OnInit {
   constructor(
     public service: SubjectService,
     public courseService: CourseService,
-    private toastr: ToastrService) { }
+    private toaster: ToastrService) { }
 
   ngOnInit(): void {
     this.resetFormData();
@@ -38,21 +38,36 @@ export class SubjectFormComponent implements OnInit {
   }
 
   isFormInvalid() {
-    return this.service.formData.Course == null;
+    return this.service.formData.Course == null
+      || this.isDuplicateRecord();
+  }
+
+  isDuplicateRecord() {
+    return this.service.getList().filter(
+      x => x.Course?.Id == this.service.formData.Course?.Id
+        && x.Code == this.service.formData.Code
+        && x.CreditHours == this.service.formData.CreditHours
+        && this.service.formData.Id == 0).length > 0;
   }
 
   setValidationMessages() {
-    this.service.CourseSelcetValidationMesage = ": Required"
+    if (this.isDuplicateRecord()) {
+      this.toaster.error("Subject already exists", "Error");
+    }
+    else {
+      this.service.CourseSelcetValidationMesage = ": Required"
+    }
+
   }
 
   inserRecord(form: NgForm) {
     this.service.postSubject().subscribe(
       result => {
-        this.toastr.success('Subject added successfully', 'Success');
+        this.toaster.success('Subject added successfully', 'Success');
         this.resetForm(form);
         this.service.refreshList();
       }, error => {
-        this.toastr.error('An error occured while adding the new subject', 'Error');
+        this.toaster.error('An error occured while adding the new subject', 'Error');
         console.log(error);
       }
     );
@@ -61,11 +76,11 @@ export class SubjectFormComponent implements OnInit {
   updateRecord(form: NgForm) {
     this.service.putSubject().subscribe(
       result => {
-        this.toastr.success('Subject updated successfully', 'Success');
+        this.toaster.success('Subject updated successfully', 'Success');
         this.resetForm(form);
         this.service.refreshList();
       }, error => {
-        this.toastr.error('An error occured while updating the new subject', 'Error');
+        this.toaster.error('An error occured while updating the new subject', 'Error');
         console.log(error);
       }
     );

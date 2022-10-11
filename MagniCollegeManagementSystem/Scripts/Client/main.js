@@ -24,10 +24,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class TeacherFormComponent {
-    constructor(service, courseService, toastr) {
+    constructor(service, courseService, toaster) {
         this.service = service;
         this.courseService = courseService;
-        this.toastr = toastr;
+        this.toaster = toaster;
         this.courses = [];
         this.subjectsDropdownSettings = {};
         this.coursesDropdownSettings = {};
@@ -55,30 +55,41 @@ class TeacherFormComponent {
         this.resetFormData();
     }
     onSubmit(form) {
-        this.service.formData.Subjects = this.service.selectedSubjects.map(x => x.Id);
-        this.service.formData.Courses = this.service.selectedCourses.map(x => x.Id);
-        if (this.service.formData.Id == 0) {
-            this.inserRecord(form);
+        if (this.isDuplicateRecord()) {
+            this.toaster.error("Teacher already exists", "Error");
         }
         else {
-            this.updateRecord(form);
+            this.service.formData.Subjects = this.service.selectedSubjects.map(x => x.Id);
+            this.service.formData.Courses = this.service.selectedCourses.map(x => x.Id);
+            if (this.service.formData.Id == 0) {
+                this.inserRecord(form);
+            }
+            else {
+                this.updateRecord(form);
+            }
         }
+    }
+    isDuplicateRecord() {
+        return this.service.getList().filter(x => x.Birthday == this.service.formData.Birthday
+            && x.Name == this.service.formData.Name
+            && x.Salary == this.service.formData.Salary
+            && this.service.formData.Id == 0).length > 0;
     }
     inserRecord(form) {
         this.service.postTeacher().subscribe(result => {
-            this.toastr.success('Teacher added successfully', 'Success');
+            this.toaster.success('Teacher added successfully', 'Success');
             this.resetForm(form);
         }, error => {
-            this.toastr.error('An error occured while adding the new teacher', 'Error');
+            this.toaster.error('An error occured while adding the new teacher', 'Error');
             console.log(error);
         });
     }
     updateRecord(form) {
         this.service.putTeacher().subscribe(result => {
-            this.toastr.success('Teacher updated successfully', 'Success');
+            this.toaster.success('Teacher updated successfully', 'Success');
             this.resetForm(form);
         }, error => {
-            this.toastr.error('An error occured while updating the new teacher', 'Error');
+            this.toaster.error('An error occured while updating the new teacher', 'Error');
             console.log(error);
         });
     }
@@ -475,10 +486,10 @@ function GradeFormComponent_button_22_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", course_r6.Name, " ");
 } }
 class GradeFormComponent {
-    constructor(service, courseService, toastr) {
+    constructor(service, courseService, toaster) {
         this.service = service;
         this.courseService = courseService;
-        this.toastr = toastr;
+        this.toaster = toaster;
     }
     ngOnInit() {
         this.resetFormData();
@@ -495,10 +506,26 @@ class GradeFormComponent {
         this.updateRecord(form);
     }
     isFormInvalid() {
-        return this.service.formData.Course == null;
+        return this.service.formData.Course == null
+            || this.isDuplicateRecord();
+    }
+    isDuplicateRecord() {
+        return this.service.getList().filter(x => {
+            var _a, _b;
+            return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = this.service.formData.Course) === null || _b === void 0 ? void 0 : _b.Id)
+                && x.StartingMarks == this.service.formData.StartingMarks
+                && x.EndingMarks == this.service.formData.EndingMarks
+                && x.Title == this.service.formData.Title
+                && this.service.formData.Id == 0;
+        }).length > 0;
     }
     setValidationMessages() {
-        this.service.CourseSelcetValidationMesage = ": Required";
+        if (this.isDuplicateRecord()) {
+            this.toaster.error("Grade already exists", "Error");
+        }
+        else {
+            this.service.CourseSelcetValidationMesage = ": Required";
+        }
     }
     onCourseSelect(course) {
         this.service.formData.Course = course;
@@ -506,19 +533,19 @@ class GradeFormComponent {
     }
     inserRecord(form) {
         this.service.postGrade().subscribe(result => {
-            this.toastr.success('Grade added successfully', 'Success');
+            this.toaster.success('Grade added successfully', 'Success');
             this.resetForm(form);
         }, error => {
-            this.toastr.error('An error occured while adding the new grade', 'Error');
+            this.toaster.error('An error occured while adding the new grade', 'Error');
             console.log(error);
         });
     }
     updateRecord(form) {
         this.service.putGrade().subscribe(result => {
-            this.toastr.success('Grade updated successfully', 'Success');
+            this.toaster.success('Grade updated successfully', 'Success');
             this.resetForm(form);
         }, error => {
-            this.toastr.error('An error occured while updating the new grade', 'Error');
+            this.toaster.error('An error occured while updating the new grade', 'Error');
             console.log(error);
         });
     }
@@ -714,7 +741,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Constants */ "z9QB");
 /* harmony import */ var _result_model__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./result.model */ "u9X8");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
-/* harmony import */ var _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./splash-screen-state.service */ "C8wY");
+/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ngx-toastr */ "EApP");
+/* harmony import */ var _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./splash-screen-state.service */ "C8wY");
+
 
 
 
@@ -722,8 +751,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class ResultService {
-    constructor(http, splashScreenStateService) {
+    constructor(http, toaster, splashScreenStateService) {
         this.http = http;
+        this.toaster = toaster;
         this.splashScreenStateService = splashScreenStateService;
         this.formData = new _result_model__WEBPACK_IMPORTED_MODULE_2__["Result"]();
         this.SubjectSelcetValidationMesage = '';
@@ -734,16 +764,29 @@ class ResultService {
             this.splashScreenStateService.stop();
         }, 1);
     }
-    IsFormInvalid() {
+    isFormInvalid() {
         return this.formData.Course == null
             || this.formData.Student == null
             || this.formData.Subject == null
-            || this.formData.Grade == null;
+            || this.formData.Grade == null
+            || this.isDuplicateRecord();
     }
-    SetValidationMessages() {
+    isDuplicateRecord() {
+        return this.resultsList.filter(x => {
+            var _a, _b, _c, _d, _e, _f;
+            return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = this.formData.Course) === null || _b === void 0 ? void 0 : _b.Id)
+                && ((_c = x.Student) === null || _c === void 0 ? void 0 : _c.Id) == ((_d = this.formData.Student) === null || _d === void 0 ? void 0 : _d.Id)
+                && ((_e = x.Subject) === null || _e === void 0 ? void 0 : _e.Id) == ((_f = this.formData.Subject) === null || _f === void 0 ? void 0 : _f.Id)
+                && this.formData.Id == 0;
+        }).length > 0;
+    }
+    setValidationMessages() {
         this.SubjectSelcetValidationMesage = this.formData.Subject == null ? ": Required" : '';
         this.CourseSelcetValidationMesage = this.formData.Course == null ? ": Required" : '';
         this.StudentSelcetValidationMesage = this.formData.Student == null ? ": Required" : '';
+        if (this.isDuplicateRecord()) {
+            this.toaster.error("Result already exists", "Error");
+        }
     }
     populateForm(student) {
         this.formData = Object.assign({}, student);
@@ -772,14 +815,14 @@ class ResultService {
         return this.resultsList;
     }
 }
-ResultService.ɵfac = function ResultService_Factory(t) { return new (t || ResultService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__["SplashScreenStateService"])); };
+ResultService.ɵfac = function ResultService_Factory(t) { return new (t || ResultService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_4__["ToastrService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_5__["SplashScreenStateService"])); };
 ResultService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: ResultService, factory: ResultService.ɵfac, providedIn: 'root' });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ResultService, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
         args: [{
                 providedIn: 'root'
             }]
-    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__["SplashScreenStateService"] }]; }, null); })();
+    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_4__["ToastrService"] }, { type: _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_5__["SplashScreenStateService"] }]; }, null); })();
 
 
 /***/ }),
@@ -812,12 +855,21 @@ class CourseFormComponent {
         this.resetFormData();
     }
     onSubmit(form) {
-        if (this.service.formData.Id == 0) {
+        if (this.isDuplicateRecord()) {
+            this.toastr.error("Course already exists", "Error");
+        }
+        else if (this.service.formData.Id == 0) {
             this.insertCourse(form);
         }
         else {
             this.updateCourse(form);
         }
+    }
+    isDuplicateRecord() {
+        return this.service.getList().filter(x => x.Code == this.service.formData.Code
+            && x.Name == this.service.formData.Name
+            && x.TotalCreditHours == this.service.formData.TotalCreditHours
+            && this.service.formData.Id == 0).length > 0;
     }
     insertCourse(form) {
         this.service.postCourse().subscribe(result => {
@@ -2540,10 +2592,10 @@ function SubjectFormComponent_button_15_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](course_r6.Name + " " + course_r6.Code);
 } }
 class SubjectFormComponent {
-    constructor(service, courseService, toastr) {
+    constructor(service, courseService, toaster) {
         this.service = service;
         this.courseService = courseService;
-        this.toastr = toastr;
+        this.toaster = toaster;
     }
     ngOnInit() {
         this.resetFormData();
@@ -2562,28 +2614,43 @@ class SubjectFormComponent {
         }
     }
     isFormInvalid() {
-        return this.service.formData.Course == null;
+        return this.service.formData.Course == null
+            || this.isDuplicateRecord();
+    }
+    isDuplicateRecord() {
+        return this.service.getList().filter(x => {
+            var _a, _b;
+            return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = this.service.formData.Course) === null || _b === void 0 ? void 0 : _b.Id)
+                && x.Code == this.service.formData.Code
+                && x.CreditHours == this.service.formData.CreditHours
+                && this.service.formData.Id == 0;
+        }).length > 0;
     }
     setValidationMessages() {
-        this.service.CourseSelcetValidationMesage = ": Required";
+        if (this.isDuplicateRecord()) {
+            this.toaster.error("Subject already exists", "Error");
+        }
+        else {
+            this.service.CourseSelcetValidationMesage = ": Required";
+        }
     }
     inserRecord(form) {
         this.service.postSubject().subscribe(result => {
-            this.toastr.success('Subject added successfully', 'Success');
+            this.toaster.success('Subject added successfully', 'Success');
             this.resetForm(form);
             this.service.refreshList();
         }, error => {
-            this.toastr.error('An error occured while adding the new subject', 'Error');
+            this.toaster.error('An error occured while adding the new subject', 'Error');
             console.log(error);
         });
     }
     updateRecord(form) {
         this.service.putSubject().subscribe(result => {
-            this.toastr.success('Subject updated successfully', 'Success');
+            this.toaster.success('Subject updated successfully', 'Success');
             this.resetForm(form);
             this.service.refreshList();
         }, error => {
-            this.toastr.error('An error occured while updating the new subject', 'Error');
+            this.toaster.error('An error occured while updating the new subject', 'Error');
             console.log(error);
         });
     }
@@ -2923,7 +2990,7 @@ function ResultComponent_tr_26_Template(rf, ctx) { if (rf & 1) {
 } if (rf & 2) {
     const result_r1 = ctx.$implicit;
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](result_r1.Student == null ? null : result_r1.Student.Id);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](result_r1.Id);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](result_r1.Student == null ? null : result_r1.Student.Name);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
@@ -3107,6 +3174,9 @@ class TeacherService {
             .toPromise()
             .then(res => this.teacherList = res);
     }
+    getList() {
+        return this.teacherList;
+    }
 }
 TeacherService.ɵfac = function TeacherService_Factory(t) { return new (t || TeacherService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_5__["SplashScreenStateService"])); };
 TeacherService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: TeacherService, factory: TeacherService.ɵfac, providedIn: 'root' });
@@ -3155,9 +3225,9 @@ function StudentFormComponent_button_31_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", course_r5.Name + " " + course_r5.Code, " ");
 } }
 class StudentFormComponent {
-    constructor(service, toastr) {
+    constructor(service, toaster) {
         this.service = service;
-        this.toastr = toastr;
+        this.toaster = toaster;
         this.subjectsDropdownSettings = {};
         this.isFormValid = true;
         this.subjectsSelectionClass = 'text-success';
@@ -3183,30 +3253,40 @@ class StudentFormComponent {
             this.service.CourseSelcetValidationMesage = ' :Required';
         }
         else if (this.isFormValid) {
-            this.service.formData.Subjects = this.service.selectedSubjectsByStudent.map(a => a.Id);
-            if (this.service.formData.Id == 0) {
-                this.inserRecord(form);
+            if (this.isDuplicateRecord()) {
+                this.toaster.error("Student already exists", "Error");
             }
             else {
-                this.updateRecord(form);
+                this.service.formData.Subjects = this.service.selectedSubjectsByStudent.map(a => a.Id);
+                if (this.service.formData.Id == 0) {
+                    this.inserRecord(form);
+                }
+                else {
+                    this.updateRecord(form);
+                }
             }
         }
     }
+    isDuplicateRecord() {
+        return this.service.getList().filter(x => x.Birthday == this.service.formData.Birthday
+            && x.Name == this.service.formData.Name
+            && this.service.formData.Id == 0).length > 0;
+    }
     inserRecord(form) {
         this.service.postStudent().subscribe(result => {
-            this.toastr.success('Student added successfully', 'Success');
+            this.toaster.success('Student added successfully', 'Success');
             this.resetForm(form);
         }, error => {
-            this.toastr.error('An error occured while adding the new student', 'Error');
+            this.toaster.error('An error occured while adding the new student', 'Error');
             console.log(error);
         });
     }
     updateRecord(form) {
         this.service.putStudent().subscribe(result => {
-            this.toastr.success('Student updated successfully', 'Success');
+            this.toaster.success('Student updated successfully', 'Success');
             this.resetForm(form);
         }, error => {
-            this.toastr.error('An error occured while updating the new student', 'Error');
+            this.toaster.error('An error occured while updating the new student', 'Error');
             console.log(error);
         });
     }
@@ -3475,8 +3555,8 @@ class ResultFormComponent {
     ngOnInit() {
     }
     onSubmit(form) {
-        if (this.service.IsFormInvalid()) {
-            this.service.SetValidationMessages();
+        if (this.service.isFormInvalid()) {
+            this.service.setValidationMessages();
         }
         else {
             if (this.service.formData.Id == 0) {

@@ -79,4 +79,8 @@ export class TeacherService {
       .toPromise()
       .then(res => this.teacherList = res as Teacher[]);
   }
+
+  getList() {
+    return this.teacherList;
+  }
 }

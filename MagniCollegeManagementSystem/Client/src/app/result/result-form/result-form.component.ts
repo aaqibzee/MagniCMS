@@ -39,8 +39,8 @@ export class ResultFormComponent implements OnInit {
   ngOnInit(): void {
   }
   onSubmit(form: NgForm) {
-    if (this.service.IsFormInvalid()) {
-      this.service.SetValidationMessages();
+    if (this.service.isFormInvalid()) {
+      this.service.setValidationMessages();
     }
     else {
       if (this.service.formData.Id == 0) {
