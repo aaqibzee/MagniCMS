@@ -70,6 +70,7 @@ Method 2 (On IIS):
 
 2) Open project in Visual Studio
 3) Build the solution and let the NuGet restore the packages.
+4) Run npm instal command in  "MagniCollegeManagementSystem\Client"
 4) For .Net side developemnt, explore the proejct "MagniCollegeManagementSystem" except the folder 'Client'
 5) For Angular side developemnt, explore the folder 'Client' in "MagniCollegeManagementSystem" web project. This folder has all code related to Angular applciation
 
