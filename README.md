@@ -1,10 +1,10 @@
 # MagniCMS
-Acollege management system, porviding basic functionality for these modeules: 
+A college management system, providing  basic functionality for these modules: 
 
-* Stuent
+* Student
 * Teacher
 * Course
-* Subejct 
+* Subject 
 * Result 
 * Grade
 
@@ -29,7 +29,7 @@ Link: https://www.microsoft.com/en-us/sql-server/sql-server-downloads
 
 # Development dependencies
 * .Net (Standard) Framework  (Developer Pack) 4.7.2
-Lnk: https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472 
+Link: https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472 
 * Node JS v 16.17.0  Link:https://nodejs.org/en/download/releases/
 * Angular cli "~11.0.2" Command: npm install -g @angular/cli@11.0.2
     
@@ -41,9 +41,9 @@ Method 1 (In Visual Studio):
     <br/>d. .Net Framework
     <br/>d. Any browser
     
-2) Open project in Visual Studio
+2) Open the project in Visual Studio
 3) Build the solution and let the NueGt restore the packages
-4) Set "MagniCollegeManagementSystem" as startup project and run the solution
+4) Set "MagniCollegeManagementSystem" as the startup project and run the solution
 5) Application will run after setting up the DB and seed data
     
 Method 2 (On IIS):
@@ -53,10 +53,10 @@ Method 2 (On IIS):
     <br/>c. .Net Framework
     <br/>d. Any browser
     
-2) Open project in Visual Studio (Must be opened as Administrator)
+2) Open the project in Visual Studio (Must be opened as Administrator)
 3) Build the main solution and let the Nuget restore the packages
 4) Set "EnvironmentSetter" as startup project and run the solution
-5) The program will take care of setting up everything and it will launch application in browser
+5) The program will take care of setting up everything and it will launch applicatoin in the browser
 
 # Setup guidelines (To contribute as a developer):
 
@@ -68,11 +68,11 @@ Method 2 (On IIS):
     <br/>e. Node Js
     <br/>f. Angular CLI
 
-2) Open project in Visual Studio
+2) Open the project in Visual Studio
 3) Build the solution and let the NuGet restore the packages.
 4) Run npm instal command in  "MagniCollegeManagementSystem\Client"
-4) For .Net side developemnt, explore the proejct "MagniCollegeManagementSystem" except the folder 'Client'
-5) For Angular side developemnt, explore the folder 'Client' in "MagniCollegeManagementSystem" web project. This folder has all code related to Angular applciation
+4) For .Net side development, explore the project "MagniCollegeManagementSystem" except the folder 'Client'
+5) For Angular side development, explore the folder 'Client' in "MagniCollegeManagementSystem" web project. This folder has all code related to Angular applciation
 
 # Projects
 
@@ -85,10 +85,10 @@ Method 2 (On IIS):
 
 
  * <b> EnvironmentSetter:</b>
-<br> Responsible for setting environment to run applicaiton on IIS by
+<br> Responsible for setting environment to run application on IIS by
 <br> a: Activating windows features required for the IIS
 <br> b: Creating applicaiotn pool and applicaiton in IIS
-<br> c: Creating DB in SQL server and assigining DB access rights to IIS pool login
+<br> c: Creating DB in SQL server and assigning  DB access rights to IIS pool login
 <br> d: Running application
 
 * <b>  MagniCollegeManagementSystem:</b>
@@ -98,14 +98,15 @@ Method 2 (On IIS):
 <br> c: Angular code
 <br> d: ASP.NET code
 
-# How overall aplicaiton works:
-The applicaiton makes use of ASP.NET MVC 5 and Angular architecture.
+# How overall application works:
+The application makes use of ASP.NET MVC 5 and Angular architecture.
 
-When angular applciaiton is built, it's generated output files are placed in Script folder inside MVC proejct.
+When angular application is built, it's generated output files are placed inside "Script" folder in MVC project.
 
-When MVC project runs, it launches it's index view, inside which, "app-root" component (Basic building block of angular applicaiton inside browser)
-is rendered, which makes Angular application run inside the MVC view.
+When MVC project runs, it launches it's index view.  
 
-Every time, applicaiton starts, it does starts the Angular applicaiton along. 
+Inside index view "app-root" component (Basic building block of angular application)is rendered, which makes Angular application run inside the MVC view.
+
+Every time, application starts, it doest start the Angular application along. 
 
 (Will be updated furhter..)
