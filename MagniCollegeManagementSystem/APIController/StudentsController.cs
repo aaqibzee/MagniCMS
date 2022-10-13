@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -13,7 +12,8 @@ using MagniCollegeManagementSystem.Mappers;
 using DataAccess.Models;
 using Microsoft.AspNet.SignalR;
 using DataAccess.DatabseContexts;
-using NLog;
+using MagniCollegeManagementSystem.Common;
+
 namespace MagniCollegeManagementSystem.APIController
 {
     public class StudentsController : ApiController
@@ -21,13 +21,13 @@ namespace MagniCollegeManagementSystem.APIController
         private readonly MagniDBContext _databaseContext;
         private readonly IStudentRepository repository;
         private readonly IHubContext magniSyncHub;
-        private readonly Logger logger;
-        public StudentsController(MagniDBContext database, IStudentRepository studentRepository)
+        private readonly IMagniLogger logger;
+        public StudentsController(MagniDBContext database, IStudentRepository studentRepository, IMagniLogger logger)
         {
             this.repository = studentRepository;
             this._databaseContext = database;
             this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
-            logger=LogManager.GetLogger(ConfigurationManager.AppSettings.Get("LoggerName"));
+            this.logger = logger;
         }
 
         // GET: api/Students

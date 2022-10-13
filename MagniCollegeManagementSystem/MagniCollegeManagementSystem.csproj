@@ -410,6 +410,8 @@
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Common\Constants.cs" />
+    <Compile Include="Common\IMagniLogger.cs" />
+    <Compile Include="Common\MagniLogger.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="DTOs\ResultDTO.cs" />
     <Compile Include="Global.asax.cs">

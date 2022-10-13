@@ -8,6 +8,12 @@ namespace MagniCollegeManagementSystem.Common
     public static class Constants
     {
         public const string SeedCheckKey="IsSeedNeeded";
+        public const string LoggerNameKey = "LoggerName";
+        public const string LogLevelKey = "LoggerLevel";
+
+        public const string LogLevelAll = "All";
+        public const string LogLevelErrorsOnly = "Error";
+        public const string LogLevelInfoOnly = "Info";
         public static class ScriptBundleKeys
         {
             public const string Jquery = "~/bundles/jquery";
