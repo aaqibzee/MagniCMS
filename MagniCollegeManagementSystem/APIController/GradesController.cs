@@ -19,14 +19,14 @@ namespace MagniCollegeManagementSystem.APIController
 {
     public class GradesController : ApiController
     {
-        private readonly MagniDBContext dbContext;
+        private readonly MagniDBContext _databaseContext;
         private readonly IHubContext magniSyncHub;
         private readonly IGradeRepository repository;
         private readonly Logger logger = LogManager.GetLogger(ConfigurationManager.AppSettings.Get("LoggerName"));
-        public GradesController(MagniDBContext db)
+        public GradesController(MagniDBContext database, IGradeRepository repository)
         {
-            this.repository = new GradeRepository(db);
-            this.dbContext = db;
+            this.repository = repository;
+            this._databaseContext = database;
             this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
         }
 
@@ -102,7 +102,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest();
                 }
 
-                dbEntity = GradeMapper.Map(dbEntity, grade, dbContext);
+                dbEntity = GradeMapper.Map(dbEntity, grade, _databaseContext);
                 await repository.Update(dbEntity);
                 magniSyncHub.Clients.All.gardesUpdated();
                 logger.Info("PutGrade call completed successfully");
@@ -130,7 +130,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest(ModelState);
                 }
 
-                var dbEntity = GradeMapper.Map(new Grade(), request, dbContext);
+                var dbEntity = GradeMapper.Map(new Grade(), request, _databaseContext);
                 await repository.Add(dbEntity);
                 magniSyncHub.Clients.All.gardesUpdated();
                 logger.Info("PostGrade call completed successfully");
@@ -173,7 +173,7 @@ namespace MagniCollegeManagementSystem.APIController
         {
             if (disposing)
             {
-                dbContext.Dispose();
+                _databaseContext.Dispose();
             }
             base.Dispose(disposing);
         }

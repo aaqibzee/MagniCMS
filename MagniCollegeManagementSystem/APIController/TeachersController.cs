@@ -19,14 +19,14 @@ namespace MagniCollegeManagementSystem.APIController
 {
     public class TeachersController : ApiController
     {
-        private readonly MagniDBContext dbContext;
+        private readonly MagniDBContext _databaseContext;
         private readonly IHubContext magniSyncHub;
         private readonly ITeacherRepository repository;
         private readonly Logger logger = LogManager.GetLogger(ConfigurationManager.AppSettings.Get("LoggerName"));
-        public TeachersController(MagniDBContext db)
+        public TeachersController(MagniDBContext database, ITeacherRepository repository)
         {
-            this.repository = new TeacherRepository(db);
-            this.dbContext = db;
+            this.repository = repository;
+            this._databaseContext = database;
             this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
         }
 
@@ -102,7 +102,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest();
                 }
 
-                TeacherMapper.Map(dbEntity, teacher, dbContext);
+                TeacherMapper.Map(dbEntity, teacher, _databaseContext);
                 await repository.Update(dbEntity);
                 magniSyncHub.Clients.All.teachersUpdated();
                 logger.Info("PutTeacher call completed successfully");
@@ -128,7 +128,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest(ModelState);
                 }
 
-                var dbEntity = TeacherMapper.Map(new Teacher(), request, dbContext);
+                var dbEntity = TeacherMapper.Map(new Teacher(), request, _databaseContext);
                 await repository.Add(dbEntity);
                 magniSyncHub.Clients.All.teachersUpdated();
                 logger.Info("PostTeacher call completed successfully");
@@ -148,7 +148,7 @@ namespace MagniCollegeManagementSystem.APIController
             try
             {
                 logger.Info("DeleteTeacher call started. Id:" + id);
-                Teacher dbEntity = dbContext.Teachers.Find(id);
+                Teacher dbEntity = _databaseContext.Teachers.Find(id);
                 if (dbEntity == null)
                 {
                     logger.Info("DeleteTeacher call completed. Result:No content. No db entity was found to delete");
@@ -171,7 +171,7 @@ namespace MagniCollegeManagementSystem.APIController
         {
             if (disposing)
             {
-                dbContext.Dispose();
+                _databaseContext.Dispose();
             }
             base.Dispose(disposing);
         }

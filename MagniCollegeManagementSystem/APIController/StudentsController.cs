@@ -18,15 +18,16 @@ namespace MagniCollegeManagementSystem.APIController
 {
     public class StudentsController : ApiController
     {
-        private readonly MagniDBContext dbContext;
+        private readonly MagniDBContext _databaseContext;
         private readonly IStudentRepository repository;
         private readonly IHubContext magniSyncHub;
-        private readonly Logger logger = LogManager.GetLogger(ConfigurationManager.AppSettings.Get("LoggerName"));
-        public StudentsController(MagniDBContext db)
+        private readonly Logger logger;
+        public StudentsController(MagniDBContext database, IStudentRepository studentRepository)
         {
-            this.repository = new StudentRepository(db);
-            this.dbContext = db;
+            this.repository = studentRepository;
+            this._databaseContext = database;
             this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
+            logger=LogManager.GetLogger(ConfigurationManager.AppSettings.Get("LoggerName"));
         }
 
         // GET: api/Students
@@ -103,7 +104,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest();
                 }
 
-                StudentMapper.Map(dbEntity, student, dbContext);
+                StudentMapper.Map(dbEntity, student, _databaseContext);
                 await repository.Update(dbEntity);
                 magniSyncHub.Clients.All.studentsUpdated();
                 logger.Info("PutStudent call completed successfully");
@@ -130,7 +131,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest(ModelState);
                 }
 
-                var dbEntity = StudentMapper.Map(new Student(), request, dbContext);
+                var dbEntity = StudentMapper.Map(new Student(), request, _databaseContext);
                 await repository.Add(dbEntity);
                 magniSyncHub.Clients.All.studentsUpdated();
                 logger.Info("PostStudent call completed successfully");
@@ -151,7 +152,7 @@ namespace MagniCollegeManagementSystem.APIController
             try
             {
                 logger.Info("DeleteStudent call started. Id:" + id);
-                Student dbEntity = dbContext.Students.Find(id);
+                Student dbEntity = _databaseContext.Students.Find(id);
                 if (dbEntity == null)
                 {
                     logger.Info("DeleteStudent call completed. Result:No content. No db entity was found to delete");
@@ -175,7 +176,7 @@ namespace MagniCollegeManagementSystem.APIController
         {
             if (disposing)
             {
-                dbContext.Dispose();
+                _databaseContext.Dispose();
             }
             base.Dispose(disposing);
         }

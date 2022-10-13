@@ -19,14 +19,14 @@ namespace MagniCollegeManagementSystem.APIController
 {
     public class SubjectsController : ApiController
     {
-        private readonly MagniDBContext dbContext;
+        private readonly MagniDBContext _databaseContext;
         private readonly IHubContext magniSyncHub;
         private readonly ISubjectRepository repository;
         private readonly Logger logger = LogManager.GetLogger(ConfigurationManager.AppSettings.Get("LoggerName"));
-        public SubjectsController(MagniDBContext db)
+        public SubjectsController(MagniDBContext database, ISubjectRepository repository)
         {
-            this.dbContext = db;
-            this.repository = new SubjectRepository(db);
+            this._databaseContext = database;
+            this.repository = repository;
             this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
         }
 
@@ -102,7 +102,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest();
                 }
 
-                SubjectMapper.Map(dbEntity, subject, dbContext);
+                SubjectMapper.Map(dbEntity, subject, _databaseContext);
                 await repository.Update(dbEntity);
                 magniSyncHub.Clients.All.subjectsUpdated();
                 logger.Info("PutSubject call completed successfully");
@@ -128,7 +128,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest(ModelState);
                 }
 
-                var dbEntity = SubjectMapper.Map(new Subject(), request, dbContext);
+                var dbEntity = SubjectMapper.Map(new Subject(), request, _databaseContext);
                 await repository.Add(dbEntity);
                 magniSyncHub.Clients.All.subjectsUpdated();
                 logger.Info("PostSubject call completed successfully");
@@ -148,7 +148,7 @@ namespace MagniCollegeManagementSystem.APIController
             try
             {
                 logger.Info("DeleteSubject call started. Id:" + id);
-                Subject dbEntity = dbContext.Subjects.Find(id);
+                Subject dbEntity = _databaseContext.Subjects.Find(id);
                 if (dbEntity == null)
                 {
                     logger.Info("DeleteSubject call completed. Result:No content. No db entity was found to delete");
@@ -170,7 +170,7 @@ namespace MagniCollegeManagementSystem.APIController
         {
             if (disposing)
             {
-                dbContext.Dispose();
+                _databaseContext.Dispose();
             }
             base.Dispose(disposing);
         }

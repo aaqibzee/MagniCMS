@@ -19,14 +19,14 @@ namespace MagniCollegeManagementSystem.APIController
 {
     public class ResultsController : ApiController
     {
-        private readonly MagniDBContext dbContext;
+        private readonly MagniDBContext _databaseContext;
         private readonly IHubContext magniSyncHub;
         private readonly IResultRepository repository;
         private readonly Logger logger = LogManager.GetLogger(ConfigurationManager.AppSettings.Get("LoggerName"));
-        public ResultsController(MagniDBContext db)
+        public ResultsController(MagniDBContext database, IResultRepository repository)
         {
-            this.repository = new ResultRepository(db);
-            this.dbContext = db;
+            this.repository = repository;
+            this._databaseContext = database;
             this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
         }
 
@@ -102,7 +102,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest();
                 }
 
-                ResultMapper.Map(dbEntity, Result, dbContext);
+                ResultMapper.Map(dbEntity, Result, _databaseContext);
                 await repository.Update(dbEntity);
                 magniSyncHub.Clients.All.resultsUpdated();
                 logger.Info("PutResult call completed successfully");
@@ -128,7 +128,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest(ModelState);
                 }
 
-                var dbEntity = ResultMapper.Map(new Result(), request, dbContext);
+                var dbEntity = ResultMapper.Map(new Result(), request, _databaseContext);
                 repository.Add(dbEntity);
                 magniSyncHub.Clients.All.resultsUpdated();
                 logger.Info("PostResult call completed successfully");
@@ -170,7 +170,7 @@ namespace MagniCollegeManagementSystem.APIController
         {
             if (disposing)
             {
-                dbContext.Dispose();
+                _databaseContext.Dispose();
             }
             base.Dispose(disposing);
         }

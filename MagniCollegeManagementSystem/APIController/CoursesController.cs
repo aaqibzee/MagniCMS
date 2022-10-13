@@ -19,14 +19,14 @@ namespace MagniCollegeManagementSystem.APIController
 {
     public class CoursesController : ApiController
     {
-        private readonly MagniDBContext dbContext;
+        private readonly MagniDBContext _databaseContext;
         private readonly IHubContext magniSyncHub;
         private readonly ICourseRepository repository;
         private readonly Logger logger = LogManager.GetLogger(ConfigurationManager.AppSettings.Get("LoggerName"));
-        public CoursesController(MagniDBContext db)
+        public CoursesController(MagniDBContext database, ICourseRepository repository)
         {
-            this.dbContext = db;
-            this.repository = new CourseRepository(db);
+            this._databaseContext = database;
+            this.repository = repository;
             this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
         }
 
@@ -105,7 +105,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest();
                 }
 
-                CourseMapper.Map(dbEntity, course, dbContext);
+                CourseMapper.Map(dbEntity, course, _databaseContext);
                 await repository.Update(dbEntity);
                 magniSyncHub.Clients.All.coursesUpdated();
                 logger.Info("PutCourse call completed successfully");
@@ -131,7 +131,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest(ModelState);
                 }
 
-                var dbEntity = CourseMapper.Map(new Course(), request, dbContext);
+                var dbEntity = CourseMapper.Map(new Course(), request, _databaseContext);
 
                 await repository.Add(dbEntity);
                 magniSyncHub.Clients.All.coursesUpdated();
@@ -152,7 +152,7 @@ namespace MagniCollegeManagementSystem.APIController
             try
             {
                 logger.Info("DeleteCourse call started. Id:" + id);
-                Course dbEntity = dbContext.Courses.Find(id);
+                Course dbEntity = _databaseContext.Courses.Find(id);
                 if (dbEntity == null)
                 {
                     logger.Info("DeleteCourse call completed. Result:No content. No db entity was found to delete");
@@ -175,7 +175,7 @@ namespace MagniCollegeManagementSystem.APIController
         {
             if (disposing)
             {
-                dbContext.Dispose();
+                _databaseContext.Dispose();
             }
             base.Dispose(disposing);
         }
