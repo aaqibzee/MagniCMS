@@ -3794,17 +3794,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _grade_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./grade.model */ "/naD");
 /* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Constants */ "z9QB");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
+/* harmony import */ var _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./splash-screen-state.service */ "C8wY");
+
 
 
 
 
 
 class GradeService {
-    constructor(http) {
+    constructor(http, splashScreenStateService) {
         this.http = http;
+        this.splashScreenStateService = splashScreenStateService;
         this.CourseSelcetValidationMesage = '';
         this.formData = new _grade_model__WEBPACK_IMPORTED_MODULE_1__["Grade"]();
         this.refreshList();
+        setTimeout(() => {
+            this.splashScreenStateService.stop();
+        }, 1);
     }
     resetFormData() {
         this.formData = new _grade_model__WEBPACK_IMPORTED_MODULE_1__["Grade"]();
@@ -3828,14 +3834,14 @@ class GradeService {
         return this.gradesList;
     }
 }
-GradeService.ɵfac = function GradeService_Factory(t) { return new (t || GradeService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"])); };
+GradeService.ɵfac = function GradeService_Factory(t) { return new (t || GradeService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__["SplashScreenStateService"])); };
 GradeService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: GradeService, factory: GradeService.ɵfac, providedIn: 'root' });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](GradeService, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
         args: [{
                 providedIn: 'root'
             }]
-    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }]; }, null); })();
+    }], function () { return [{ type: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClient"] }, { type: _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__["SplashScreenStateService"] }]; }, null); })();
 
 
 /***/ }),

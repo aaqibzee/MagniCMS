@@ -2,16 +2,19 @@ import { Injectable } from '@angular/core';
 import { Grade } from "./grade.model";
 import { HttpClient } from '@angular/common/http';
 import { Constants } from './Constants';
-import { CourseService } from './course.service';
-import { SubjectService } from './subject.service';
+import { SplashScreenStateService } from './splash-screen-state.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GradeService {
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+    private splashScreenStateService: SplashScreenStateService,) {
     this.refreshList();
+    setTimeout(() => {
+      this.splashScreenStateService.stop();
+    }, 1);
   }
   CourseSelcetValidationMesage: string = '';
   formData: Grade = new Grade();
