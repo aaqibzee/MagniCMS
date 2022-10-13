@@ -1,12 +1,14 @@
-using MagniCollegeManagementSystem.APIController;
 using System.Web.Http;
 using DataAccess.Interfaces;
 using Unity;
-using Unity.Injection;
-using Unity.Lifetime;
-using Unity.WebApi;
-using System.Configuration;
+using System.Data.Entity;
+using System.Web;
 using DataAccess.DatabseContexts;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using MagniCollegeManagementSystem.App_Start;
+using Unity.Lifetime;
 
 namespace MagniCollegeManagementSystem
 {
@@ -15,13 +17,8 @@ namespace MagniCollegeManagementSystem
         public static void RegisterComponents()
         {
 			var container = new UnityContainer();
-            var magniDbContext = new MagniDBContext();
-
-            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
-            container.RegisterType<MagniDBContext, MagniDBContext>();
-
-            //container.RegisterInstance(magniDbContext);
-            
+            GlobalConfiguration.Configuration.DependencyResolver = new Unity.WebApi.UnityDependencyResolver(container);
+            container.RegisterType<MagniDBContext, MagniDBContext>(new PerRequestLifetimeManagerCustom());
             container.RegisterType<IStudentRepository, StudentRepository>();
             container.RegisterType<ICourseRepository, CourseRepository>();
             container.RegisterType<ISubjectRepository, SubjectRepository>();
