@@ -3,7 +3,7 @@ using MagniCollegeManagementSystem.DTOs;
 using System.Linq;
 using System.Collections.Generic;
 using DataAccess.DatabseContexts;
-using DataAccess.Interfaces;
+using DataAccess.Repositories.Interfaces;
 
 namespace MagniCollegeManagementSystem.Mappers
 {

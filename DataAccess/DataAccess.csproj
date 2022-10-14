@@ -50,18 +50,30 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DatabseContexts\MagniDBContext.cs" />
-    <Compile Include="Implementations\CourseRepository.cs" />
-    <Compile Include="Implementations\GradeRepository.cs" />
-    <Compile Include="Implementations\ResultRepository.cs" />
-    <Compile Include="Implementations\TeacherRepository.cs" />
-    <Compile Include="Implementations\SubjectRepository.cs" />
-    <Compile Include="Implementations\StudentRepository.cs" />
-    <Compile Include="Interfaces\ICourseRepository.cs" />
-    <Compile Include="Interfaces\IGradeRepository.cs" />
-    <Compile Include="Interfaces\IResultRepository.cs" />
-    <Compile Include="Interfaces\ITeacherRepository .cs" />
-    <Compile Include="Interfaces\ISubjectRepository.cs" />
-    <Compile Include="Interfaces\IStudentRepository.cs" />
+    <Compile Include="Implementations\ResultDAL.cs" />
+    <Compile Include="Implementations\StudentDAL.cs" />
+    <Compile Include="Implementations\TeacherDAL.cs" />
+    <Compile Include="Implementations\GradeDAL.cs" />
+    <Compile Include="Implementations\SubjectDAL.cs" />
+    <Compile Include="Implementations\CourseDAL.cs" />
+    <Compile Include="Interfaces\ITeacherDAL.cs" />
+    <Compile Include="Interfaces\IGradeDAL.cs" />
+    <Compile Include="Interfaces\IResultDAL.cs" />
+    <Compile Include="Interfaces\IStudentDAL.cs" />
+    <Compile Include="Interfaces\ISubjectDAL.cs" />
+    <Compile Include="Interfaces\ICourseDAL.cs" />
+    <Compile Include="Repositories\Implementations\CourseRepository.cs" />
+    <Compile Include="Repositories\Implementations\GradeRepository.cs" />
+    <Compile Include="Repositories\Implementations\ResultRepository.cs" />
+    <Compile Include="Repositories\Implementations\TeacherRepository.cs" />
+    <Compile Include="Repositories\Implementations\SubjectRepository.cs" />
+    <Compile Include="Repositories\Implementations\StudentRepository.cs" />
+    <Compile Include="Repositories\Interfaces\ICourseRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IGradeRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IResultRepository.cs" />
+    <Compile Include="Repositories\Interfaces\ITeacherRepository .cs" />
+    <Compile Include="Repositories\Interfaces\ISubjectRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IStudentRepository.cs" />
     <Compile Include="Migrations\202210081355355_CreateDBShcema.cs" />
     <Compile Include="Migrations\202210081355355_CreateDBShcema.Designer.cs">
       <DependentUpon>202210081355355_CreateDBShcema.cs</DependentUpon>
@@ -82,5 +94,6 @@
       <DependentUpon>202210081355355_CreateDBShcema.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

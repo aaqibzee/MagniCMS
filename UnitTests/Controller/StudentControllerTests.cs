@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using DataAccess.Interfaces;
+using DataAccess.Repositories.Interfaces;
 using DataAccess.Models;
 using MagniCollegeManagementSystem.APIController;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

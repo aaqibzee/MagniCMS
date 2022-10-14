@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using DataAccess.Models;
 
-namespace DataAccess.Interfaces
+namespace DataAccess.Repositories.Interfaces
 {
     public  interface ISubjectRepository
     {

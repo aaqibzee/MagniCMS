@@ -4,8 +4,9 @@ using DataAccess.Models;
 using DataAccess.DatabseContexts;
 using System.Data.Entity;
 using System.Threading.Tasks;
+using DataAccess.Repositories.Interfaces;
 
-namespace DataAccess.Interfaces
+namespace DataAccess.Repositories.Implementations
 {
     public  class GradeRepository: IGradeRepository
     {

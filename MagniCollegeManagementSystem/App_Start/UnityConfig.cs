@@ -1,9 +1,10 @@
 using System.Web.Http;
-using DataAccess.Interfaces;
+using DataAccess.Repositories.Interfaces;
 using Unity;
 using DataAccess.DatabseContexts;
 using BusinessLogic.Implementations;
 using BusinessLogic.Interfaces;
+using DataAccess.Repositories.Implementations;
 using MagniCollegeManagementSystem.App_Start;
 using MagniCollegeManagementSystem.Common;
 using MagniCollegeManagementSystem.Hubs;
@@ -33,6 +34,13 @@ namespace MagniCollegeManagementSystem
             container.RegisterType<ISubjectMapper, SubjectMapper>();
             container.RegisterType<IStudentMapper, StudentMapper>();
             container.RegisterType<IResultMapper, ResultMapper>();
+
+            container.RegisterType<ICourseDAL, CourseDAL>();
+            container.RegisterType<ISubjectDAL, SubjectDAL>();
+            container.RegisterType<ITeacherDAL, TeacherDAL>();
+            container.RegisterType<IGradeDAL, GradeDAL>();
+            container.RegisterType<IResultDAL, ResultDAL>();
+            container.RegisterType<IStudentDAL, StudentDAL>();
 
             container.RegisterType<IStudentManager, StudentManager>();
             container.RegisterType<ITeacherManager, TeacherManager>();

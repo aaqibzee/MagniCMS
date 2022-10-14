@@ -1,25 +1,25 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using BusinessLogic.DTOs;
-using DataAccess.Interfaces;
+using DataAccess.Repositories.Interfaces;
 using DataAccess.Models;
 
 namespace BusinessLogic.Interfaces
 {
     public  class ResultManager: IResultManager
     {
-        private IResultRepository repository;
+        private IResultDAL _dal;
         private IResultMapper mapper;
 
-        public ResultManager(IResultRepository repository, IResultMapper mapper)
+        public ResultManager(IResultDAL dal, IResultMapper mapper)
         {
-            this.repository= repository;
+            this._dal= dal;
             this.mapper = mapper;
         }
 
         public async Task<List<ResultDTO>> GetAll()
         {
-            var result =  await repository.GetAll();
+            var result =  await _dal.GetAll();
             var response = new List<ResultDTO>();
 
             foreach (var item in result)
@@ -32,27 +32,27 @@ namespace BusinessLogic.Interfaces
 
         public  async Task<ResultDTO> Get(int id)
         {
-            var Result = await repository.Get(id);
+            var Result = await _dal.Get(id);
             return mapper.Map(Result);
         }
 
         public async Task<int> Delete(int id)
         {
-            var entity = await repository.Get(id);
-            return await repository.Delete(entity);
+            var entity = await _dal.Get(id);
+            return await _dal.Delete(entity);
         }
 
         public async Task<int> Add(ResultDTO Result)
         {
             var dbEntity = mapper.Map(new Result(), Result);
-            return await repository.Add(dbEntity);
+            return await _dal.Add(dbEntity);
         }
 
         public async Task<int> Update(ResultDTO Result)
         {
-            var dbEntity = await repository.Get(Result.Id);
+            var dbEntity = await _dal.Get(Result.Id);
             mapper.Map(dbEntity, Result);
-            return await repository.Update(dbEntity);
+            return await _dal.Update(dbEntity);
         }
     }
 }
