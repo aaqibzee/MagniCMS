@@ -46,7 +46,7 @@ export class GradeFormComponent implements OnInit {
   }
 
   isDuplicateRecord() {
-    return this.service.getList().filter(
+    return this.service.getList()?.filter(
       x => x.Course?.Id == this.service.formData.Course?.Id
         && x.StartingMarks == this.service.formData.StartingMarks
         && x.EndingMarks == this.service.formData.EndingMarks

@@ -32,7 +32,7 @@ export class CourseFormComponent implements OnInit {
   }
 
   isDuplicateRecord() {
-    return this.service.getList().filter(
+    return this.service.getList()?.filter(
       x => x.Code == this.service.formData.Code
         && x.Name == this.service.formData.Name
         && x.TotalCreditHours == this.service.formData.TotalCreditHours

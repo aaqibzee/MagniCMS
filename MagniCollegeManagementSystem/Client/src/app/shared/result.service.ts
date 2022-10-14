@@ -35,7 +35,7 @@ export class ResultService {
   }
 
   isDuplicateRecord() {
-    return this.resultsList.filter(
+    return this.resultsList?.filter(
       x => x.Course?.Id == this.formData.Course?.Id
         && x.Student?.Id == this.formData.Student?.Id
         && x.Subject?.Id == this.formData.Subject?.Id

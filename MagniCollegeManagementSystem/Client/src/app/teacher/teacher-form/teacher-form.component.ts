@@ -61,7 +61,7 @@ export class TeacherFormComponent implements OnInit {
     }
   }
   isDuplicateRecord() {
-    return this.service.getList().filter(
+    return this.service.getList()?.filter(
       x => x.Birthday == this.service.formData.Birthday
         && x.Name == this.service.formData.Name
         && x.Salary == this.service.formData.Salary

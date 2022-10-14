@@ -43,7 +43,7 @@ export class SubjectFormComponent implements OnInit {
   }
 
   isDuplicateRecord() {
-    return this.service.getList().filter(
+    return this.service.getList()?.filter(
       x => x.Course?.Id == this.service.formData.Course?.Id
         && x.Code == this.service.formData.Code
         && x.CreditHours == this.service.formData.CreditHours

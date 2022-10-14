@@ -62,7 +62,7 @@ export class StudentFormComponent implements OnInit {
   }
 
   isDuplicateRecord() {
-    return this.service.getList().filter(
+    return this.service.getList()?.filter(
       x => x.Birthday == this.service.formData.Birthday
         && x.Name == this.service.formData.Name
         && this.service.formData.Id == 0).length > 0;
