@@ -398,10 +398,10 @@
   <ItemGroup>
     <Compile Include="APIController\CoursesController.cs" />
     <Compile Include="APIController\GradesController.cs" />
-    <Compile Include="APIController\StudentsController.cs" />
-    <Compile Include="APIController\SubjectsController.cs" />
     <Compile Include="APIController\ResultsController.cs" />
     <Compile Include="APIController\TeachersController.cs" />
+    <Compile Include="APIController\SubjectsController.cs" />
+    <Compile Include="APIController\StudentsController.cs" />
     <Compile Include="App_Start\DatabaseConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\PerRequestLifetimeManagerCustom.cs" />
@@ -500,6 +500,10 @@
     <TypeScriptCompile Include="Scripts\index.d.ts" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\BusinessLogic\BusinessLogic.csproj">
+      <Project>{8f3f5e9d-67e5-40c6-b6e2-d8de51256e0a}</Project>
+      <Name>BusinessLogic</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj">
       <Project>{fe66014d-2fb6-45bd-b248-675bb8344d25}</Project>
       <Name>DataAccess</Name>

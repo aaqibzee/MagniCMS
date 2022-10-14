@@ -32,7 +32,7 @@ namespace UnitTests.Controller
             var mockContext = new Mock<MagniDBContext>();
             mockStudentRepo = new Mock<IStudentRepository>();
             mockMagniLogger = new Mock<IMagniLogger>();
-            controller = new StudentsController(mockContext.Object, mockStudentRepo.Object, mockMagniLogger.Object);
+            //controller = new StudentsController(mockContext.Object, mockStudentRepo.Object, mockMagniLogger.Object);
             controller.Configuration = new System.Web.Http.HttpConfiguration();
             controller.Request = new System.Net.Http.HttpRequestMessage();
         }

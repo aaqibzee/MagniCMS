@@ -1,33 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using MagniCollegeManagementSystem.DTOs;
+using BusinessLogic.Interfaces;
 using MagniCollegeManagementSystem.Hubs;
-using MagniCollegeManagementSystem.Mappers;
-using DataAccess.Models;
 using Microsoft.AspNet.SignalR;
-using DataAccess.DatabseContexts;
-using DataAccess.Interfaces;
-using System.Text.Json;
 using MagniCollegeManagementSystem.Common;
+using BusinessLogic.DTOs;
 
 namespace MagniCollegeManagementSystem.APIController
 {
     public class GradesController : ApiController
     {
-        private readonly MagniDBContext _databaseContext;
+        private readonly IGradeManager manager;
         private readonly IHubContext magniSyncHub;
-        private readonly IGradeRepository repository;
         private readonly IMagniLogger logger;
-        public GradesController(MagniDBContext database, IGradeRepository repository, IMagniLogger logger)
+        public GradesController(IMagniLogger logger, IGradeManager manager)
         {
-            this.repository = repository;
-            this._databaseContext = database;
-            this.logger = logger;
+            this.manager = manager;
             this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
+            this.logger = logger;
         }
 
         // GET: api/Grades
@@ -36,14 +30,8 @@ namespace MagniCollegeManagementSystem.APIController
             try
             {
                 logger.Info("GetGrades call started");
-                var dbEntity =await repository.GetAll();
-                var response = new List<GradeDTO>();
-
-                foreach (var item in dbEntity)
-                {
-                    response.Add(GradeMapper.Map(item));
-                }
-                logger.Info("GetGrades call completed. Result:" + JsonSerializer.Serialize(response));
+                var response = await manager.GetAll();
+                logger.Info("GetGrades call completed. Grade:"+JsonSerializer.Serialize(response));
                 return Ok(response);
             }
             catch (Exception ex)
@@ -59,15 +47,16 @@ namespace MagniCollegeManagementSystem.APIController
         {
             try
             {
-                logger.Info("GetGrade call started Id:" + id);
-                Grade response = await repository.Get(id);
+                logger.Info("GetGrade call started Id:"+id);
+                var response = await manager.Get(id);
                 if (response == null)
                 {
-                    logger.Info("GetGrade call completed. Result:" + "No content");
+                    logger.Info("GetGrade call completed. Grade:" + "No content");
                     return NotFound();
                 }
-                logger.Info("GetGrade call completed. Result:" + JsonSerializer.Serialize(response));
-                return Ok(GradeMapper.Map(response));
+
+                logger.Info("GetGrade call completed. Grade:" + JsonSerializer.Serialize(response));
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -78,33 +67,32 @@ namespace MagniCollegeManagementSystem.APIController
 
         // PUT: api/Grades/5
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutGrade(int id, GradeDTO grade)
+        public async Task<IHttpActionResult> PutGrade(int id, GradeDTO Grade)
         {
             try
             {
-                logger.Info("PutGrade call started Request:" + JsonSerializer.Serialize(grade));
+                logger.Info("PutGrade call started Request:" + JsonSerializer.Serialize(Grade));
                 if (!ModelState.IsValid)
                 {
-                    logger.Info("PutGrade call aborted due to invalid model state. Model state:" + JsonSerializer.Serialize(ModelState));
+                    logger.Info("PutGrade call aborted due to invalid model state. Model state:" +JsonSerializer.Serialize(ModelState) );
                     return BadRequest(ModelState);
                 }
 
-                if (id != grade.Id)
+                if (id != Grade.Id)
                 {
                     logger.Info("PutGrade call aborted due to invalid request. Id:" + id);
                     return BadRequest();
                 }
 
-                var dbEntity = await repository.Get(id);
+                var dbEntity = await manager.Get(id);
                 if (dbEntity is null)
                 {
                     logger.Info("PutGrade call aborted due to invalid request. No DB entity was found for the given Id:" + id);
                     return BadRequest();
                 }
 
-                dbEntity = GradeMapper.Map(dbEntity, grade, _databaseContext);
-                await repository.Update(dbEntity);
-                magniSyncHub.Clients.All.gardesUpdated();
+                await manager.Update(Grade);
+                magniSyncHub.Clients.All.GradesUpdated();
                 logger.Info("PutGrade call completed successfully");
                 return StatusCode(HttpStatusCode.NoContent);
             }
@@ -114,11 +102,10 @@ namespace MagniCollegeManagementSystem.APIController
                 return InternalServerError();
             }
 
-
         }
 
         // POST: api/Grades
-        [ResponseType(typeof(Grade))]
+        [ResponseType(typeof(GradeDTO))]
         public async Task<IHttpActionResult> PostGrade(GradeDTO request)
         {
             try
@@ -130,9 +117,8 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest(ModelState);
                 }
 
-                var dbEntity = GradeMapper.Map(new Grade(), request, _databaseContext);
-                await repository.Add(dbEntity);
-                magniSyncHub.Clients.All.gardesUpdated();
+                await manager.Add(request);
+                magniSyncHub.Clients.All.GradesUpdated();
                 logger.Info("PostGrade call completed successfully");
                 return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
             }
@@ -151,31 +137,24 @@ namespace MagniCollegeManagementSystem.APIController
             try
             {
                 logger.Info("DeleteGrade call started. Id:" + id);
-                Grade dbEntity = await repository.Get(id);
+                var dbEntity = await manager.Get(id);
                 if (dbEntity == null)
                 {
-                    logger.Info("DeleteGrade call completed. Result:No content. No db entity was found to delete");
+                    logger.Info("DeleteGrade call completed. Grade:No content. No db entity was found to delete");
                     return NotFound();
                 }
-                await repository.Delete(dbEntity);
-                magniSyncHub.Clients.All.gardesUpdated();
-                logger.Info("DeleteGrade call completed successfully for entiry" + JsonSerializer.Serialize(dbEntity));
-                return Ok(GradeMapper.Map(dbEntity));
+
+                await manager.Delete(id);
+                magniSyncHub.Clients.All.GradesUpdated();
+                logger.Info("DeleteGrade call completed successfully for entity" + JsonSerializer.Serialize(dbEntity));
+                return Ok();
             }
             catch (Exception ex)
             {
                 logger.Error("DeleteGrade call failed. Exception:" + ex.Message);
                 return InternalServerError();
             }
-        }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _databaseContext.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }
