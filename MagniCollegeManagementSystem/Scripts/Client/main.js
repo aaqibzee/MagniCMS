@@ -70,10 +70,11 @@ class TeacherFormComponent {
         }
     }
     isDuplicateRecord() {
-        return this.service.getList().filter(x => x.Birthday == this.service.formData.Birthday
+        var _a;
+        return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => x.Birthday == this.service.formData.Birthday
             && x.Name == this.service.formData.Name
             && x.Salary == this.service.formData.Salary
-            && this.service.formData.Id == 0).length > 0;
+            && this.service.formData.Id == 0).length) > 0;
     }
     inserRecord(form) {
         this.service.postTeacher().subscribe(result => {
@@ -510,14 +511,15 @@ class GradeFormComponent {
             || this.isDuplicateRecord();
     }
     isDuplicateRecord() {
-        return this.service.getList().filter(x => {
+        var _a;
+        return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => {
             var _a, _b;
             return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = this.service.formData.Course) === null || _b === void 0 ? void 0 : _b.Id)
                 && x.StartingMarks == this.service.formData.StartingMarks
                 && x.EndingMarks == this.service.formData.EndingMarks
                 && x.Title == this.service.formData.Title
                 && this.service.formData.Id == 0;
-        }).length > 0;
+        }).length) > 0;
     }
     setValidationMessages() {
         if (this.isDuplicateRecord()) {
@@ -772,13 +774,14 @@ class ResultService {
             || this.isDuplicateRecord();
     }
     isDuplicateRecord() {
-        return this.resultsList.filter(x => {
+        var _a;
+        return ((_a = this.resultsList) === null || _a === void 0 ? void 0 : _a.filter(x => {
             var _a, _b, _c, _d, _e, _f;
             return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = this.formData.Course) === null || _b === void 0 ? void 0 : _b.Id)
                 && ((_c = x.Student) === null || _c === void 0 ? void 0 : _c.Id) == ((_d = this.formData.Student) === null || _d === void 0 ? void 0 : _d.Id)
                 && ((_e = x.Subject) === null || _e === void 0 ? void 0 : _e.Id) == ((_f = this.formData.Subject) === null || _f === void 0 ? void 0 : _f.Id)
                 && this.formData.Id == 0;
-        }).length > 0;
+        }).length) > 0;
     }
     setValidationMessages() {
         this.SubjectSelcetValidationMesage = this.formData.Subject == null ? ": Required" : '';
@@ -866,10 +869,11 @@ class CourseFormComponent {
         }
     }
     isDuplicateRecord() {
-        return this.service.getList().filter(x => x.Code == this.service.formData.Code
+        var _a;
+        return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => x.Code == this.service.formData.Code
             && x.Name == this.service.formData.Name
             && x.TotalCreditHours == this.service.formData.TotalCreditHours
-            && this.service.formData.Id == 0).length > 0;
+            && this.service.formData.Id == 0).length) > 0;
     }
     insertCourse(form) {
         this.service.postCourse().subscribe(result => {
@@ -2618,13 +2622,14 @@ class SubjectFormComponent {
             || this.isDuplicateRecord();
     }
     isDuplicateRecord() {
-        return this.service.getList().filter(x => {
+        var _a;
+        return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => {
             var _a, _b;
             return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = this.service.formData.Course) === null || _b === void 0 ? void 0 : _b.Id)
                 && x.Code == this.service.formData.Code
                 && x.CreditHours == this.service.formData.CreditHours
                 && this.service.formData.Id == 0;
-        }).length > 0;
+        }).length) > 0;
     }
     setValidationMessages() {
         if (this.isDuplicateRecord()) {
@@ -3268,9 +3273,10 @@ class StudentFormComponent {
         }
     }
     isDuplicateRecord() {
-        return this.service.getList().filter(x => x.Birthday == this.service.formData.Birthday
+        var _a;
+        return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => x.Birthday == this.service.formData.Birthday
             && x.Name == this.service.formData.Name
-            && this.service.formData.Id == 0).length > 0;
+            && this.service.formData.Id == 0).length) > 0;
     }
     inserRecord(form) {
         this.service.postStudent().subscribe(result => {
@@ -3900,8 +3906,8 @@ const routes = [
     { path: 'Student', component: _student_student_component__WEBPACK_IMPORTED_MODULE_2__["StudentComponent"] },
     { path: 'Teacher', component: _teacher_teacher_component__WEBPACK_IMPORTED_MODULE_3__["TeacherComponent"] },
     { path: 'Subject', component: _subject_subject_component__WEBPACK_IMPORTED_MODULE_4__["SubjectComponent"] },
-    { path: 'Course', component: _course_course_component__WEBPACK_IMPORTED_MODULE_5__["CourseComponent"] },
     { path: 'Results', component: _result_result_component__WEBPACK_IMPORTED_MODULE_7__["ResultComponent"] },
+    { path: 'Course', component: _course_course_component__WEBPACK_IMPORTED_MODULE_5__["CourseComponent"] },
     { path: 'Grade', component: _grade_grade_component__WEBPACK_IMPORTED_MODULE_6__["GradeComponent"] },
 ];
 class AppRoutingModule {
