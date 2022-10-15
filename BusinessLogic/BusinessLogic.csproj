@@ -64,6 +64,7 @@
     <Compile Include="Interfaces\IResultManager.cs" />
     <Compile Include="Interfaces\ICourseManager.cs" />
     <Compile Include="Interfaces\ISubjectManager.cs" />
+    <Compile Include="Interfaces\IManager.cs" />
     <Compile Include="Interfaces\ITeacherManager.cs" />
     <Compile Include="Interfaces\IStudentManager.cs" />
     <Compile Include="Mappers\Implementations\CourseMapper.cs" />

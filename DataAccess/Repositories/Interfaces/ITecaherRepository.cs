@@ -2,5 +2,5 @@
 
 namespace DataAccess.Repositories.Interfaces
 {
-    public interface ICourseDAL : IDAL<Course> { }
+    public  interface ITeacherRepository : IRepository<Teacher> { }
 }

@@ -1,39 +1,38 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using DataAccess.Models;
 
-namespace DataAccess.Repositories.Interfaces
+namespace BusinessLogic.Interfaces
 {
-    public  interface ITeacherRepository
+    public  interface IManager<TEntityDto>
     {
         /// <summary>
-        ///  Get all teachers
+        ///  Get all <see cref="TEntityDto"/>(s)
         /// </summary>
         /// <returns></returns>
-        Task<List<Teacher>> GetAll();
+        Task<List<TEntityDto>> GetAll();
         /// <summary>
-        ///  Get a specific teacher by id
+        ///  Get a specific <see cref="TEntityDto"/> by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<Teacher> Get(int id);
+        Task<TEntityDto> Get(int id);
         /// <summary>
-        /// Delete a specific teacher
+        /// Delete a specific <see cref="TEntityDto"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<int> Delete(int id);
+        /// <summary>
+        /// Add a new <see cref="TEntityDto"/>
         /// </summary>
         /// <param name="Teacher"></param>
         /// <returns></returns>
-        Task<int> Delete(Teacher Teacher);
+        Task<int> Add(TEntityDto dto);
         /// <summary>
-        /// Add a new teacher
+        /// Update a specific <see cref="TEntityDto"/>
         /// </summary>
         /// <param name="Teacher"></param>
         /// <returns></returns>
-        Task<int> Add(Teacher Teacher);
-        /// <summary>
-        /// Update a specific teacher
-        /// </summary>
-        /// <param name="Teacher"></param>
-        /// <returns></returns>
-        Task<int> Update(Teacher Teacher);
+        Task<int> Update(TEntityDto dto);
     }
 }

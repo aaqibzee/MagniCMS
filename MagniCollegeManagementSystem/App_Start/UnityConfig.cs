@@ -4,6 +4,7 @@ using Unity;
 using DataAccess.DatabseContexts;
 using BusinessLogic.Implementations;
 using BusinessLogic.Interfaces;
+using DataAccess.Models;
 using DataAccess.Repositories.Implementations;
 using MagniCollegeManagementSystem.App_Start;
 using MagniCollegeManagementSystem.Common;
@@ -21,12 +22,12 @@ namespace MagniCollegeManagementSystem
             container.RegisterType<MagniDBContext, MagniDBContext>(new PerRequestLifetimeManagerCustom());
             container.RegisterType<IMagniLogger, MagniLogger>();
 
-            container.RegisterType<IStudentRepository, StudentRepository>();
-            container.RegisterType<ICourseRepository, CourseRepository>();
-            container.RegisterType<ISubjectRepository, SubjectRepository>();
-            container.RegisterType<ITeacherRepository, TeacherRepository>();
-            container.RegisterType<IGradeRepository, GradeRepository>();
-            container.RegisterType<IResultRepository, ResultRepository>();
+            container.RegisterType<IRepository<Result>, ResultRepository>();
+            container.RegisterType<IRepository<Course>, CourseRepository>();
+            container.RegisterType<IRepository<Teacher>, TeacherRepository>();
+            container.RegisterType<IRepository<Subject>, SubjectRepository>();
+            container.RegisterType<IRepository<Student>, StudentRepository>();
+            container.RegisterType<IRepository<Grade>, GradeRepository>();
 
             container.RegisterType<ICourseMapper, CourseMapper>();
             container.RegisterType<IGradeMapper, GradeMapper>();

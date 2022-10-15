@@ -50,12 +50,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DatabseContexts\MagniDBContext.cs" />
+    <Compile Include="Implementations\BaseDAL.cs" />
     <Compile Include="Implementations\ResultDAL.cs" />
     <Compile Include="Implementations\StudentDAL.cs" />
     <Compile Include="Implementations\TeacherDAL.cs" />
     <Compile Include="Implementations\GradeDAL.cs" />
     <Compile Include="Implementations\SubjectDAL.cs" />
     <Compile Include="Implementations\CourseDAL.cs" />
+    <Compile Include="Interfaces\IDAL.cs" />
     <Compile Include="Interfaces\ITeacherDAL.cs" />
     <Compile Include="Interfaces\IGradeDAL.cs" />
     <Compile Include="Interfaces\IResultDAL.cs" />
@@ -71,7 +73,8 @@
     <Compile Include="Repositories\Interfaces\ICourseRepository.cs" />
     <Compile Include="Repositories\Interfaces\IGradeRepository.cs" />
     <Compile Include="Repositories\Interfaces\IResultRepository.cs" />
-    <Compile Include="Repositories\Interfaces\ITeacherRepository .cs" />
+    <Compile Include="Repositories\Interfaces\ITecaherRepository.cs" />
+    <Compile Include="Repositories\Interfaces\IRepository .cs" />
     <Compile Include="Repositories\Interfaces\ISubjectRepository.cs" />
     <Compile Include="Repositories\Interfaces\IStudentRepository.cs" />
     <Compile Include="Migrations\202210081355355_CreateDBShcema.cs" />

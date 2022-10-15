@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using DataAccess.Models;
 using DataAccess.DatabseContexts;
 using System.Data.Entity;
@@ -8,7 +7,7 @@ using DataAccess.Repositories.Interfaces;
 
 namespace DataAccess.Repositories.Implementations
 {
-    public  class ResultRepository: IResultRepository
+    public  class ResultRepository:IResultRepository
     {
         private readonly MagniDBContext dbContext;
         public ResultRepository(MagniDBContext db)
