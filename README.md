@@ -75,6 +75,13 @@ Method 2 (On IIS):
 5) For Angular side development, explore the folder 'Client' in "MagniCollegeManagementSystem" web project. This folder has all code related to Angular applciation
 
 # Projects
+* <b>  BusinessLogic:</b>
+<br> Responsible for:
+<br> a: Adding business logic (If any)
+
+* <b>  UnitTests:</b>
+<br> Responsible for:
+<br> a: Containing unit tests for the proejcts
 
 * <b>  DataAccess:</b>
 <br> Responsible for:
