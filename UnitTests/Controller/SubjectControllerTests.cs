@@ -14,7 +14,7 @@ using BusinessLogic.DTOs;
 namespace UnitTests.Controller
 {
     /// <summary>
-    /// Summary description for SubjectControllerTests
+    /// Summary description for Subject ControllerTests
     /// </summary>
     [TestClass]
     public class SubjectControllerTests
