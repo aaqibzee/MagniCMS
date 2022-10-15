@@ -1,8 +1,7 @@
 ﻿namespace BusinessLogic.DTOs
 {
-    public class ResultDTO
+    public class ResultDTO : BaseDTO
     {
-        public int Id { get; set; }
         public virtual CourseDTO Course  { get; set; }
         public virtual StudentDTO Student { get; set; }
         public virtual SubjectDTO Subject { get; set; }

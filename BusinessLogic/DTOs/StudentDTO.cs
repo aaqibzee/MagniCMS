@@ -2,9 +2,8 @@
 
 namespace BusinessLogic.DTOs
 {
-    public class StudentDTO
+    public class StudentDTO : BaseDTO
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Birthday { get; set; }
         public string RegisterationNumber { get; set; }

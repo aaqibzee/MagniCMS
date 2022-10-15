@@ -2,9 +2,8 @@
 
 namespace BusinessLogic.DTOs
 {
-    public class CourseDTO
+    public class CourseDTO: BaseDTO
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
         public int TotalCreditHours { get; set; }

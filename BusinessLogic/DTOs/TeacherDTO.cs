@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 namespace BusinessLogic.DTOs
 {
-    public class TeacherDTO
+    public class TeacherDTO : BaseDTO
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Birthday { get; set; }
         public decimal Salary { get; set; }

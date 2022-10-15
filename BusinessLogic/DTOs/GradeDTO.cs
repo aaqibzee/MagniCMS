@@ -2,9 +2,8 @@
 
 namespace BusinessLogic.DTOs
 {
-    public class GradeDTO
+    public class GradeDTO : BaseDTO
     {
-        public int Id { get; set; }
         public string Title { get; set; }
         public int StartingMarks { get; set; }
         public int EndingMarks { get; set; }
