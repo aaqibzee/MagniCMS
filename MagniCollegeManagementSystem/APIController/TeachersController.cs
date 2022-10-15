@@ -140,7 +140,7 @@ namespace MagniCollegeManagementSystem.APIController
                 var dbEntity = await manager.Get(id);
                 if (dbEntity == null)
                 {
-                    logger.Info("DeleteTeacher call completed. Result:No content. No db entity was found to delete");
+                    logger.Info("DeleteTeacher call completed. Result:Not found. No db entity was found to delete");
                     return NotFound();
                 }
 
