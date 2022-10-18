@@ -64,7 +64,7 @@ export class StudentComponent implements OnInit {
   }
   getGrade(subjectId: number, stdId: number) {
     let subject = this.service?.subjectService?.subjectList?.find(x => x.Id == subjectId);
-    let result = this.resultService.resultsList?.find(x => x.Student?.Id == stdId && x.Subject?.Id == subject.Id);
+    let result = this.resultService.resultsList?.find(x => x.Student?.Id == stdId && x.Subject?.Id == subject?.Id);
     return result?.Grade?.Title ? "(" + result?.Grade?.Title + ")" : "TBD";
   }
 

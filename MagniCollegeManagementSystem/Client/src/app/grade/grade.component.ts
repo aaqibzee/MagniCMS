@@ -17,16 +17,21 @@ export class GradeComponent implements OnInit {
     private service: GradeService,
     private resultService: ResultService,
     private ngZone: NgZone,
-    private toastr: ToastrService) { }
+    private toastr: ToastrService) {
+  }
+  public gradesList: Grade[];
 
   ngOnInit(): void {
     this.service.refreshList();
     window[Constants.gradeComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
+    this.service.sourceList$.subscribe(
+      grades => { this.gradesList = grades; }
+    );
   }
 
   populateForm(grade: Grade) {
     this.toastr.info('Data populated to form', 'Info', { closeButton: true });
-    this.service.formData = Object.assign({}, grade);
+    this.service.sendFormData(Object.assign({}, grade));
   }
 
   deleteGrade(grade: Grade) {
@@ -48,6 +53,7 @@ export class GradeComponent implements OnInit {
   }
 
   getgradesList() {
-    return this.service.getList();
+    console.log("Grades List Retunring");
+    return this.gradesList;
   }
 }

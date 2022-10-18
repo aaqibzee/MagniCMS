@@ -5,6 +5,7 @@ import { CourseService } from 'src/app/shared/course.service';
 import { Subject } from 'src/app/shared/subject.model';
 import { GradeService } from "../../shared/grade.service";
 import { ToastrService } from 'ngx-toastr';
+import { Grade } from 'src/app/shared/grade.model';
 
 @Component({
   selector: 'app-grade-form',
@@ -22,9 +23,17 @@ export class GradeFormComponent implements OnInit {
   ) { }
 
   subjectsInSelectedCourse: Subject[];
+  CourseSelcetValidationMesage: string = '';
+  formData: Grade = new Grade();
 
   ngOnInit(): void {
     this.resetFormData();
+    this.service.formData$.subscribe(
+      data => {
+
+        this.formData = data;
+      }
+    );
   }
 
   onSubmit(form: NgForm) {
@@ -33,7 +42,7 @@ export class GradeFormComponent implements OnInit {
       return;
     }
 
-    if (this.service.formData.Id == 0) {
+    if (this.formData.Id == 0) {
       this.inserRecord(form);
       return;
     }
@@ -41,17 +50,17 @@ export class GradeFormComponent implements OnInit {
     this.updateRecord(form);
   }
   isFormInvalid() {
-    return this.service.formData.Course == null
+    return this.formData.Course == null
       || this.isDuplicateRecord();
   }
 
   isDuplicateRecord() {
     return this.service.getList()?.filter(
-      x => x.Course?.Id == this.service.formData.Course?.Id
-        && x.StartingMarks == this.service.formData.StartingMarks
-        && x.EndingMarks == this.service.formData.EndingMarks
-        && x.Title == this.service.formData.Title
-        && this.service.formData.Id == 0).length > 0;
+      x => x.Course?.Id == this.formData.Course?.Id
+        && x.StartingMarks == this.formData.StartingMarks
+        && x.EndingMarks == this.formData.EndingMarks
+        && x.Title == this.formData.Title
+        && this.formData.Id == 0).length > 0;
   }
 
   setValidationMessages() {
@@ -60,18 +69,18 @@ export class GradeFormComponent implements OnInit {
       this.toaster.error("Grade already exists", "Error", { closeButton: true });
     }
     else {
-      this.service.CourseSelcetValidationMesage = ": Required"
+      this.CourseSelcetValidationMesage = ": Required"
     }
   }
 
 
   onCourseSelect(course: Course) {
-    this.service.formData.Course = course;
-    this.service.CourseSelcetValidationMesage = "";
+    this.formData.Course = course;
+    this.CourseSelcetValidationMesage = "";
   }
 
   inserRecord(form: NgForm) {
-    this.service.postGrade().subscribe(
+    this.service.postGrade(this.formData).subscribe(
       result => {
         this.toaster.success('Grade added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
@@ -83,7 +92,7 @@ export class GradeFormComponent implements OnInit {
   }
 
   updateRecord(form: NgForm) {
-    this.service.putGrade().subscribe(
+    this.service.putGrade(this.formData).subscribe(
       result => {
         this.toaster.success('Grade updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
@@ -100,6 +109,7 @@ export class GradeFormComponent implements OnInit {
   }
 
   resetFormData() {
-    this.service.resetFormData();
+    this.formData = new Grade();
+    this.CourseSelcetValidationMesage = '';
   }
 }

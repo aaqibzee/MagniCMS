@@ -3,6 +3,7 @@ import { Grade } from "./grade.model";
 import { HttpClient } from '@angular/common/http';
 import { Constants } from './Constants';
 import { SplashScreenStateService } from './splash-screen-state.service';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,20 +17,27 @@ export class GradeService {
       this.splashScreenStateService.stop();
     }, 1);
   }
-  CourseSelcetValidationMesage: string = '';
-  formData: Grade = new Grade();
+
   private gradesList: Grade[];
+  private gradeDataUpdatedSource = new Subject<Grade[]>();
+  private formDataUpdatedSource = new Subject<Grade>();
+  sourceList$ = this.gradeDataUpdatedSource.asObservable();
+  formData$ = this.formDataUpdatedSource.asObservable();
 
-  resetFormData() {
-    this.formData = new Grade();
-    this.CourseSelcetValidationMesage = '';
-  }
-  postGrade() {
-    return this.http.post(Constants.gradesBase, this.formData);
+  sendGradeData() {
+    this.gradeDataUpdatedSource.next(this.gradesList);
   }
 
-  putGrade() {
-    return this.http.put(Constants.gradesBase + '/' + this.formData.Id, this.formData);
+  sendFormData(formData: Grade) {
+    this.formDataUpdatedSource.next(formData);
+  }
+
+  postGrade(formData: Grade) {
+    return this.http.post(Constants.gradesBase, formData);
+  }
+
+  putGrade(formData: Grade) {
+    return this.http.put(Constants.gradesBase + '/' + formData.Id, formData);
   }
 
   deleteGrade(id: number) {
@@ -39,7 +47,8 @@ export class GradeService {
   refreshList() {
     this.http.get(Constants.gradesBase)
       .toPromise()
-      .then(res => this.gradesList = res as Grade[]);
+      .then(res => this.gradesList = res as Grade[])
+      .then(x => this.sendGradeData());
   }
 
   getList() {

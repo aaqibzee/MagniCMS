@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { Course } from "./course.model";
 import { HttpClient } from '@angular/common/http';
 import { Constants } from '../shared/Constants';
-import { GradeService } from './grade.service';
-import { ResultService } from './result.service';
 import { SplashScreenStateService } from './splash-screen-state.service';
 
 @Injectable({
