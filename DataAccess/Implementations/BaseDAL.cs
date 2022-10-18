@@ -32,7 +32,7 @@ namespace DataAccess.Repositories.Interfaces
 
         public Task<int> Update(TEntity entity)
         {
-            return repository.Add(entity);
+            return repository.Update(entity);
         }
     }
 }
