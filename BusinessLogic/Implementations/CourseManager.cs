@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using BusinessLogic.DTOs;
+using BusinessLogic.Interfaces;
 using DataAccess.Repositories.Interfaces;
 using DataAccess.Models;
 
-namespace BusinessLogic.Interfaces
+namespace BusinessLogic.Implementations
 {
     public  class CourseManager: ICourseManager
     {

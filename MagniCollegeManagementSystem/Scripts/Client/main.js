@@ -2873,6 +2873,9 @@ class GradeComponent {
     getTooltipForDeleteButton(grade) {
         return this.isDeleteable(grade) ? "" : "Delete 'Results' associated to this 'Grade' first";
     }
+    getgradesList() {
+        return this.service.getList();
+    }
 }
 GradeComponent.ɵfac = function GradeComponent_Factory(t) { return new (t || GradeComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_grade_service__WEBPACK_IMPORTED_MODULE_2__["GradeService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_result_service__WEBPACK_IMPORTED_MODULE_3__["ResultService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgZone"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_4__["ToastrService"])); };
 GradeComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: GradeComponent, selectors: [["app-grade"]], decls: 27, vars: 1, consts: [[1, "jumbotron", "py-3"], [1, "display-4", "text-center"], [1, "container", "body-content"], [1, "row"], [1, "col-md-3"], [1, "col-md-9"], [1, "table"], [1, "thead-light"], [4, "ngFor", "ngForOf"], [3, "click"], ["type", "button", 1, "btn", "btn-info"], ["type", "button", "data-toggle", "tooltip", 1, "btn", "btn-danger", 3, "disabled", "title"]], template: function GradeComponent_Template(rf, ctx) { if (rf & 1) {
@@ -2922,7 +2925,7 @@ GradeComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCom
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](26);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.service.gradesList);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.getgradesList());
     } }, directives: [_grade_form_grade_form_component__WEBPACK_IMPORTED_MODULE_5__["GradeFormComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_6__["NgForOf"]], encapsulation: 2 });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](GradeComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
@@ -3574,6 +3577,7 @@ class ResultFormComponent {
         }
     }
     calculateGrade() {
+        var _a;
         let obMarks = this.service.formData.ObtainedMarks;
         let course = this.service.formData.Course;
         if (course == null) {
@@ -3581,7 +3585,7 @@ class ResultFormComponent {
             this.gradeLabelTextClass = "text-danger";
             return;
         }
-        let grades = this.gradeService.gradesList.filter(x => x.Course.Id == course.Id);
+        let grades = (_a = this.gradeService.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => x.Course.Id == course.Id);
         if (grades == null) {
             this.gradeLabelText = "No grades available for the selected subject";
             this.gradeLabelTextClass = "text-info";
@@ -3597,9 +3601,10 @@ class ResultFormComponent {
         this.gradeLabelText = grade === null || grade === void 0 ? void 0 : grade.Title;
     }
     onCourseSelect(course) {
+        var _a, _b;
         this.service.formData.Course = course;
-        this.subjectsInSelectedCourse = this.subjectService.subjectList.filter(x => x.Course.Id == course.Id);
-        this.gradesInSelectedCourse = this.gradeService.gradesList.filter(x => { var _a; return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == course.Id; });
+        this.subjectsInSelectedCourse = (_a = this.subjectService.subjectList) === null || _a === void 0 ? void 0 : _a.filter(x => x.Course.Id == course.Id);
+        this.gradesInSelectedCourse = (_b = this.gradeService.getList()) === null || _b === void 0 ? void 0 : _b.filter(x => { var _a; return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == course.Id; });
         this.service.formData.Student = null;
         this.service.formData.Subject = null;
         this.selectedSubject.value = '';

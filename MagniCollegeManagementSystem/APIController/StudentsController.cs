@@ -14,12 +14,12 @@ namespace MagniCollegeManagementSystem.APIController
 {
     public class StudentsController : ApiController
     {
-        private readonly IStudentManager manager;
+        private readonly IStudentManager _baseManager;
         private readonly IHubContext magniSyncHub;
         private readonly IMagniLogger logger;
-        public StudentsController(IMagniLogger logger, IStudentManager manager)
+        public StudentsController(IMagniLogger logger, IStudentManager baseManager)
         {
-            this.manager = manager;
+            this._baseManager = baseManager;
             this.magniSyncHub = GlobalHost.ConnectionManager.GetHubContext<MagniSyncHub>();
             this.logger = logger;
         }
@@ -30,7 +30,7 @@ namespace MagniCollegeManagementSystem.APIController
             try
             {
                 logger.Info("GetStudents call started");
-                var response = await manager.GetAll();
+                var response = await _baseManager.GetAll();
                 logger.Info("GetStudents call completed. Result:"+JsonSerializer.Serialize(response));
                 return Ok(response);
             }
@@ -48,7 +48,7 @@ namespace MagniCollegeManagementSystem.APIController
             try
             {
                 logger.Info("GetStudent call started Id:"+id);
-                var response = await manager.Get(id);
+                var response = await _baseManager.Get(id);
                 if (response == null)
                 {
                     logger.Info("GetStudent call completed. Result:" + "No content");
@@ -84,14 +84,14 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest();
                 }
 
-                var dbEntity = await manager.Get(id);
+                var dbEntity = await _baseManager.Get(id);
                 if (dbEntity is null)
                 {
                     logger.Info("PutStudent call aborted due to invalid request. No DB entity was found for the given Id:" + id);
                     return BadRequest();
                 }
 
-                await manager.Update(student);
+                await _baseManager.Update(student);
                 magniSyncHub.Clients.All.studentsUpdated();
                 logger.Info("PutStudent call completed successfully");
                 return StatusCode(HttpStatusCode.NoContent);
@@ -117,7 +117,7 @@ namespace MagniCollegeManagementSystem.APIController
                     return BadRequest(ModelState);
                 }
 
-                await manager.Add(request);
+                await _baseManager.Add(request);
                 magniSyncHub.Clients.All.studentsUpdated();
                 logger.Info("PostStudent call completed successfully");
                 return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
@@ -137,14 +137,14 @@ namespace MagniCollegeManagementSystem.APIController
             try
             {
                 logger.Info("DeleteStudent call started. Id:" + id);
-                var dbEntity = await manager.Get(id);
+                var dbEntity = await _baseManager.Get(id);
                 if (dbEntity == null)
                 {
                     logger.Info("DeleteStudent call completed. Result:Not found. No db entity was found to delete");
                     return NotFound();
                 }
 
-                await manager.Delete(id);
+                await _baseManager.Delete(id);
                 magniSyncHub.Clients.All.studentsUpdated();
                 logger.Info("DeleteStudent call completed successfully for entity" + JsonSerializer.Serialize(dbEntity));
                 return Ok();

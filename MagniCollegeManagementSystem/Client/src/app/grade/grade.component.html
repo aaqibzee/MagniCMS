@@ -34,7 +34,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let grade of service.gradesList">
+                <tr *ngFor="let grade of getgradesList()">
                     <td>{{grade.Id}}</td>
                     <td>{{grade.Title}}</td>
                     <td>{{grade.StartingMarks}}</td>

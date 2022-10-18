@@ -14,8 +14,8 @@ import { ToastrService } from 'ngx-toastr';
 export class GradeComponent implements OnInit {
 
   constructor(
-    public service: GradeService,
-    public resultService: ResultService,
+    private service: GradeService,
+    private resultService: ResultService,
     private ngZone: NgZone,
     private toastr: ToastrService) { }
 
@@ -45,5 +45,9 @@ export class GradeComponent implements OnInit {
 
   getTooltipForDeleteButton(grade: Grade) {
     return this.isDeleteable(grade) ? "" : "Delete 'Results' associated to this 'Grade' first";
+  }
+
+  getgradesList() {
+    return this.service.getList();
   }
 }

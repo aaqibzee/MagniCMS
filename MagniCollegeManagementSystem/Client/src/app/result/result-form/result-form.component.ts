@@ -62,7 +62,7 @@ export class ResultFormComponent implements OnInit {
       return;
     }
 
-    let grades = this.gradeService.gradesList.filter(x => x.Course.Id == course.Id)
+    let grades = this.gradeService.getList()?.filter(x => x.Course.Id == course.Id)
     if (grades == null) {
       this.gradeLabelText = "No grades available for the selected subject";
       this.gradeLabelTextClass = "text-info";
@@ -81,8 +81,8 @@ export class ResultFormComponent implements OnInit {
 
   onCourseSelect(course: Course) {
     this.service.formData.Course = course;
-    this.subjectsInSelectedCourse = this.subjectService.subjectList.filter(x => x.Course.Id == course.Id);
-    this.gradesInSelectedCourse = this.gradeService.gradesList.filter(x => x.Course?.Id == course.Id);
+    this.subjectsInSelectedCourse = this.subjectService.subjectList?.filter(x => x.Course.Id == course.Id);
+    this.gradesInSelectedCourse = this.gradeService.getList()?.filter(x => x.Course?.Id == course.Id);
     this.service.formData.Student = null;
     this.service.formData.Subject = null;
     this.selectedSubject.value = '';

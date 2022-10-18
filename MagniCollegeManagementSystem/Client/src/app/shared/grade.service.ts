@@ -18,7 +18,7 @@ export class GradeService {
   }
   CourseSelcetValidationMesage: string = '';
   formData: Grade = new Grade();
-  gradesList: Grade[];
+  private gradesList: Grade[];
 
   resetFormData() {
     this.formData = new Grade();
