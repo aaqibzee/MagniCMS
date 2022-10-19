@@ -49,6 +49,7 @@ export class GradeComponent implements OnInit {
         this.toastr.error('An error occured, while deleting grade', 'Error', { closeButton: true });
         console.log(error);
       });
+    this.service.resetFormData(grade.Id);
   }
 
   isDeleteable(grade: Grade) {

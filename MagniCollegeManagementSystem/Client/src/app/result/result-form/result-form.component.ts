@@ -55,7 +55,7 @@ export class ResultFormComponent implements OnInit {
 
     this.service.resetFormData$.subscribe(
       data => {
-        this.resetDataOnDeleteItem(data);
+        this.resetDataOnDelete(data);
       }
     );
   }
@@ -189,7 +189,7 @@ export class ResultFormComponent implements OnInit {
     this.StudentSelcetValidationMesage = '';
   }
 
-  resetDataOnDeleteItem(id: number) {
+  resetDataOnDelete(id: number) {
     if (id == this.formData.Id) {
       this.resetFormData();
     }

@@ -1,4 +1,4 @@
-export class Constants {   
+export class Constants {
     // ComponentReferences Start
     public static readonly studentComponentReference = 'studentComponentReference';
     public static readonly courseComponentReference = 'courseComponentReference';
@@ -7,7 +7,6 @@ export class Constants {
     public static readonly resultComponentReference = 'resultComponentReference';
     public static readonly gradeComponentReference = 'gradeComponentReference';
     // ComponentReferences End
-
 
     // Endpoints Start
     public static readonly coursesBase = '/api/courses';
@@ -18,4 +17,3 @@ export class Constants {
     public static readonly gradesBase = '/api/grades';
     // Endpoints End
 }
-

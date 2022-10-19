@@ -28,9 +28,9 @@ export class StudentService {
   private listDataUpdatedSource = new Subject<Student[]>();
   private formDataUpdatedSource = new Subject<Student>();
   private resetFormDataUpdatedSource = new Subject<number>();
-  sourceList$ = this.listDataUpdatedSource.asObservable();
-  formData$ = this.formDataUpdatedSource.asObservable();
-  resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
+  public sourceList$ = this.listDataUpdatedSource.asObservable();
+  public formData$ = this.formDataUpdatedSource.asObservable();
+  public resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
 
   notifyListUpdate() {
     this.listDataUpdatedSource.next(this.studentsList);

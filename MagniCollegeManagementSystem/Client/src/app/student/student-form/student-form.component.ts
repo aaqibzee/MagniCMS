@@ -54,7 +54,13 @@ export class StudentFormComponent implements OnInit {
     this.resetFormData();
     this.service.formData$.subscribe(
       data => {
-        this.formData = data;
+        this.populateForm(data);
+      }
+    );
+
+    this.service.resetFormData$.subscribe(
+      data => {
+        this.resetFormDataOnDelete(data);
       }
     );
   }
@@ -73,14 +79,14 @@ export class StudentFormComponent implements OnInit {
       this.formData.Course = course;
       this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => x.Course?.Id == course?.Id);
       this.selectedSubjectsByStudent = [];
-      this.SubjectsSelcetValidationMesage = course.TotalCreditHours + ' Credit Hours Left';
+      this.SubjectsSelcetValidationMesage = ' ' + course.TotalCreditHours + ' Credit Hours Left';
       this.CourseSelcetValidationMesage = '';
     }
   }
 
   populateForm(student: Student) {
-    this.selectedCourseByStudent = student.Course.Name;
     this.formData = Object.assign({}, student);
+    this.selectedCourseByStudent = student.Course?.Name;
     this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => x.Course?.Id == student.Course?.Id);
     this.selectedSubjectsByStudent = this.getSelctedSubjectListWithAllDetails();
   }
@@ -194,5 +200,10 @@ export class StudentFormComponent implements OnInit {
 
   isCourseSelectionValid() {
     return this.selectedCourseByStudent == this.courseDropDownDefaultValue
+  }
+
+  resetFormDataOnDelete(id: number) {
+    if (id == this.formData.Id)
+      this.resetFormData();
   }
 }

@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Teacher } from "./teacher.model";
 import { HttpClient } from '@angular/common/http';
-import { Subject } from './subject.model';
 import { SubjectService } from './subject.service';
 import { Constants } from './Constants';
-import { Course } from './course.model';
 import { SplashScreenStateService } from './splash-screen-state.service';
 import { Subject as SubjectObserveable } from 'rxjs'
 
@@ -40,7 +38,7 @@ export class TeacherService {
     this.formDataUpdatedSource.next(formData);
   }
 
-  resetFormDataPostDataDeletion(id: number) {
+  restFormData(id: number) {
     this.resetFormDataUpdatedSource.next(id);
   }
 

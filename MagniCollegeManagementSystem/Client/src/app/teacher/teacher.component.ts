@@ -57,7 +57,7 @@ export class TeacherComponent implements OnInit {
         this.toaster.error('An error occured, while deleting teacher', 'Error', { closeButton: true });
         console.log(error);
       });
-    this.service.resetFormDataPostDataDeletion(record.Id);
+    this.service.restFormData(record.Id);
   }
   isDeleteable(record: Teacher) {
     return record.Subjects?.length <= 0;

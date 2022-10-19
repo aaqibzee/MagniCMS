@@ -33,6 +33,12 @@ export class GradeFormComponent implements OnInit {
         this.formData = data;
       }
     );
+
+    this.service.resetFormData$.subscribe(
+      data => {
+        this.resetFormDataOnDelete(data);
+      }
+    );
   }
 
   onSubmit(form: NgForm) {
@@ -110,5 +116,10 @@ export class GradeFormComponent implements OnInit {
   resetFormData() {
     this.formData = new Grade();
     this.CourseSelcetValidationMesage = '';
+  }
+
+  resetFormDataOnDelete(id: number) {
+    if (id == this.formData.Id)
+      this.resetFormData();
   }
 }

@@ -51,7 +51,7 @@ export class SubjectComponent implements OnInit {
         this.toaster.error('An error occured, while deleting subject', 'Error', { closeButton: true });
         console.log(error);
       });
-    this.service.resetFormDataPostDataDeletion(record.Id);
+    this.service.resetFormData(record.Id);
   }
 
   isDeleteable(record: Subject) {

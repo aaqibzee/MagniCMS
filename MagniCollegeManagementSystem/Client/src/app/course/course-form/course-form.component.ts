@@ -29,7 +29,7 @@ export class CourseFormComponent implements OnInit {
 
     this.service.resetFormData$.subscribe(
       id => {
-        this.resetFormDataOnDeletion(id)
+        this.resetFormDataOnDelete(id)
       }
     );
   }
@@ -88,7 +88,7 @@ export class CourseFormComponent implements OnInit {
     this.formData = new Course();
   }
 
-  resetFormDataOnDeletion(id: number) {
+  resetFormDataOnDelete(id: number) {
     if (id == this.formData.Id) {
       this.resetFormData();
     }

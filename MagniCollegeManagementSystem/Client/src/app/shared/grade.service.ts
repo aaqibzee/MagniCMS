@@ -21,15 +21,21 @@ export class GradeService {
   private gradesList: Grade[];
   private gradeDataUpdatedSource = new Subject<Grade[]>();
   private formDataUpdatedSource = new Subject<Grade>();
-  sourceList$ = this.gradeDataUpdatedSource.asObservable();
-  formData$ = this.formDataUpdatedSource.asObservable();
+  private resetFormDataUpdatedSource = new Subject<number>();
+  public sourceList$ = this.gradeDataUpdatedSource.asObservable();
+  public formData$ = this.formDataUpdatedSource.asObservable();
+  public resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
 
-  sendGradeData() {
+  notifyListUpdate() {
     this.gradeDataUpdatedSource.next(this.gradesList);
   }
 
   sendFormData(formData: Grade) {
     this.formDataUpdatedSource.next(formData);
+  }
+
+  resetFormData(id: number) {
+    this.resetFormDataUpdatedSource.next(id);
   }
 
   postGrade(formData: Grade) {
@@ -48,7 +54,7 @@ export class GradeService {
     this.http.get(Constants.gradesBase)
       .toPromise()
       .then(res => this.gradesList = res as Grade[])
-      .then(x => this.sendGradeData());
+      .then(x => this.notifyListUpdate());
   }
 
   getList() {

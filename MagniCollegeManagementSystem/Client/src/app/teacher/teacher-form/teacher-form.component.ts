@@ -58,6 +58,12 @@ export class TeacherFormComponent implements OnInit {
         this.populateForm(data);
       }
     );
+
+    this.service.resetFormData$.subscribe(
+      data => {
+        this.resetFormDataOnDelete(data);
+      }
+    );
   }
 
   onSubmit(form: NgForm) {
@@ -124,10 +130,9 @@ export class TeacherFormComponent implements OnInit {
   getSubjectsForSelectedCourses() {
     let list: Subject[] = [];
     var subjects = this.service.subjectService.getList();
-    var selectedCourses = this.selectedCourses;
 
     subjects?.filter(function (x) {
-      if (selectedCourses.filter(y => y.Id == x.Course.Id).length > 0) {
+      if (this.selectedCourses?.filter(y => y.Id == x.Course.Id).length > 0) {
         list.push(x);
       }
     });
@@ -137,7 +142,7 @@ export class TeacherFormComponent implements OnInit {
   getSelctedSubjectListWithAllDetails() {
     let list: Subject[] = [];
     let form = this.formData;
-    this.service.subjectService.getList().filter(function (x) {
+    this.service.subjectService.getList()?.filter(function (x) {
       if (form?.Subjects?.includes(x.Id)) {
         list.push(x);
       }
@@ -148,7 +153,7 @@ export class TeacherFormComponent implements OnInit {
   getSelctedCourseListWithAllDetails() {
     let list: Course[] = [];
     let form = this.formData;
-    this.courseService.getList().filter(function (x) {
+    this.courseService.getList()?.filter(function (x) {
       if (form?.Courses?.includes(x.Id)) {
         list.push(x);
       }
@@ -164,11 +169,12 @@ export class TeacherFormComponent implements OnInit {
   }
 
   onCourseSelect(item: Course) {
-    var list = this.subjectService.getList().filter(x => x.Course.Id == item.Id);
+    var list = this.subjectService.getList()?.filter(x => x.Course.Id == item.Id);
     this.subjectsForSelectedCourses = this.subjectsForSelectedCourses.concat(list);
   }
+
   onCourseDeselect(course: Course) {
-    let subjectsInSelectedCourse = this.subjectService.getList().filter(x => x.Course.Id == course.Id);
+    let subjectsInSelectedCourse = this.subjectService.getList()?.filter(x => x.Course.Id == course.Id);
     this.selectedSubjects = this.selectedSubjects?.filter(function (x) {
       var shouldInclude = true;
       subjectsInSelectedCourse.forEach(element => {
@@ -188,5 +194,10 @@ export class TeacherFormComponent implements OnInit {
       });
       return shouldInclude;
     });
+  }
+
+  resetFormDataOnDelete(id: number) {
+    if (id == this.formData.Id)
+      this.resetFormData();
   }
 }

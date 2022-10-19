@@ -66,6 +66,9 @@ class TeacherFormComponent {
         this.service.formData$.subscribe(data => {
             this.populateForm(data);
         });
+        this.service.resetFormData$.subscribe(data => {
+            this.resetFormDataOnDelete(data);
+        });
     }
     onSubmit(form) {
         if (this.isDuplicateRecord()) {
@@ -121,18 +124,19 @@ class TeacherFormComponent {
     getSubjectsForSelectedCourses() {
         let list = [];
         var subjects = this.service.subjectService.getList();
-        var selectedCourses = this.selectedCourses;
         subjects === null || subjects === void 0 ? void 0 : subjects.filter(function (x) {
-            if (selectedCourses.filter(y => y.Id == x.Course.Id).length > 0) {
+            var _a;
+            if (((_a = this.selectedCourses) === null || _a === void 0 ? void 0 : _a.filter(y => y.Id == x.Course.Id).length) > 0) {
                 list.push(x);
             }
         });
         return list;
     }
     getSelctedSubjectListWithAllDetails() {
+        var _a;
         let list = [];
         let form = this.formData;
-        this.service.subjectService.getList().filter(function (x) {
+        (_a = this.service.subjectService.getList()) === null || _a === void 0 ? void 0 : _a.filter(function (x) {
             var _a;
             if ((_a = form === null || form === void 0 ? void 0 : form.Subjects) === null || _a === void 0 ? void 0 : _a.includes(x.Id)) {
                 list.push(x);
@@ -141,9 +145,10 @@ class TeacherFormComponent {
         return list;
     }
     getSelctedCourseListWithAllDetails() {
+        var _a;
         let list = [];
         let form = this.formData;
-        this.courseService.getList().filter(function (x) {
+        (_a = this.courseService.getList()) === null || _a === void 0 ? void 0 : _a.filter(function (x) {
             var _a;
             if ((_a = form === null || form === void 0 ? void 0 : form.Courses) === null || _a === void 0 ? void 0 : _a.includes(x.Id)) {
                 list.push(x);
@@ -158,13 +163,14 @@ class TeacherFormComponent {
         this.subjectsForSelectedCourses = [];
     }
     onCourseSelect(item) {
-        var list = this.subjectService.getList().filter(x => x.Course.Id == item.Id);
+        var _a;
+        var list = (_a = this.subjectService.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => x.Course.Id == item.Id);
         this.subjectsForSelectedCourses = this.subjectsForSelectedCourses.concat(list);
     }
     onCourseDeselect(course) {
-        var _a, _b;
-        let subjectsInSelectedCourse = this.subjectService.getList().filter(x => x.Course.Id == course.Id);
-        this.selectedSubjects = (_a = this.selectedSubjects) === null || _a === void 0 ? void 0 : _a.filter(function (x) {
+        var _a, _b, _c;
+        let subjectsInSelectedCourse = (_a = this.subjectService.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => x.Course.Id == course.Id);
+        this.selectedSubjects = (_b = this.selectedSubjects) === null || _b === void 0 ? void 0 : _b.filter(function (x) {
             var shouldInclude = true;
             subjectsInSelectedCourse.forEach(element => {
                 if (element.Id == x.Id) {
@@ -173,7 +179,7 @@ class TeacherFormComponent {
             });
             return shouldInclude;
         });
-        this.subjectsForSelectedCourses = (_b = this.subjectsForSelectedCourses) === null || _b === void 0 ? void 0 : _b.filter(function (x) {
+        this.subjectsForSelectedCourses = (_c = this.subjectsForSelectedCourses) === null || _c === void 0 ? void 0 : _c.filter(function (x) {
             var shouldInclude = true;
             subjectsInSelectedCourse.forEach(element => {
                 if (element.Id == x.Id) {
@@ -182,6 +188,10 @@ class TeacherFormComponent {
             });
             return shouldInclude;
         });
+    }
+    resetFormDataOnDelete(id) {
+        if (id == this.formData.Id)
+            this.resetFormData();
     }
 }
 TeacherFormComponent.ɵfac = function TeacherFormComponent_Factory(t) { return new (t || TeacherFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_teacher_service__WEBPACK_IMPORTED_MODULE_2__["TeacherService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_5__["ToastrService"])); };
@@ -439,7 +449,7 @@ class SubjectComponent {
             this.toaster.error('An error occured, while deleting subject', 'Error', { closeButton: true });
             console.log(error);
         });
-        this.service.resetFormDataPostDataDeletion(record.Id);
+        this.service.resetFormData(record.Id);
     }
     isDeleteable(record) {
         var _a;
@@ -591,6 +601,9 @@ class GradeFormComponent {
         this.service.formData$.subscribe(data => {
             this.formData = data;
         });
+        this.service.resetFormData$.subscribe(data => {
+            this.resetFormDataOnDelete(data);
+        });
     }
     onSubmit(form) {
         if (this.isFormInvalid()) {
@@ -655,6 +668,10 @@ class GradeFormComponent {
     resetFormData() {
         this.formData = new src_app_shared_grade_model__WEBPACK_IMPORTED_MODULE_1__["Grade"]();
         this.CourseSelcetValidationMesage = '';
+    }
+    resetFormDataOnDelete(id) {
+        if (id == this.formData.Id)
+            this.resetFormData();
     }
 }
 GradeFormComponent.ɵfac = function GradeFormComponent_Factory(t) { return new (t || GradeFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_grade_service__WEBPACK_IMPORTED_MODULE_2__["GradeService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_4__["ToastrService"])); };
@@ -940,7 +957,7 @@ class CourseFormComponent {
             this.formData = data;
         });
         this.service.resetFormData$.subscribe(id => {
-            this.resetFormDataOnDeletion(id);
+            this.resetFormDataOnDelete(id);
         });
     }
     onSubmit(form) {
@@ -987,7 +1004,7 @@ class CourseFormComponent {
     resetFormData() {
         this.formData = new src_app_shared_course_model__WEBPACK_IMPORTED_MODULE_1__["Course"]();
     }
-    resetFormDataOnDeletion(id) {
+    resetFormDataOnDelete(id) {
         if (id == this.formData.Id) {
             this.resetFormData();
         }
@@ -2444,7 +2461,7 @@ class TeacherComponent {
             this.toaster.error('An error occured, while deleting teacher', 'Error', { closeButton: true });
             console.log(error);
         });
-        this.service.resetFormDataPostDataDeletion(record.Id);
+        this.service.restFormData(record.Id);
     }
     isDeleteable(record) {
         var _a;
@@ -2559,7 +2576,7 @@ class SubjectService {
     populateForm(formData) {
         this.formDataUpdatedSource.next(formData);
     }
-    resetFormDataPostDataDeletion(id) {
+    resetFormData(id) {
         this.resetFormDataUpdatedSource.next(id);
     }
     postSubject(formData) {
@@ -2661,6 +2678,13 @@ class SubjectFormComponent {
         this.courseDropDownCelectedValue = 'Select Course';
         this.CourseSelcetValidationMesage = ': Required';
     }
+    ngOnInit() {
+        this.resetFormData();
+        this.service.formData$.subscribe(formData => { this.populateForm(formData); });
+        this.service.resetFormData$.subscribe(data => {
+            this.resetFormDataOnDelete(data);
+        });
+    }
     selectCourse(course) {
         this.courseDropDownCelectedValue = course.Name;
         this.formData.Course = course;
@@ -2669,10 +2693,6 @@ class SubjectFormComponent {
     populateForm(subject) {
         this.courseDropDownCelectedValue = subject.Course.Name;
         this.formData = Object.assign({}, subject);
-    }
-    ngOnInit() {
-        this.resetFormData();
-        this.service.formData$.subscribe(formData => { this.populateForm(formData); });
     }
     onSubmit(form) {
         if (this.isFormInvalid()) {
@@ -2737,6 +2757,10 @@ class SubjectFormComponent {
         this.formData = new src_app_shared_subject_model__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
         this.courseDropDownCelectedValue = 'Select Course';
         this.CourseSelcetValidationMesage = '';
+    }
+    resetFormDataOnDelete(id) {
+        if (id == this.formData.Id)
+            this.resetFormData();
     }
 }
 SubjectFormComponent.ɵfac = function SubjectFormComponent_Factory(t) { return new (t || SubjectFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_subject_service__WEBPACK_IMPORTED_MODULE_2__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_4__["ToastrService"])); };
@@ -2943,6 +2967,7 @@ class GradeComponent {
             this.toastr.error('An error occured, while deleting grade', 'Error', { closeButton: true });
             console.log(error);
         });
+        this.service.resetFormData(grade.Id);
     }
     isDeleteable(grade) {
         var _a, _b;
@@ -3221,7 +3246,7 @@ class TeacherService {
     populateForm(formData) {
         this.formDataUpdatedSource.next(formData);
     }
-    resetFormDataPostDataDeletion(id) {
+    restFormData(id) {
         this.resetFormDataUpdatedSource.next(id);
     }
     postTeacher(formData) {
@@ -3327,7 +3352,10 @@ class StudentFormComponent {
     ngOnInit() {
         this.resetFormData();
         this.service.formData$.subscribe(data => {
-            this.formData = data;
+            this.populateForm(data);
+        });
+        this.service.resetFormData$.subscribe(data => {
+            this.resetFormDataOnDelete(data);
         });
     }
     resetFormData() {
@@ -3344,13 +3372,14 @@ class StudentFormComponent {
             this.formData.Course = course;
             this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => { var _a; return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == (course === null || course === void 0 ? void 0 : course.Id); });
             this.selectedSubjectsByStudent = [];
-            this.SubjectsSelcetValidationMesage = course.TotalCreditHours + ' Credit Hours Left';
+            this.SubjectsSelcetValidationMesage = ' ' + course.TotalCreditHours + ' Credit Hours Left';
             this.CourseSelcetValidationMesage = '';
         }
     }
     populateForm(student) {
-        this.selectedCourseByStudent = student.Course.Name;
+        var _a;
         this.formData = Object.assign({}, student);
+        this.selectedCourseByStudent = (_a = student.Course) === null || _a === void 0 ? void 0 : _a.Name;
         this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => { var _a, _b; return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = student.Course) === null || _b === void 0 ? void 0 : _b.Id); });
         this.selectedSubjectsByStudent = this.getSelctedSubjectListWithAllDetails();
     }
@@ -3451,6 +3480,10 @@ class StudentFormComponent {
     }
     isCourseSelectionValid() {
         return this.selectedCourseByStudent == this.courseDropDownDefaultValue;
+    }
+    resetFormDataOnDelete(id) {
+        if (id == this.formData.Id)
+            this.resetFormData();
     }
 }
 StudentFormComponent.ɵfac = function StudentFormComponent_Factory(t) { return new (t || StudentFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_student_service__WEBPACK_IMPORTED_MODULE_2__["StudentService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_5__["ToastrService"])); };
@@ -3679,7 +3712,7 @@ class ResultFormComponent {
             this.formData = data;
         });
         this.service.resetFormData$.subscribe(data => {
-            this.resetDataOnDeleteItem(data);
+            this.resetDataOnDelete(data);
         });
     }
     onSubmit(form) {
@@ -3796,7 +3829,7 @@ class ResultFormComponent {
         this.CourseSelcetValidationMesage = '';
         this.StudentSelcetValidationMesage = '';
     }
-    resetDataOnDeleteItem(id) {
+    resetDataOnDelete(id) {
         if (id == this.formData.Id) {
             this.resetFormData();
         }
@@ -3976,18 +4009,23 @@ class GradeService {
         this.splashScreenStateService = splashScreenStateService;
         this.gradeDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
         this.formDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.resetFormDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
         this.sourceList$ = this.gradeDataUpdatedSource.asObservable();
         this.formData$ = this.formDataUpdatedSource.asObservable();
+        this.resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
         this.refreshList();
         setTimeout(() => {
             this.splashScreenStateService.stop();
         }, 1);
     }
-    sendGradeData() {
+    notifyListUpdate() {
         this.gradeDataUpdatedSource.next(this.gradesList);
     }
     sendFormData(formData) {
         this.formDataUpdatedSource.next(formData);
+    }
+    resetFormData(id) {
+        this.resetFormDataUpdatedSource.next(id);
     }
     postGrade(formData) {
         return this.http.post(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].gradesBase, formData);
@@ -4002,7 +4040,7 @@ class GradeService {
         this.http.get(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].gradesBase)
             .toPromise()
             .then(res => this.gradesList = res)
-            .then(x => this.sendGradeData());
+            .then(x => this.notifyListUpdate());
     }
     getList() {
         return this.gradesList;

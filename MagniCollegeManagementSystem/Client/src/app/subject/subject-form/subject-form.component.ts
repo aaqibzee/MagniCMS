@@ -3,7 +3,6 @@ import { NgForm } from '@angular/forms';
 import { CourseService } from 'src/app/shared/course.service';
 import { SubjectService } from "../../shared/subject.service";
 import { ToastrService } from 'ngx-toastr';
-import { Subject as SubjectObserveable } from 'rxjs';
 import { Subject } from 'src/app/shared/subject.model';
 import { Course } from 'src/app/shared/course.model';
 
@@ -25,6 +24,19 @@ export class SubjectFormComponent implements OnInit {
   courseDropDownCelectedValue: string = 'Select Course';
   CourseSelcetValidationMesage: string = ': Required';
 
+  ngOnInit(): void {
+    this.resetFormData();
+    this.service.formData$.subscribe(
+      formData => { this.populateForm(formData); }
+    );
+
+    this.service.resetFormData$.subscribe(
+      data => {
+        this.resetFormDataOnDelete(data);
+      }
+    );
+  }
+
   selectCourse(course: Course) {
     this.courseDropDownCelectedValue = course.Name;
     this.formData.Course = course;
@@ -34,13 +46,6 @@ export class SubjectFormComponent implements OnInit {
   populateForm(subject: Subject) {
     this.courseDropDownCelectedValue = subject.Course.Name;
     this.formData = Object.assign({}, subject);
-  }
-
-  ngOnInit(): void {
-    this.resetFormData();
-    this.service.formData$.subscribe(
-      formData => { this.populateForm(formData); }
-    );
   }
 
   onSubmit(form: NgForm) {
@@ -114,5 +119,10 @@ export class SubjectFormComponent implements OnInit {
     this.formData = new Subject();
     this.courseDropDownCelectedValue = 'Select Course';
     this.CourseSelcetValidationMesage = '';
+  }
+
+  resetFormDataOnDelete(id: number) {
+    if (id == this.formData.Id)
+      this.resetFormData();
   }
 }

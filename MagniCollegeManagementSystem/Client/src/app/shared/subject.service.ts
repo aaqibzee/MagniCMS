@@ -35,7 +35,7 @@ export class SubjectService {
     this.formDataUpdatedSource.next(formData);
   }
 
-  resetFormDataPostDataDeletion(id: number) {
+  resetFormData(id: number) {
     this.resetFormDataUpdatedSource.next(id);
   }
 
