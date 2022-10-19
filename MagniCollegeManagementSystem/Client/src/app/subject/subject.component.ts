@@ -20,10 +20,21 @@ export class SubjectComponent implements OnInit {
     public gradeService: GradeService,
     private ngZone: NgZone,
     private toaster: ToastrService) { }
+  public subjectList: Subject[] = null;
 
   ngOnInit(): void {
     this.service.refreshList();
-    window[Constants.subjectComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
+
+    window[Constants.subjectComponentReference] =
+    {
+      component: this,
+      zone: this.ngZone,
+      syncData: () => this.service.refreshList()
+    };
+
+    this.service.sourceList$.subscribe(
+      list => { this.subjectList = list; }
+    );
   }
 
   updateSubject(record: Subject) {
@@ -40,6 +51,7 @@ export class SubjectComponent implements OnInit {
         this.toaster.error('An error occured, while deleting subject', 'Error', { closeButton: true });
         console.log(error);
       });
+    this.service.resetFormDataPostDataDeletion(record.Id);
   }
 
   isDeleteable(record: Subject) {

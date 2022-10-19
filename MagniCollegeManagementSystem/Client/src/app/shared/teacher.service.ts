@@ -6,6 +6,7 @@ import { SubjectService } from './subject.service';
 import { Constants } from './Constants';
 import { Course } from './course.model';
 import { SplashScreenStateService } from './splash-screen-state.service';
+import { Subject as SubjectObserveable } from 'rxjs'
 
 @Injectable({
   providedIn: 'root'
@@ -21,53 +22,34 @@ export class TeacherService {
       this.splashScreenStateService.stop();
     }, 1);
   }
-  formData: Teacher = new Teacher();
+
   teacherList: Teacher[] = [];
-  readonly genderOptions: string[] = ['Male', 'Female', 'Other'];
-  selectedCourses: Course[] = [];
-  selectedSubjects: Subject[] = [];
-  subjectsForSelectedCourses: Subject[] = [];
 
-  resetFormData() {
-    this.formData = new Teacher();
-    this.selectedSubjects = [];
-    this.selectedCourses = [];
-    this.subjectsForSelectedCourses = [];
+  private listDataUpdatedSource = new SubjectObserveable<Teacher[]>();
+  private formDataUpdatedSource = new SubjectObserveable<Teacher>();
+  private resetFormDataUpdatedSource = new SubjectObserveable<number>();
+  sourceList$ = this.listDataUpdatedSource.asObservable();
+  formData$ = this.formDataUpdatedSource.asObservable();
+  resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
+
+  notifyListUpdate() {
+    this.listDataUpdatedSource.next(this.teacherList);
   }
 
-  onCourseSelect(item: Course) {
-    var list = this.subjectService.getList().filter(x => x.Course.Id == item.Id);
-    this.subjectsForSelectedCourses = this.subjectsForSelectedCourses.concat(list);
-  }
-  onCourseDeselect(course: Course) {
-    let subjectsInSelectedCourse = this.subjectService.getList().filter(x => x.Course.Id == course.Id);
-    this.selectedSubjects = this.selectedSubjects?.filter(function (x) {
-      var shouldInclude = true;
-      subjectsInSelectedCourse.forEach(element => {
-        if (element.Id == x.Id) {
-          shouldInclude = false;
-        }
-      });
-      return shouldInclude;
-    });
-
-    this.subjectsForSelectedCourses = this.subjectsForSelectedCourses?.filter(function (x) {
-      var shouldInclude = true;
-      subjectsInSelectedCourse.forEach(element => {
-        if (element.Id == x.Id) {
-          shouldInclude = false;
-        }
-      });
-      return shouldInclude;
-    });
+  populateForm(formData: Teacher) {
+    this.formDataUpdatedSource.next(formData);
   }
 
-  postTeacher() {
-    return this.http.post(Constants.teachersBase, this.formData);
+  resetFormDataPostDataDeletion(id: number) {
+    this.resetFormDataUpdatedSource.next(id);
   }
 
-  putTeacher() {
-    return this.http.put(Constants.teachersBase + '/' + this.formData.Id, this.formData);
+  postTeacher(formData: Teacher) {
+    return this.http.post(Constants.teachersBase, formData);
+  }
+
+  putTeacher(formData: Teacher) {
+    return this.http.put(Constants.teachersBase + '/' + formData.Id, formData);
   }
 
   deleteTeacher(id: number) {
@@ -77,7 +59,8 @@ export class TeacherService {
   refreshList() {
     this.http.get(Constants.teachersBase)
       .toPromise()
-      .then(res => this.teacherList = res as Teacher[]);
+      .then(res => this.teacherList = res as Teacher[])
+      .then(res => this.notifyListUpdate());
   }
 
   getList() {

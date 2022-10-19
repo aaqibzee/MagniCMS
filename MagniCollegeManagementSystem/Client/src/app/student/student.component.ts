@@ -25,9 +25,19 @@ export class StudentComponent implements OnInit {
   }
   deleteButtonToolTip: string = '';
   @Input() selectedItem: string = '';
+  studentsList: Student[];
 
   ngOnInit(): void {
-    window[Constants.studentComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
+    window[Constants.studentComponentReference] =
+    {
+      component: this,
+      zone: this.ngZone,
+      syncData: () => this.service.refreshList()
+    };
+
+    this.service.sourceList$.subscribe(
+      list => { this.studentsList = list; }
+    );
   }
   updateStudent(record: Student) {
     this.service.populateForm(record);
@@ -42,10 +52,8 @@ export class StudentComponent implements OnInit {
         console.log(error);
         this.toaster.error('An error occured, while deleting student', 'Error', { closeButton: true });
       });
-    if (record.Id == this.service.formData.Id) {
-      this.service.resetFormData();
-    }
 
+    this.service.resetFormData(record.Id);
   }
   getSubjectName(subjectId: number, stdId: number) {
     let subject = this.service?.subjectService?.subjectList?.find(x => x.Id == subjectId);

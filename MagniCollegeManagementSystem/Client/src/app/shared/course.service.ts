@@ -3,11 +3,13 @@ import { Course } from "./course.model";
 import { HttpClient } from '@angular/common/http';
 import { Constants } from '../shared/Constants';
 import { SplashScreenStateService } from './splash-screen-state.service';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CourseService {
+  private courseList: Course[];
 
   constructor(private http: HttpClient,
     private splashScreenStateService: SplashScreenStateService) {
@@ -17,18 +19,32 @@ export class CourseService {
     }, 1);
   }
 
-  formData: Course = new Course();
-  courseList: Course[];
+  private listDataUpdatedSource = new Subject<Course[]>();
+  private formDataUpdatedSource = new Subject<Course>();
+  private resetFormDataUpdatedSource = new Subject<number>();
 
-  resetFormData() {
-    this.formData = new Course();
-  }
-  postCourse() {
-    return this.http.post(Constants.coursesBase, this.formData);
+  public sourceList$ = this.listDataUpdatedSource.asObservable();
+  public formData$ = this.formDataUpdatedSource.asObservable();
+  public resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
+
+  notifyListUpdate() {
+    this.listDataUpdatedSource.next(this.courseList);
   }
 
-  putCourse() {
-    return this.http.put(Constants.coursesBase + '/' + this.formData.Id, this.formData);
+  populateForm(formData: Course) {
+    this.formDataUpdatedSource.next(formData);
+  }
+
+  resetFormData(id: number) {
+    this.resetFormDataUpdatedSource.next(id);
+  }
+
+  postCourse(formData: Course) {
+    return this.http.post(Constants.coursesBase, formData);
+  }
+
+  putCourse(formData: Course) {
+    return this.http.put(Constants.coursesBase + '/' + formData.Id, formData);
   }
 
   deleteCourse(id: number) {
@@ -38,7 +54,8 @@ export class CourseService {
   refreshList() {
     this.http.get(Constants.coursesBase)
       .toPromise()
-      .then(res => this.courseList = res as Course[]);
+      .then(res => this.courseList = res as Course[])
+      .then(res => this.notifyListUpdate());
   }
 
   getList() {

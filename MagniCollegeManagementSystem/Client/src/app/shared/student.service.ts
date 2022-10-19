@@ -2,26 +2,16 @@ import { Injectable } from '@angular/core';
 import { Student } from "./student.model";
 import { HttpClient } from '@angular/common/http';
 import { CourseService } from "./course.service";
-import { Course } from './course.model';
 import { SubjectService } from './subject.service';
-import { Subject } from './subject.model';
 import { Constants } from './Constants';
 import { SplashScreenStateService } from './splash-screen-state.service';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class StudentService {
-  readonly courseDropDownDefaultValue = 'Select Course';
-  readonly genderDropDownDefaultValue = 'Select Gender';
-  readonly genderOptions: string[] = ['Male', 'Female', 'Other'];
-  subjectsInselcetedCourse: Subject[];
-  SubjectsSelcetValidationMesage: string = '';
-  CourseSelcetValidationMesage: string = '';
-  selectedSubjectsByStudent: Subject[];
-  selectedCourseByStudent: string = this.courseDropDownDefaultValue;
   studentsList: Student[];
-  formData: Student = new Student();
 
   constructor(
     private http: HttpClient,
@@ -35,49 +25,31 @@ export class StudentService {
     }, 1);
   }
 
-  resetFormData() {
-    this.formData = new Student();
-    this.selectedCourseByStudent = this.courseDropDownDefaultValue;
-    this.selectedSubjectsByStudent = null;
-    this.subjectsInselcetedCourse = null;
-    this.SubjectsSelcetValidationMesage = '';
+  private listDataUpdatedSource = new Subject<Student[]>();
+  private formDataUpdatedSource = new Subject<Student>();
+  private resetFormDataUpdatedSource = new Subject<number>();
+  sourceList$ = this.listDataUpdatedSource.asObservable();
+  formData$ = this.formDataUpdatedSource.asObservable();
+  resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
+
+  notifyListUpdate() {
+    this.listDataUpdatedSource.next(this.studentsList);
   }
 
-  onSelectCourse(course: Course) {
-    if (course?.Id != this.formData?.Course?.Id) {
-      this.selectedCourseByStudent = course.Name;
-      this.formData.Course = course;
-      this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => x.Course?.Id == course?.Id);
-      this.selectedSubjectsByStudent = [];
-      this.SubjectsSelcetValidationMesage = course.TotalCreditHours + ' Credit Hours Left';
-      this.CourseSelcetValidationMesage = '';
-    }
+  populateForm(formData: Student) {
+    this.formDataUpdatedSource.next(formData);
   }
 
-  populateForm(student: Student) {
-    this.selectedCourseByStudent = student.Course.Name;
-    this.formData = Object.assign({}, student);
-    this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => x.Course?.Id == student.Course?.Id);
-    this.selectedSubjectsByStudent = this.getSelctedSubjectListWithAllDetails();
+  resetFormData(id: number) {
+    this.resetFormDataUpdatedSource.next(id);
   }
 
-  getSelctedSubjectListWithAllDetails() {
-    let list: Subject[] = [];
-    let form = this.formData;
-    this.subjectsInselcetedCourse.filter(function (x) {
-      if (form?.Subjects?.includes(x.Id)) {
-        list.push(x);
-      }
-    });
-    return list;
+  postStudent(formData: Student) {
+    return this.http.post(Constants.studentsBase, formData);
   }
 
-  postStudent() {
-    return this.http.post(Constants.studentsBase, this.formData);
-  }
-
-  putStudent() {
-    return this.http.put(Constants.studentsBase + '/' + this.formData.Id, this.formData);
+  putStudent(formData: Student) {
+    return this.http.put(Constants.studentsBase + '/' + formData.Id, formData);
   }
 
   deleteStudent(id: number) {
@@ -87,7 +59,8 @@ export class StudentService {
   refreshList() {
     this.http.get(Constants.studentsBase)
       .toPromise()
-      .then(res => this.studentsList = res as Student[]);
+      .then(res => this.studentsList = res as Student[])
+      .then(res => this.notifyListUpdate());
   }
 
   getList() {

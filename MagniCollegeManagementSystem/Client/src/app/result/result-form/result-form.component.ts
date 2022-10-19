@@ -10,6 +10,7 @@ import { StudentService } from 'src/app/shared/student.service';
 import { Subject } from 'src/app/shared/subject.model';
 import { SubjectService } from 'src/app/shared/subject.service';
 import { ToastrService } from 'ngx-toastr';
+import { Result } from 'src/app/shared/result.model';
 
 @Component({
   selector: 'app-result-form',
@@ -18,18 +19,27 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class ResultFormComponent implements OnInit {
 
-  subjectsInSelectedCourse: Subject[];
-  studentsInSelectedSubject: Student[];
-  gradesInSelectedCourse: Grade[];
-  gradeLabelText: string = 'Enter obtained marks to calculate grade';
-  gradeLabelTextClass: string = "text-info";
+  private gradesInSelectedCourse: Grade[];
+
+  public subjectsInSelectedCourse: Subject[];
+  public studentsInSelectedSubject: Student[];
+  public gradeLabelText: string = 'Enter obtained marks to calculate grade';
+  public gradeLabelTextClass: string = "text-info";
+  public formData: Result = new Result();
+  public SubjectSelcetValidationMesage: string = '';
+  public CourseSelcetValidationMesage: string = '';
+  public StudentSelcetValidationMesage: string = '';
+
   @ViewChild('selectedSubject') selectedSubject;
-  constructor(public service: ResultService,
-    public studentService: StudentService,
-    public subjectService: SubjectService,
-    public gradeService: GradeService,
-    public courseService: CourseService,
-    private toaster: ToastrService) {
+  constructor
+    (
+      public service: ResultService,
+      public studentService: StudentService,
+      public subjectService: SubjectService,
+      public gradeService: GradeService,
+      public courseService: CourseService,
+      private toaster: ToastrService
+    ) {
     this.studentService.refreshList();
     this.subjectService.refreshList();
     this.gradeService.refreshList();
@@ -37,13 +47,25 @@ export class ResultFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.service.formData$.subscribe(
+      data => {
+        this.formData = data;
+      }
+    );
+
+    this.service.resetFormData$.subscribe(
+      data => {
+        this.resetDataOnDeleteItem(data);
+      }
+    );
   }
+
   onSubmit(form: NgForm) {
-    if (this.service.isFormInvalid()) {
-      this.service.setValidationMessages();
+    if (this.isFormInvalid()) {
+      this.setValidationMessages();
     }
     else {
-      if (this.service.formData.Id == 0) {
+      if (this.formData.Id == 0) {
         this.inserRecord(form);
       }
       else {
@@ -52,9 +74,38 @@ export class ResultFormComponent implements OnInit {
     }
   }
 
+  isFormInvalid() {
+    return this.formData.Course == null
+      || this.formData.Student == null
+      || this.formData.Subject == null
+      || this.formData.Grade == null
+      || this.isDuplicateRecord()
+  }
+
+  isDuplicateRecord() {
+    return this.service.getList()?.filter(
+      x => x.Course?.Id == this.formData.Course?.Id
+        && x.Student?.Id == this.formData.Student?.Id
+        && x.Subject?.Id == this.formData.Subject?.Id
+        && this.formData.Id == 0).length > 0;
+  }
+
+  setValidationMessages() {
+    this.SubjectSelcetValidationMesage = this.formData.Subject == null ? ": Required" : '';
+    this.CourseSelcetValidationMesage = this.formData.Course == null ? ": Required" : '';
+    this.StudentSelcetValidationMesage = this.formData.Student == null ? ": Required" : '';
+    if (this.isDuplicateRecord()) {
+      this.toaster.error("Result already exists", "Error", { closeButton: true });
+    }
+  }
+
+  populateForm(student: Result) {
+    this.formData = Object.assign({}, student);
+  }
+
   calculateGrade() {
-    let obMarks = this.service.formData.ObtainedMarks;
-    let course = this.service.formData.Course;
+    let obMarks = this.formData.ObtainedMarks;
+    let course = this.formData.Course;
 
     if (course == null) {
       this.gradeLabelText = "Select a Course, and a subject first";
@@ -75,33 +126,33 @@ export class ResultFormComponent implements OnInit {
       this.gradeLabelTextClass = "text-info";
       return;
     }
-    this.service.formData.Grade = grade;
+    this.formData.Grade = grade;
     this.gradeLabelText = grade?.Title;
   }
 
   onCourseSelect(course: Course) {
-    this.service.formData.Course = course;
+    this.formData.Course = course;
     this.subjectsInSelectedCourse = this.subjectService.subjectList?.filter(x => x.Course.Id == course.Id);
     this.gradesInSelectedCourse = this.gradeService.getList()?.filter(x => x.Course?.Id == course.Id);
-    this.service.formData.Student = null;
-    this.service.formData.Subject = null;
+    this.formData.Student = null;
+    this.formData.Subject = null;
     this.selectedSubject.value = '';
-    this.service.CourseSelcetValidationMesage = '';
+    this.CourseSelcetValidationMesage = '';
   }
 
   onStudentSelect(student: Student) {
-    this.service.formData.Student = student;
-    this.service.StudentSelcetValidationMesage = '';
+    this.formData.Student = student;
+    this.StudentSelcetValidationMesage = '';
   }
 
   onSubjectSelect(subject: Subject) {
-    this.service.formData.Subject = subject;
+    this.formData.Subject = subject;
     this.studentsInSelectedSubject = this.studentService.studentsList.filter(x => x.Subjects.includes(subject.Id));
-    this.service.SubjectSelcetValidationMesage = '';
+    this.SubjectSelcetValidationMesage = '';
   }
 
   inserRecord(form: NgForm) {
-    this.service.postResult().subscribe(
+    this.service.postResult(this.formData).subscribe(
       result => {
         this.toaster.success('Result added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
@@ -113,7 +164,7 @@ export class ResultFormComponent implements OnInit {
   }
 
   updateRecord(form: NgForm) {
-    this.service.putResult().subscribe(
+    this.service.putResult(this.formData).subscribe(
       result => {
         this.toaster.success('Result updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
@@ -126,8 +177,21 @@ export class ResultFormComponent implements OnInit {
 
   resetForm(form: NgForm) {
     form.form.reset();
-    this.service.resetFormData();
+    this.resetFormData();
     this.gradeLabelText = 'Enter obtained marks to calculate grade';
     this.gradeLabelTextClass = "text-info";
+  }
+
+  resetFormData() {
+    this.formData = new Result();
+    this.SubjectSelcetValidationMesage = '';
+    this.CourseSelcetValidationMesage = '';
+    this.StudentSelcetValidationMesage = '';
+  }
+
+  resetDataOnDeleteItem(id: number) {
+    if (id == this.formData.Id) {
+      this.resetFormData();
+    }
   }
 }

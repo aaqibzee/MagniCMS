@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
+import { Subject } from 'rxjs';
 import { Constants } from './Constants';
 import { Result } from './result.model';
 import { SplashScreenStateService } from './splash-screen-state.service';
@@ -9,6 +10,7 @@ import { SplashScreenStateService } from './splash-screen-state.service';
   providedIn: 'root'
 })
 export class ResultService {
+  public resultsList: Result[]
   constructor(
     private http: HttpClient,
     private toaster: ToastrService,
@@ -20,47 +22,31 @@ export class ResultService {
     }, 1);
   }
 
-  formData: Result = new Result();
-  resultsList: Result[];
-  SubjectSelcetValidationMesage: string = '';
-  CourseSelcetValidationMesage: string = '';
-  StudentSelcetValidationMesage: string = '';
+  private listDataUpdatedSource = new Subject<Result[]>();
+  private formDataUpdatedSource = new Subject<Result>();
+  private resetFormDataUpdatedSource = new Subject<number>();
+  sourceList$ = this.listDataUpdatedSource.asObservable();
+  formData$ = this.formDataUpdatedSource.asObservable();
+  resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
 
-  isFormInvalid() {
-    return this.formData.Course == null
-      || this.formData.Student == null
-      || this.formData.Subject == null
-      || this.formData.Grade == null
-      || this.isDuplicateRecord()
+  notifyListUpdate() {
+    this.listDataUpdatedSource.next(this.resultsList);
   }
 
-  isDuplicateRecord() {
-    return this.resultsList?.filter(
-      x => x.Course?.Id == this.formData.Course?.Id
-        && x.Student?.Id == this.formData.Student?.Id
-        && x.Subject?.Id == this.formData.Subject?.Id
-        && this.formData.Id == 0).length > 0;
+  populateForm(formData: Result) {
+    this.formDataUpdatedSource.next(formData);
   }
 
-  setValidationMessages() {
-    this.SubjectSelcetValidationMesage = this.formData.Subject == null ? ": Required" : '';
-    this.CourseSelcetValidationMesage = this.formData.Course == null ? ": Required" : '';
-    this.StudentSelcetValidationMesage = this.formData.Student == null ? ": Required" : '';
-    if (this.isDuplicateRecord()) {
-      this.toaster.error("Result already exists", "Error", { closeButton: true });
-    }
+  resetFormData(id: number) {
+    this.resetFormDataUpdatedSource.next(id);
   }
 
-  populateForm(student: Result) {
-    this.formData = Object.assign({}, student);
+  postResult(formData: Result) {
+    return this.http.post(Constants.resultsBase, formData);
   }
 
-  postResult() {
-    return this.http.post(Constants.resultsBase, this.formData);
-  }
-
-  putResult() {
-    return this.http.put(Constants.resultsBase + '/' + this.formData.Id, this.formData);
+  putResult(formData: Result) {
+    return this.http.put(Constants.resultsBase + '/' + formData.Id, formData);
   }
 
   deleteResult(id: number) {
@@ -70,15 +56,10 @@ export class ResultService {
   refreshList() {
     this.http.get(Constants.resultsBase)
       .toPromise()
-      .then(res => this.resultsList = res as Result[]);
+      .then(res => this.resultsList = res as Result[])
+      .then(res => this.notifyListUpdate());;
   }
 
-  resetFormData() {
-    this.formData = new Result();
-    this.SubjectSelcetValidationMesage = '';
-    this.CourseSelcetValidationMesage = '';
-    this.StudentSelcetValidationMesage = '';
-  }
   getList() {
     return this.resultsList;
   }

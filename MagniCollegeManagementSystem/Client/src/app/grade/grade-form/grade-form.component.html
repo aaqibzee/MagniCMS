@@ -17,7 +17,7 @@
                 {{formData?.Course?.Name?formData?.Course?.Name:'Select Course'}}
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" #selectedCourse>
-                <button type="button" class="dropdown-item" *ngFor="let course of courseService.courseList"
+                <button type="button" class="dropdown-item" *ngFor="let course of courseService.getList()"
                     (click)="onCourseSelect(course)" on-click="selectedCourse.value=course.Name">
                     {{course.Name}}
                 </button>

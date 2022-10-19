@@ -30,7 +30,6 @@ export class GradeFormComponent implements OnInit {
     this.resetFormData();
     this.service.formData$.subscribe(
       data => {
-
         this.formData = data;
       }
     );

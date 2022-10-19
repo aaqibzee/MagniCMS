@@ -23,9 +23,16 @@ export class GradeComponent implements OnInit {
 
   ngOnInit(): void {
     this.service.refreshList();
-    window[Constants.gradeComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
+
+    window[Constants.gradeComponentReference] =
+    {
+      component: this,
+      zone: this.ngZone,
+      syncData: () => this.service.refreshList()
+    };
+
     this.service.sourceList$.subscribe(
-      grades => { this.gradesList = grades; }
+      list => { this.gradesList = list; }
     );
   }
 

@@ -13,7 +13,6 @@ import { ToastrService } from 'ngx-toastr';
   ]
 })
 export class CourseComponent implements OnInit {
-
   constructor(
     public service: CourseService,
     private ngZone: NgZone,
@@ -23,18 +22,28 @@ export class CourseComponent implements OnInit {
 
     gradeService.refreshList();
     resultService.refreshList();
-
   }
 
+  public courseList: Course[];
 
   ngOnInit(): void {
     this.service.refreshList();
-    window[Constants.courseComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
+
+    window[Constants.courseComponentReference] =
+    {
+      component: this,
+      zone: this.ngZone,
+      syncData: () => this.service.refreshList()
+    };
+
+    this.service.sourceList$.subscribe(
+      list => { this.courseList = list; }
+    );
   }
 
   populateForm(course: Course) {
     this.toastr.info('Data populated to form', 'Info', { closeButton: true });
-    this.service.formData = Object.assign({}, course);
+    this.service.populateForm(Object.assign({}, course));
   }
 
   getAverageGrade(course: Course) {
@@ -46,6 +55,7 @@ export class CourseComponent implements OnInit {
     resultsForTheCourse?.forEach(function (x) {
       sum += x.ObtainedMarks;
     });
+
     let average = sum / resultsForTheCourse.length;
     let grade = this.gradeService.getList()?.find
       (
@@ -53,9 +63,11 @@ export class CourseComponent implements OnInit {
           x.StartingMarks <= average &&
           x.EndingMarks >= average
       );
+
     if (grade == null) {
       return 'N/A';
     }
+
     return grade?.Title;
   }
 
@@ -67,6 +79,7 @@ export class CourseComponent implements OnInit {
         this.toastr.error('An error occured, while deleting course', 'Error', { closeButton: true });
         console.log(error);
       });
+    this.service.resetFormData(course.Id);
   }
 
   isDeleteable(course: Course) {

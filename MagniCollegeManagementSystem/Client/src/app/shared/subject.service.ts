@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Subject } from "./subject.model";
 import { HttpClient } from '@angular/common/http';
-import { CourseService } from './course.service';
-import { Course } from './course.model';
 import { Constants } from './Constants';
 import { SplashScreenStateService } from './splash-screen-state.service';
+import { Subject as SubjectObs } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -20,34 +19,32 @@ export class SubjectService {
     }, 1);
   }
 
-  formData: Subject = new Subject();
   subjectList: Subject[] = null;
-  courseDropDownCelectedValue: string = 'Select Course';
-  CourseSelcetValidationMesage: string = ': Required';
+  private listDataUpdatedSource = new SubjectObs<Subject[]>();
+  private formDataUpdatedSource = new SubjectObs<Subject>();
+  private resetFormDataUpdatedSource = new SubjectObs<number>();
+  sourceList$ = this.listDataUpdatedSource.asObservable();
+  formData$ = this.formDataUpdatedSource.asObservable();
+  resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
 
-  resetFormData() {
-    this.formData = new Subject();
-    this.courseDropDownCelectedValue = 'Select Course';
-    this.CourseSelcetValidationMesage = '';
+  notifyListUpdate() {
+    this.listDataUpdatedSource.next(this.subjectList);
   }
 
-  selectCourse(course: Course) {
-    this.courseDropDownCelectedValue = course.Name;
-    this.formData.Course = course;
-    this.CourseSelcetValidationMesage = '';
+  populateForm(formData: Subject) {
+    this.formDataUpdatedSource.next(formData);
   }
 
-  populateForm(subject: Subject) {
-    this.courseDropDownCelectedValue = subject.Course.Name;
-    this.formData = Object.assign({}, subject);
+  resetFormDataPostDataDeletion(id: number) {
+    this.resetFormDataUpdatedSource.next(id);
   }
 
-  postSubject() {
-    return this.http.post(Constants.subjectsBase, this.formData);
+  postSubject(formData: Subject) {
+    return this.http.post(Constants.subjectsBase, formData);
   }
 
-  putSubject() {
-    return this.http.put(Constants.subjectsBase + '/' + this.formData.Id, this.formData);
+  putSubject(formData: Subject) {
+    return this.http.put(Constants.subjectsBase + '/' + formData.Id, formData);
   }
 
   deleteSubject(id: number) {
@@ -57,7 +54,8 @@ export class SubjectService {
   refreshList() {
     this.http.get(Constants.subjectsBase)
       .toPromise()
-      .then(res => this.subjectList = res as Subject[]);
+      .then(res => this.subjectList = res as Subject[])
+      .then(res => this.notifyListUpdate());
   }
   getList() {
     return this.subjectList;

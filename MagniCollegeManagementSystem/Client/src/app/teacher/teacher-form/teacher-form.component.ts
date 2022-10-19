@@ -1,10 +1,13 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Course } from 'src/app/shared/course.model';
 import { CourseService } from 'src/app/shared/course.service';
 import { TeacherService } from "../../shared/teacher.service";
 import { ToastrService } from 'ngx-toastr';
+import { Teacher } from 'src/app/shared/teacher.model';
+import { Subject } from 'src/app/shared/subject.model';
+import { SubjectService } from 'src/app/shared/subject.service';
 
 @Component({
   selector: 'app-teacher-form',
@@ -17,6 +20,7 @@ export class TeacherFormComponent implements OnInit {
   constructor(
     public service: TeacherService,
     public courseService: CourseService,
+    public subjectService: SubjectService,
     private toaster: ToastrService) {
     this.subjectsDropdownSettings = {
       singleSelection: false,
@@ -37,12 +41,23 @@ export class TeacherFormComponent implements OnInit {
       allowSearchFilter: true
     };
     courseService.refreshList();
-    this.courses = courseService.courseList;
+    this.courses = courseService.getList();
   }
   subjectsDropdownSettings: IDropdownSettings = {};
   coursesDropdownSettings: IDropdownSettings = {};
+  formData: Teacher = new Teacher();
+  readonly genderOptions: string[] = ['Male', 'Female', 'Other'];
+  selectedCourses: Course[] = [];
+  selectedSubjects: Subject[] = [];
+  subjectsForSelectedCourses: Subject[] = [];
+
   ngOnInit(): void {
     this.resetFormData();
+    this.service.formData$.subscribe(
+      data => {
+        this.populateForm(data);
+      }
+    );
   }
 
   onSubmit(form: NgForm) {
@@ -50,9 +65,9 @@ export class TeacherFormComponent implements OnInit {
       this.toaster.error("Teacher already exists", "Error", { closeButton: true });
     }
     else {
-      this.service.formData.Subjects = this.service.selectedSubjects.map(x => x.Id);
-      this.service.formData.Courses = this.service.selectedCourses.map(x => x.Id);
-      if (this.service.formData.Id == 0) {
+      this.formData.Subjects = this.selectedSubjects.map(x => x.Id);
+      this.formData.Courses = this.selectedCourses.map(x => x.Id);
+      if (this.formData.Id == 0) {
         this.inserRecord(form);
       }
       else {
@@ -60,16 +75,17 @@ export class TeacherFormComponent implements OnInit {
       }
     }
   }
+
   isDuplicateRecord() {
     return this.service.getList()?.filter(
-      x => x.Birthday == this.service.formData.Birthday
-        && x.Name == this.service.formData.Name
-        && x.Salary == this.service.formData.Salary
-        && this.service.formData.Id == 0).length > 0;
+      x => x.Birthday == this.formData.Birthday
+        && x.Name == this.formData.Name
+        && x.Salary == this.formData.Salary
+        && this.formData.Id == 0).length > 0;
   }
 
   inserRecord(form: NgForm) {
-    this.service.postTeacher().subscribe(
+    this.service.postTeacher(this.formData).subscribe(
       result => {
         this.toaster.success('Teacher added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
@@ -81,7 +97,7 @@ export class TeacherFormComponent implements OnInit {
   }
 
   updateRecord(form: NgForm) {
-    this.service.putTeacher().subscribe(
+    this.service.putTeacher(this.formData).subscribe(
       result => {
         this.toaster.success('Teacher updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
@@ -97,7 +113,80 @@ export class TeacherFormComponent implements OnInit {
     this.resetFormData();
   }
 
+  populateForm(record: Teacher) {
+    this.formData = Object.assign({}, record);
+    this.selectedSubjects = this.getSelctedSubjectListWithAllDetails();
+    this.selectedCourses = this.getSelctedCourseListWithAllDetails();
+    this.subjectsForSelectedCourses = this.getSubjectsForSelectedCourses();
+    this.toaster.info('Data populated to form', 'Info', { closeButton: true });
+  }
+
+  getSubjectsForSelectedCourses() {
+    let list: Subject[] = [];
+    var subjects = this.service.subjectService.getList();
+    var selectedCourses = this.selectedCourses;
+
+    subjects?.filter(function (x) {
+      if (selectedCourses.filter(y => y.Id == x.Course.Id).length > 0) {
+        list.push(x);
+      }
+    });
+    return list;
+  }
+
+  getSelctedSubjectListWithAllDetails() {
+    let list: Subject[] = [];
+    let form = this.formData;
+    this.service.subjectService.getList().filter(function (x) {
+      if (form?.Subjects?.includes(x.Id)) {
+        list.push(x);
+      }
+    });
+    return list;
+  }
+
+  getSelctedCourseListWithAllDetails() {
+    let list: Course[] = [];
+    let form = this.formData;
+    this.courseService.getList().filter(function (x) {
+      if (form?.Courses?.includes(x.Id)) {
+        list.push(x);
+      }
+    });
+    return list;
+  }
+
   resetFormData() {
-    this.service.resetFormData();
+    this.formData = new Teacher();
+    this.selectedSubjects = [];
+    this.selectedCourses = [];
+    this.subjectsForSelectedCourses = [];
+  }
+
+  onCourseSelect(item: Course) {
+    var list = this.subjectService.getList().filter(x => x.Course.Id == item.Id);
+    this.subjectsForSelectedCourses = this.subjectsForSelectedCourses.concat(list);
+  }
+  onCourseDeselect(course: Course) {
+    let subjectsInSelectedCourse = this.subjectService.getList().filter(x => x.Course.Id == course.Id);
+    this.selectedSubjects = this.selectedSubjects?.filter(function (x) {
+      var shouldInclude = true;
+      subjectsInSelectedCourse.forEach(element => {
+        if (element.Id == x.Id) {
+          shouldInclude = false;
+        }
+      });
+      return shouldInclude;
+    });
+
+    this.subjectsForSelectedCourses = this.subjectsForSelectedCourses?.filter(function (x) {
+      var shouldInclude = true;
+      subjectsInSelectedCourse.forEach(element => {
+        if (element.Id == x.Id) {
+          shouldInclude = false;
+        }
+      });
+      return shouldInclude;
+    });
   }
 }

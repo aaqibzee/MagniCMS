@@ -1,9 +1,11 @@
-
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { CourseService } from 'src/app/shared/course.service';
 import { SubjectService } from "../../shared/subject.service";
 import { ToastrService } from 'ngx-toastr';
+import { Subject as SubjectObserveable } from 'rxjs';
+import { Subject } from 'src/app/shared/subject.model';
+import { Course } from 'src/app/shared/course.model';
 
 @Component({
   selector: 'app-subject-form',
@@ -19,8 +21,26 @@ export class SubjectFormComponent implements OnInit {
     public courseService: CourseService,
     private toaster: ToastrService) { }
 
+  formData: Subject = new Subject();
+  courseDropDownCelectedValue: string = 'Select Course';
+  CourseSelcetValidationMesage: string = ': Required';
+
+  selectCourse(course: Course) {
+    this.courseDropDownCelectedValue = course.Name;
+    this.formData.Course = course;
+    this.CourseSelcetValidationMesage = '';
+  }
+
+  populateForm(subject: Subject) {
+    this.courseDropDownCelectedValue = subject.Course.Name;
+    this.formData = Object.assign({}, subject);
+  }
+
   ngOnInit(): void {
     this.resetFormData();
+    this.service.formData$.subscribe(
+      formData => { this.populateForm(formData); }
+    );
   }
 
   onSubmit(form: NgForm) {
@@ -28,7 +48,7 @@ export class SubjectFormComponent implements OnInit {
       this.setValidationMessages();
     }
     else {
-      if (this.service.formData.Id == 0) {
+      if (this.formData.Id == 0) {
         this.inserRecord(form);
       }
       else {
@@ -38,16 +58,16 @@ export class SubjectFormComponent implements OnInit {
   }
 
   isFormInvalid() {
-    return this.service.formData.Course == null
+    return this.formData.Course == null
       || this.isDuplicateRecord();
   }
 
   isDuplicateRecord() {
     return this.service.getList()?.filter(
-      x => x.Course?.Id == this.service.formData.Course?.Id
-        && x.Code == this.service.formData.Code
-        && x.CreditHours == this.service.formData.CreditHours
-        && this.service.formData.Id == 0).length > 0;
+      x => x.Course?.Id == this.formData.Course?.Id
+        && x.Code == this.formData.Code
+        && x.CreditHours == this.formData.CreditHours
+        && this.formData.Id == 0).length > 0;
   }
 
   setValidationMessages() {
@@ -55,13 +75,12 @@ export class SubjectFormComponent implements OnInit {
       this.toaster.error("Subject already exists", "Error", { closeButton: true });
     }
     else {
-      this.service.CourseSelcetValidationMesage = ": Required"
+      this.CourseSelcetValidationMesage = ": Required"
     }
-
   }
 
   inserRecord(form: NgForm) {
-    this.service.postSubject().subscribe(
+    this.service.postSubject(this.formData).subscribe(
       result => {
         this.toaster.success('Subject added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
@@ -74,7 +93,7 @@ export class SubjectFormComponent implements OnInit {
   }
 
   updateRecord(form: NgForm) {
-    this.service.putSubject().subscribe(
+    this.service.putSubject(this.formData).subscribe(
       result => {
         this.toaster.success('Subject updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
@@ -92,7 +111,8 @@ export class SubjectFormComponent implements OnInit {
   }
 
   resetFormData() {
-    this.service.resetFormData();
+    this.formData = new Subject();
+    this.courseDropDownCelectedValue = 'Select Course';
+    this.CourseSelcetValidationMesage = '';
   }
 }
-

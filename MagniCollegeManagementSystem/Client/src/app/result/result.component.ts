@@ -12,7 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 })
 
 export class ResultComponent implements OnInit {
-
+  resultsList: Result[];
   constructor(
     public service: ResultService,
     public subjectService: SubjectService,
@@ -22,11 +22,14 @@ export class ResultComponent implements OnInit {
   ngOnInit(): void {
     this.service.refreshList();
     window[Constants.resultComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
+    this.service.sourceList$.subscribe(
+      list => { this.resultsList = list; }
+    );
   }
 
   updateResult(record: Result) {
     this.toaster.info('Data populated to form', 'Info', { closeButton: true });
-    this.service.populateForm(record);
+    this.service.populateForm(Object.assign({}, record));
   }
 
   deleteResult(record: Result) {
@@ -37,9 +40,7 @@ export class ResultComponent implements OnInit {
         this.toaster.error('An error occured, while deleting result', 'Error', { closeButton: true });
         console.log(error);
       });
-    if (record.Id == this.service.formData.Id) {
-      this.service.resetFormData();
-    }
+    this.service.resetFormData(record.Id);
   }
 }
 

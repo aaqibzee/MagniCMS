@@ -4,6 +4,10 @@ import { StudentService } from "../../shared/student.service";
 import { Course } from 'src/app/shared/course.model';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { ToastrService } from 'ngx-toastr';
+import { Subject } from 'src/app/shared/subject.model';
+import { Student } from 'src/app/shared/student.model';
+import { SubjectService } from 'src/app/shared/subject.service';
+import { CourseService } from 'src/app/shared/course.service';
 
 @Component({
   selector: 'app-student-form',
@@ -12,14 +16,10 @@ import { ToastrService } from 'ngx-toastr';
   styles: [],
 })
 export class StudentFormComponent implements OnInit {
-  subjectsDropdownSettings: IDropdownSettings = {};
-  selectedCourse: Course;
-  isFormValid: boolean = true;
-  subjectsSelectionClass: string = 'text-success';
-  courseSelectionClass: string = 'text-success';
-
   constructor(
     public service: StudentService,
+    public courseService: CourseService,
+    public subjectService: SubjectService,
     private toaster: ToastrService) {
     this.subjectsDropdownSettings = {
       singleSelection: false,
@@ -34,15 +34,72 @@ export class StudentFormComponent implements OnInit {
     };
   }
 
+  subjectsDropdownSettings: IDropdownSettings = {};
+  selectedCourse: Course;
+  isFormValid: boolean = true;
+  subjectsSelectionClass: string = 'text-success';
+  courseSelectionClass: string = 'text-success';
+  readonly courseDropDownDefaultValue = 'Select Course';
+  readonly genderDropDownDefaultValue = 'Select Gender';
+  readonly genderOptions: string[] = ['Male', 'Female', 'Other'];
+  subjectsInselcetedCourse: Subject[];
+  SubjectsSelcetValidationMesage: string = '';
+  CourseSelcetValidationMesage: string = '';
+  selectedSubjectsByStudent: Subject[];
+  selectedCourseByStudent: string = this.courseDropDownDefaultValue;
+  studentsList: Student[];
+  formData: Student = new Student();
 
   ngOnInit(): void {
     this.resetFormData();
+    this.service.formData$.subscribe(
+      data => {
+        this.formData = data;
+      }
+    );
+  }
+
+  resetFormData() {
+    this.formData = new Student();
+    this.selectedCourseByStudent = this.courseDropDownDefaultValue;
+    this.selectedSubjectsByStudent = null;
+    this.subjectsInselcetedCourse = null;
+    this.SubjectsSelcetValidationMesage = '';
+  }
+
+  onSelectCourse(course: Course) {
+    if (course?.Id != this.formData?.Course?.Id) {
+      this.selectedCourseByStudent = course.Name;
+      this.formData.Course = course;
+      this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => x.Course?.Id == course?.Id);
+      this.selectedSubjectsByStudent = [];
+      this.SubjectsSelcetValidationMesage = course.TotalCreditHours + ' Credit Hours Left';
+      this.CourseSelcetValidationMesage = '';
+    }
+  }
+
+  populateForm(student: Student) {
+    this.selectedCourseByStudent = student.Course.Name;
+    this.formData = Object.assign({}, student);
+    this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => x.Course?.Id == student.Course?.Id);
+    this.selectedSubjectsByStudent = this.getSelctedSubjectListWithAllDetails();
+  }
+
+  getSelctedSubjectListWithAllDetails() {
+    let list: Subject[] = [];
+    let form = this.formData;
+    this.subjectsInselcetedCourse.filter(function (x) {
+      if (form?.Subjects?.includes(x.Id)) {
+        list.push(x);
+      }
+    });
+    return list;
   }
 
   onSubmit(form: NgForm) {
     if (this.isCourseSelectionValid()) {
       this.courseSelectionClass = 'text-danger'
-      this.service.CourseSelcetValidationMesage = ' :Required';
+      this.CourseSelcetValidationMesage = ' :Required';
     }
 
     else if (this.isFormValid) {
@@ -50,8 +107,8 @@ export class StudentFormComponent implements OnInit {
         this.toaster.error("Student already exists", "Error", { closeButton: true });
       }
       else {
-        this.service.formData.Subjects = this.service.selectedSubjectsByStudent.map(a => a.Id);
-        if (this.service.formData.Id == 0) {
+        this.formData.Subjects = this.selectedSubjectsByStudent.map(a => a.Id);
+        if (this.formData.Id == 0) {
           this.inserRecord(form);
         }
         else {
@@ -63,13 +120,13 @@ export class StudentFormComponent implements OnInit {
 
   isDuplicateRecord() {
     return this.service.getList()?.filter(
-      x => x.Birthday == this.service.formData.Birthday
-        && x.Name == this.service.formData.Name
-        && this.service.formData.Id == 0).length > 0;
+      x => x.Birthday == this.formData.Birthday
+        && x.Name == this.formData.Name
+        && this.formData.Id == 0).length > 0;
   }
 
   inserRecord(form: NgForm) {
-    this.service.postStudent().subscribe(
+    this.service.postStudent(this.formData).subscribe(
       result => {
         this.toaster.success('Student added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
@@ -81,7 +138,7 @@ export class StudentFormComponent implements OnInit {
   }
 
   updateRecord(form: NgForm) {
-    this.service.putStudent().subscribe(
+    this.service.putStudent(this.formData).subscribe(
       result => {
         this.toaster.success('Student updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
@@ -97,10 +154,6 @@ export class StudentFormComponent implements OnInit {
     this.resetFormData();
   }
 
-  resetFormData() {
-    this.service.resetFormData();
-  }
-
   onSubjectSelect(item: any) {
     this.validateSubjectSelection();
   }
@@ -112,11 +165,11 @@ export class StudentFormComponent implements OnInit {
   }
 
   validateSubjectSelection() {
-    let allowed = this.service.formData.Course?.TotalCreditHours;
+    let allowed = this.formData.Course?.TotalCreditHours;
     let availed: number = 0;
 
-    this.service.subjectsInselcetedCourse?.forEach(course => {
-      if (this.service.selectedSubjectsByStudent?.find(x => x.Id == course.Id) != undefined) {
+    this.subjectsInselcetedCourse?.forEach(course => {
+      if (this.selectedSubjectsByStudent?.find(x => x.Id == course.Id) != undefined) {
         availed += course.CreditHours;
       }
     });
@@ -125,21 +178,21 @@ export class StudentFormComponent implements OnInit {
     if (availed < allowed) {
       this.subjectsSelectionClass = 'text-info'
       this.isFormValid = true;
-      this.service.SubjectsSelcetValidationMesage = ': ' + difference + ' Credit hour(s) left';
+      this.SubjectsSelcetValidationMesage = ': ' + difference + ' Credit hour(s) left';
     }
     else if (availed > allowed) {
       this.subjectsSelectionClass = 'text-danger'
       this.isFormValid = false;
-      this.service.SubjectsSelcetValidationMesage = + (availed - allowed) + ' Extra credit hour(s), remove subject(s)';
+      this.SubjectsSelcetValidationMesage = + (availed - allowed) + ' Extra credit hour(s), remove subject(s)';
     }
     else if (availed == allowed) {
       this.subjectsSelectionClass = 'text-info'
-      this.service.SubjectsSelcetValidationMesage = ' : All credit hours availed'
+      this.SubjectsSelcetValidationMesage = ' : All credit hours availed'
       this.isFormValid = true;
     }
   }
 
   isCourseSelectionValid() {
-    return this.service.selectedCourseByStudent == this.service.courseDropDownDefaultValue
+    return this.selectedCourseByStudent == this.courseDropDownDefaultValue
   }
 }

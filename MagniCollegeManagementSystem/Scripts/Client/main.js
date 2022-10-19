@@ -11,11 +11,15 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TeacherFormComponent", function() { return TeacherFormComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var _shared_teacher_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/teacher.service */ "sz4S");
-/* harmony import */ var src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/shared/course.service */ "Pv0z");
-/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ngx-toastr */ "EApP");
-/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
-/* harmony import */ var ng_multiselect_dropdown__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ng-multiselect-dropdown */ "Egam");
+/* harmony import */ var src_app_shared_teacher_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/shared/teacher.model */ "kVKu");
+/* harmony import */ var _shared_teacher_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/teacher.service */ "sz4S");
+/* harmony import */ var src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/shared/course.service */ "Pv0z");
+/* harmony import */ var src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/shared/subject.service */ "lLrn");
+/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ngx-toastr */ "EApP");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
+/* harmony import */ var ng_multiselect_dropdown__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ng-multiselect-dropdown */ "Egam");
+
+
 
 
 
@@ -24,13 +28,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class TeacherFormComponent {
-    constructor(service, courseService, toaster) {
+    constructor(service, courseService, subjectService, toaster) {
         this.service = service;
         this.courseService = courseService;
+        this.subjectService = subjectService;
         this.toaster = toaster;
         this.courses = [];
         this.subjectsDropdownSettings = {};
         this.coursesDropdownSettings = {};
+        this.formData = new src_app_shared_teacher_model__WEBPACK_IMPORTED_MODULE_1__["Teacher"]();
+        this.genderOptions = ['Male', 'Female', 'Other'];
+        this.selectedCourses = [];
+        this.selectedSubjects = [];
+        this.subjectsForSelectedCourses = [];
         this.subjectsDropdownSettings = {
             singleSelection: false,
             idField: 'Id',
@@ -49,19 +59,22 @@ class TeacherFormComponent {
             allowSearchFilter: true
         };
         courseService.refreshList();
-        this.courses = courseService.courseList;
+        this.courses = courseService.getList();
     }
     ngOnInit() {
         this.resetFormData();
+        this.service.formData$.subscribe(data => {
+            this.populateForm(data);
+        });
     }
     onSubmit(form) {
         if (this.isDuplicateRecord()) {
             this.toaster.error("Teacher already exists", "Error", { closeButton: true });
         }
         else {
-            this.service.formData.Subjects = this.service.selectedSubjects.map(x => x.Id);
-            this.service.formData.Courses = this.service.selectedCourses.map(x => x.Id);
-            if (this.service.formData.Id == 0) {
+            this.formData.Subjects = this.selectedSubjects.map(x => x.Id);
+            this.formData.Courses = this.selectedCourses.map(x => x.Id);
+            if (this.formData.Id == 0) {
                 this.inserRecord(form);
             }
             else {
@@ -71,13 +84,13 @@ class TeacherFormComponent {
     }
     isDuplicateRecord() {
         var _a;
-        return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => x.Birthday == this.service.formData.Birthday
-            && x.Name == this.service.formData.Name
-            && x.Salary == this.service.formData.Salary
-            && this.service.formData.Id == 0).length) > 0;
+        return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => x.Birthday == this.formData.Birthday
+            && x.Name == this.formData.Name
+            && x.Salary == this.formData.Salary
+            && this.formData.Id == 0).length) > 0;
     }
     inserRecord(form) {
-        this.service.postTeacher().subscribe(result => {
+        this.service.postTeacher(this.formData).subscribe(result => {
             this.toaster.success('Teacher added successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
@@ -86,7 +99,7 @@ class TeacherFormComponent {
         });
     }
     updateRecord(form) {
-        this.service.putTeacher().subscribe(result => {
+        this.service.putTeacher(this.formData).subscribe(result => {
             this.toaster.success('Teacher updated successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
@@ -98,11 +111,80 @@ class TeacherFormComponent {
         form.form.reset();
         this.resetFormData();
     }
+    populateForm(record) {
+        this.formData = Object.assign({}, record);
+        this.selectedSubjects = this.getSelctedSubjectListWithAllDetails();
+        this.selectedCourses = this.getSelctedCourseListWithAllDetails();
+        this.subjectsForSelectedCourses = this.getSubjectsForSelectedCourses();
+        this.toaster.info('Data populated to form', 'Info', { closeButton: true });
+    }
+    getSubjectsForSelectedCourses() {
+        let list = [];
+        var subjects = this.service.subjectService.getList();
+        var selectedCourses = this.selectedCourses;
+        subjects === null || subjects === void 0 ? void 0 : subjects.filter(function (x) {
+            if (selectedCourses.filter(y => y.Id == x.Course.Id).length > 0) {
+                list.push(x);
+            }
+        });
+        return list;
+    }
+    getSelctedSubjectListWithAllDetails() {
+        let list = [];
+        let form = this.formData;
+        this.service.subjectService.getList().filter(function (x) {
+            var _a;
+            if ((_a = form === null || form === void 0 ? void 0 : form.Subjects) === null || _a === void 0 ? void 0 : _a.includes(x.Id)) {
+                list.push(x);
+            }
+        });
+        return list;
+    }
+    getSelctedCourseListWithAllDetails() {
+        let list = [];
+        let form = this.formData;
+        this.courseService.getList().filter(function (x) {
+            var _a;
+            if ((_a = form === null || form === void 0 ? void 0 : form.Courses) === null || _a === void 0 ? void 0 : _a.includes(x.Id)) {
+                list.push(x);
+            }
+        });
+        return list;
+    }
     resetFormData() {
-        this.service.resetFormData();
+        this.formData = new src_app_shared_teacher_model__WEBPACK_IMPORTED_MODULE_1__["Teacher"]();
+        this.selectedSubjects = [];
+        this.selectedCourses = [];
+        this.subjectsForSelectedCourses = [];
+    }
+    onCourseSelect(item) {
+        var list = this.subjectService.getList().filter(x => x.Course.Id == item.Id);
+        this.subjectsForSelectedCourses = this.subjectsForSelectedCourses.concat(list);
+    }
+    onCourseDeselect(course) {
+        var _a, _b;
+        let subjectsInSelectedCourse = this.subjectService.getList().filter(x => x.Course.Id == course.Id);
+        this.selectedSubjects = (_a = this.selectedSubjects) === null || _a === void 0 ? void 0 : _a.filter(function (x) {
+            var shouldInclude = true;
+            subjectsInSelectedCourse.forEach(element => {
+                if (element.Id == x.Id) {
+                    shouldInclude = false;
+                }
+            });
+            return shouldInclude;
+        });
+        this.subjectsForSelectedCourses = (_b = this.subjectsForSelectedCourses) === null || _b === void 0 ? void 0 : _b.filter(function (x) {
+            var shouldInclude = true;
+            subjectsInSelectedCourse.forEach(element => {
+                if (element.Id == x.Id) {
+                    shouldInclude = false;
+                }
+            });
+            return shouldInclude;
+        });
     }
 }
-TeacherFormComponent.ɵfac = function TeacherFormComponent_Factory(t) { return new (t || TeacherFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_teacher_service__WEBPACK_IMPORTED_MODULE_1__["TeacherService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_2__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_3__["ToastrService"])); };
+TeacherFormComponent.ɵfac = function TeacherFormComponent_Factory(t) { return new (t || TeacherFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_teacher_service__WEBPACK_IMPORTED_MODULE_2__["TeacherService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_5__["ToastrService"])); };
 TeacherFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: TeacherFormComponent, selectors: [["app-teacher-form"]], decls: 41, vars: 13, consts: [["ngNativeValidate", "", 3, "submit"], ["form", "ngForm"], ["type", "hidden", "name", "id", 3, "value"], [1, "form-group"], [1, "label", "label-default"], [1, "lbl-required"], ["placeholder", " Name", "name", "name", "required", "", 1, "form-control", "form-control-lg", 3, "ngModel", "ngModelChange"], ["Name", "ngModel"], ["type", "date", "placeholder", "Pick Date Of Birth", "name", "dob", "max", "2005-12-31", "required", "", 1, "form-control", "form-control-lg", 3, "ngModel", "ngModelChange"], ["dob", "ngModel"], ["placeholder", "Salary", "name", "salary", "type", "number", "min", "0", "required", "", 1, "form-control", "form-control-lg", 3, "ngModel", "ngModelChange"], ["salary", "ngModel"], ["name", "coursesSelect", 3, "placeholder", "settings", "data", "ngModel", "ngModelChange", "onSelect", "onDeSelect"], ["name", "subjectSelect", 3, "placeholder", "settings", "data", "ngModel", "ngModelChange"], [1, "row"], [1, "form-group", "col-md-6"], ["type", "button", 1, "btn", "btn-info", "btn-lg", "btn-block", 3, "click"], ["type", "submit", 1, "btn", "btn-info", "btn-lg", "btn-block"]], template: function TeacherFormComponent_Template(rf, ctx) { if (rf & 1) {
         const _r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "form", 0, 1);
@@ -116,7 +198,7 @@ TeacherFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7, "*");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "input", 6, 7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function TeacherFormComponent_Template_input_ngModelChange_8_listener($event) { return ctx.service.formData.Name = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function TeacherFormComponent_Template_input_ngModelChange_8_listener($event) { return ctx.formData.Name = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "div", 3);
@@ -127,7 +209,7 @@ TeacherFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](14, "*");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "input", 8, 9);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function TeacherFormComponent_Template_input_ngModelChange_15_listener($event) { return ctx.service.formData.Birthday = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function TeacherFormComponent_Template_input_ngModelChange_15_listener($event) { return ctx.formData.Birthday = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "div", 3);
@@ -138,7 +220,7 @@ TeacherFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](21, "*");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "input", 10, 11);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function TeacherFormComponent_Template_input_ngModelChange_22_listener($event) { return ctx.service.formData.Salary = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function TeacherFormComponent_Template_input_ngModelChange_22_listener($event) { return ctx.formData.Salary = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "div", 3);
@@ -147,7 +229,7 @@ TeacherFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](27, "br");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](28, "ng-multiselect-dropdown", 12);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function TeacherFormComponent_Template_ng_multiselect_dropdown_ngModelChange_28_listener($event) { return ctx.service.selectedCourses = $event; })("onSelect", function TeacherFormComponent_Template_ng_multiselect_dropdown_onSelect_28_listener($event) { return ctx.service.onCourseSelect($event); })("onDeSelect", function TeacherFormComponent_Template_ng_multiselect_dropdown_onDeSelect_28_listener($event) { return ctx.service.onCourseDeselect($event); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function TeacherFormComponent_Template_ng_multiselect_dropdown_ngModelChange_28_listener($event) { return ctx.selectedCourses = $event; })("onSelect", function TeacherFormComponent_Template_ng_multiselect_dropdown_onSelect_28_listener($event) { return ctx.onCourseSelect($event); })("onDeSelect", function TeacherFormComponent_Template_ng_multiselect_dropdown_onDeSelect_28_listener($event) { return ctx.onCourseDeselect($event); });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](29, "div", 3);
@@ -156,7 +238,7 @@ TeacherFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](32, "br");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](33, "ng-multiselect-dropdown", 13);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function TeacherFormComponent_Template_ng_multiselect_dropdown_ngModelChange_33_listener($event) { return ctx.service.selectedSubjects = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function TeacherFormComponent_Template_ng_multiselect_dropdown_ngModelChange_33_listener($event) { return ctx.selectedSubjects = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](34, "div", 14);
@@ -175,20 +257,20 @@ TeacherFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.service.formData.Id);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formData.Id);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.service.formData.Name);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.Name);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.service.formData.Birthday);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.Birthday);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.service.formData.Salary);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.Salary);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("placeholder", "Select Course(s)")("settings", ctx.coursesDropdownSettings)("data", ctx.courses)("ngModel", ctx.service.selectedCourses);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("placeholder", "Select Course(s)")("settings", ctx.coursesDropdownSettings)("data", ctx.courses)("ngModel", ctx.selectedCourses);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("placeholder", "Select Subject(s)")("settings", ctx.subjectsDropdownSettings)("data", ctx.service.subjectsForSelectedCourses)("ngModel", ctx.service.selectedSubjects);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("placeholder", "Select Subject(s)")("settings", ctx.subjectsDropdownSettings)("data", ctx.subjectsForSelectedCourses)("ngModel", ctx.selectedSubjects);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.service.formData.Id != 0 ? "Update" : "Add", " ");
-    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgForm"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["RequiredValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgModel"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NumberValueAccessor"], ng_multiselect_dropdown__WEBPACK_IMPORTED_MODULE_5__["MultiSelectComponent"]], styles: [".lbl-required[_ngcontent-%COMP%] {\n    color: red;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInRlYWNoZXItZm9ybS5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0lBQ0ksVUFBVTtBQUNkIiwiZmlsZSI6InRlYWNoZXItZm9ybS5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmxibC1yZXF1aXJlZCB7XG4gICAgY29sb3I6IHJlZDtcbn0iXX0= */"] });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.formData.Id != 0 ? "Update" : "Add", " ");
+    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_6__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_6__["NgForm"], _angular_forms__WEBPACK_IMPORTED_MODULE_6__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_6__["RequiredValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_6__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_6__["NgModel"], _angular_forms__WEBPACK_IMPORTED_MODULE_6__["NumberValueAccessor"], ng_multiselect_dropdown__WEBPACK_IMPORTED_MODULE_7__["MultiSelectComponent"]], styles: [".lbl-required[_ngcontent-%COMP%] {\n    color: red;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInRlYWNoZXItZm9ybS5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0lBQ0ksVUFBVTtBQUNkIiwiZmlsZSI6InRlYWNoZXItZm9ybS5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmxibC1yZXF1aXJlZCB7XG4gICAgY29sb3I6IHJlZDtcbn0iXX0= */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](TeacherFormComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -196,7 +278,7 @@ TeacherFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
                 templateUrl: './teacher-form.component.html',
                 styleUrls: ['./teacher-form.component.css'],
             }]
-    }], function () { return [{ type: _shared_teacher_service__WEBPACK_IMPORTED_MODULE_1__["TeacherService"] }, { type: src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_2__["CourseService"] }, { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_3__["ToastrService"] }]; }, null); })();
+    }], function () { return [{ type: _shared_teacher_service__WEBPACK_IMPORTED_MODULE_2__["TeacherService"] }, { type: src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__["CourseService"] }, { type: src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"] }, { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_5__["ToastrService"] }]; }, null); })();
 
 
 /***/ }),
@@ -333,10 +415,17 @@ class SubjectComponent {
         this.gradeService = gradeService;
         this.ngZone = ngZone;
         this.toaster = toaster;
+        this.subjectList = null;
     }
     ngOnInit() {
         this.service.refreshList();
-        window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].subjectComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
+        window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].subjectComponentReference] =
+            {
+                component: this,
+                zone: this.ngZone,
+                syncData: () => this.service.refreshList()
+            };
+        this.service.sourceList$.subscribe(list => { this.subjectList = list; });
     }
     updateSubject(record) {
         this.toaster.info('Data populated to form', 'Info', { closeButton: true });
@@ -350,6 +439,7 @@ class SubjectComponent {
             this.toaster.error('An error occured, while deleting subject', 'Error', { closeButton: true });
             console.log(error);
         });
+        this.service.resetFormDataPostDataDeletion(record.Id);
     }
     isDeleteable(record) {
         var _a;
@@ -438,7 +528,7 @@ SubjectComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineC
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](32);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.service.subjectList);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.subjectList);
     } }, directives: [_subject_form_subject_form_component__WEBPACK_IMPORTED_MODULE_6__["SubjectFormComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_7__["NgForOf"]], encapsulation: 2 });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](SubjectComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
@@ -649,7 +739,7 @@ GradeFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefin
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", (ctx.formData == null ? null : ctx.formData.Course == null ? null : ctx.formData.Course.Name) ? ctx.formData == null ? null : ctx.formData.Course == null ? null : ctx.formData.Course.Name : "Select Course", " ");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.courseService.courseList);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.courseService.getList());
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.StartingMarks);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
@@ -748,8 +838,8 @@ SplashScreenStateService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵ
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ResultService", function() { return ResultService; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Constants */ "z9QB");
-/* harmony import */ var _result_model__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./result.model */ "u9X8");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "qCKp");
+/* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Constants */ "z9QB");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
 /* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ngx-toastr */ "EApP");
 /* harmony import */ var _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./splash-screen-state.service */ "C8wY");
@@ -765,62 +855,41 @@ class ResultService {
         this.http = http;
         this.toaster = toaster;
         this.splashScreenStateService = splashScreenStateService;
-        this.formData = new _result_model__WEBPACK_IMPORTED_MODULE_2__["Result"]();
-        this.SubjectSelcetValidationMesage = '';
-        this.CourseSelcetValidationMesage = '';
-        this.StudentSelcetValidationMesage = '';
+        this.listDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.formDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.resetFormDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.sourceList$ = this.listDataUpdatedSource.asObservable();
+        this.formData$ = this.formDataUpdatedSource.asObservable();
+        this.resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
         this.refreshList();
         setTimeout(() => {
             this.splashScreenStateService.stop();
         }, 1);
     }
-    isFormInvalid() {
-        return this.formData.Course == null
-            || this.formData.Student == null
-            || this.formData.Subject == null
-            || this.formData.Grade == null
-            || this.isDuplicateRecord();
+    notifyListUpdate() {
+        this.listDataUpdatedSource.next(this.resultsList);
     }
-    isDuplicateRecord() {
-        var _a;
-        return ((_a = this.resultsList) === null || _a === void 0 ? void 0 : _a.filter(x => {
-            var _a, _b, _c, _d, _e, _f;
-            return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = this.formData.Course) === null || _b === void 0 ? void 0 : _b.Id)
-                && ((_c = x.Student) === null || _c === void 0 ? void 0 : _c.Id) == ((_d = this.formData.Student) === null || _d === void 0 ? void 0 : _d.Id)
-                && ((_e = x.Subject) === null || _e === void 0 ? void 0 : _e.Id) == ((_f = this.formData.Subject) === null || _f === void 0 ? void 0 : _f.Id)
-                && this.formData.Id == 0;
-        }).length) > 0;
+    populateForm(formData) {
+        this.formDataUpdatedSource.next(formData);
     }
-    setValidationMessages() {
-        this.SubjectSelcetValidationMesage = this.formData.Subject == null ? ": Required" : '';
-        this.CourseSelcetValidationMesage = this.formData.Course == null ? ": Required" : '';
-        this.StudentSelcetValidationMesage = this.formData.Student == null ? ": Required" : '';
-        if (this.isDuplicateRecord()) {
-            this.toaster.error("Result already exists", "Error", { closeButton: true });
-        }
+    resetFormData(id) {
+        this.resetFormDataUpdatedSource.next(id);
     }
-    populateForm(student) {
-        this.formData = Object.assign({}, student);
+    postResult(formData) {
+        return this.http.post(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].resultsBase, formData);
     }
-    postResult() {
-        return this.http.post(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].resultsBase, this.formData);
-    }
-    putResult() {
-        return this.http.put(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].resultsBase + '/' + this.formData.Id, this.formData);
+    putResult(formData) {
+        return this.http.put(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].resultsBase + '/' + formData.Id, formData);
     }
     deleteResult(id) {
-        return this.http.delete(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].resultsBase + '/' + id);
+        return this.http.delete(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].resultsBase + '/' + id);
     }
     refreshList() {
-        this.http.get(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].resultsBase)
+        this.http.get(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].resultsBase)
             .toPromise()
-            .then(res => this.resultsList = res);
-    }
-    resetFormData() {
-        this.formData = new _result_model__WEBPACK_IMPORTED_MODULE_2__["Result"]();
-        this.SubjectSelcetValidationMesage = '';
-        this.CourseSelcetValidationMesage = '';
-        this.StudentSelcetValidationMesage = '';
+            .then(res => this.resultsList = res)
+            .then(res => this.notifyListUpdate());
+        ;
     }
     getList() {
         return this.resultsList;
@@ -849,9 +918,11 @@ ResultService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInj
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CourseFormComponent", function() { return CourseFormComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var _shared_course_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/course.service */ "Pv0z");
-/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ngx-toastr */ "EApP");
-/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
+/* harmony import */ var src_app_shared_course_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/shared/course.model */ "vQy0");
+/* harmony import */ var _shared_course_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/course.service */ "Pv0z");
+/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ngx-toastr */ "EApP");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
+
 
 
 
@@ -861,15 +932,23 @@ class CourseFormComponent {
     constructor(service, toastr) {
         this.service = service;
         this.toastr = toastr;
+        this.formData = new src_app_shared_course_model__WEBPACK_IMPORTED_MODULE_1__["Course"]();
     }
     ngOnInit() {
         this.resetFormData();
+        this.service.formData$.subscribe(data => {
+            this.formData = data;
+        });
+        this.service.resetFormData$.subscribe(id => {
+            this.resetFormDataOnDeletion(id);
+        });
     }
     onSubmit(form) {
         if (this.isDuplicateRecord()) {
-            this.toastr.error("Course already exists", "Error", { closeButton: true });
+            this.toastr
+                .error("Course already exists", "Error", { closeButton: true });
         }
-        else if (this.service.formData.Id == 0) {
+        else if (this.formData.Id == 0) {
             this.insertCourse(form);
         }
         else {
@@ -878,13 +957,13 @@ class CourseFormComponent {
     }
     isDuplicateRecord() {
         var _a;
-        return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => x.Code == this.service.formData.Code
-            && x.Name == this.service.formData.Name
-            && x.TotalCreditHours == this.service.formData.TotalCreditHours
-            && this.service.formData.Id == 0).length) > 0;
+        return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => x.Code == this.formData.Code
+            && x.Name == this.formData.Name
+            && x.TotalCreditHours == this.formData.TotalCreditHours
+            && this.formData.Id == 0).length) > 0;
     }
     insertCourse(form) {
-        this.service.postCourse().subscribe(result => {
+        this.service.postCourse(this.formData).subscribe(result => {
             this.toastr.success('Course added successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
@@ -893,7 +972,7 @@ class CourseFormComponent {
         });
     }
     updateCourse(form) {
-        this.service.putCourse().subscribe(result => {
+        this.service.putCourse(this.formData).subscribe(result => {
             this.toastr.success('Course updated successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
@@ -906,10 +985,15 @@ class CourseFormComponent {
         this.resetFormData();
     }
     resetFormData() {
-        this.service.resetFormData();
+        this.formData = new src_app_shared_course_model__WEBPACK_IMPORTED_MODULE_1__["Course"]();
+    }
+    resetFormDataOnDeletion(id) {
+        if (id == this.formData.Id) {
+            this.resetFormData();
+        }
     }
 }
-CourseFormComponent.ɵfac = function CourseFormComponent_Factory(t) { return new (t || CourseFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_course_service__WEBPACK_IMPORTED_MODULE_1__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_2__["ToastrService"])); };
+CourseFormComponent.ɵfac = function CourseFormComponent_Factory(t) { return new (t || CourseFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_course_service__WEBPACK_IMPORTED_MODULE_2__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_3__["ToastrService"])); };
 CourseFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: CourseFormComponent, selectors: [["app-course-form"]], decls: 31, vars: 5, consts: [["ngNativeValidate", "", 3, "submit"], ["form", "ngForm"], ["type", "hidden", "name", "id", 3, "value"], [1, "label", "label-default"], [1, "lbl-required"], [1, "form-group"], ["placeholder", "Course Name", "name", "Name", "required", "", "maxlength", "100", 1, "form-control", "form-control-lg", 3, "ngModel", "ngModelChange"], ["CourseCode", "ngModel"], ["placeholder", "Course Code", "name", "code", "required", "", "maxlength", "100", 1, "form-control", "form-control-lg", 3, "ngModel", "ngModelChange"], ["type", "number", "min", "3", "placeholder", "Total Credit Hours", "name", "name", "required", "", 1, "form-control", "form-control-lg", 3, "ngModel", "ngModelChange"], ["SubjectsCount", "ngModel"], [1, "row"], [1, "form-group", "col-md-6"], ["type", "button", 1, "btn", "btn-info", "btn-lg", "btn-block", 3, "click"], ["type", "submit", 1, "btn", "btn-info", "btn-lg", "btn-block"]], template: function CourseFormComponent_Template(rf, ctx) { if (rf & 1) {
         const _r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "form", 0, 1);
@@ -923,7 +1007,7 @@ CourseFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefi
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "div", 5);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "input", 6, 7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function CourseFormComponent_Template_input_ngModelChange_8_listener($event) { return ctx.service.formData.Name = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function CourseFormComponent_Template_input_ngModelChange_8_listener($event) { return ctx.formData.Name = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "label", 3);
@@ -934,7 +1018,7 @@ CourseFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefi
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "div", 5);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "input", 8, 7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function CourseFormComponent_Template_input_ngModelChange_15_listener($event) { return ctx.service.formData.Code = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function CourseFormComponent_Template_input_ngModelChange_15_listener($event) { return ctx.formData.Code = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "label", 3);
@@ -945,7 +1029,7 @@ CourseFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefi
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "div", 5);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](22, "input", 9, 10);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function CourseFormComponent_Template_input_ngModelChange_22_listener($event) { return ctx.service.formData.TotalCreditHours = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function CourseFormComponent_Template_input_ngModelChange_22_listener($event) { return ctx.formData.TotalCreditHours = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](24, "div", 11);
@@ -964,16 +1048,16 @@ CourseFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefi
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.service.formData.Id);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formData.Id);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.service.formData.Name);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.Name);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.service.formData.Code);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.Code);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.service.formData.TotalCreditHours);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.TotalCreditHours);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](8);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.service.formData.Id != 0 ? "Update" : "Add", " ");
-    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_3__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_3__["NgForm"], _angular_forms__WEBPACK_IMPORTED_MODULE_3__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_3__["RequiredValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_3__["MaxLengthValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_3__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_3__["NgModel"], _angular_forms__WEBPACK_IMPORTED_MODULE_3__["NumberValueAccessor"]], styles: [".lbl-required[_ngcontent-%COMP%] {\n    color: red;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNvdXJzZS1mb3JtLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7SUFDSSxVQUFVO0FBQ2QiLCJmaWxlIjoiY291cnNlLWZvcm0uY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5sYmwtcmVxdWlyZWQge1xuICAgIGNvbG9yOiByZWQ7XG59Il19 */"] });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.formData.Id != 0 ? "Update" : "Add", " ");
+    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgForm"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["RequiredValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["MaxLengthValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgModel"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NumberValueAccessor"]], styles: [".lbl-required[_ngcontent-%COMP%] {\n    color: red;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNvdXJzZS1mb3JtLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7SUFDSSxVQUFVO0FBQ2QiLCJmaWxlIjoiY291cnNlLWZvcm0uY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5sYmwtcmVxdWlyZWQge1xuICAgIGNvbG9yOiByZWQ7XG59Il19 */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](CourseFormComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -981,7 +1065,7 @@ CourseFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefi
                 templateUrl: './course-form.component.html',
                 styleUrls: ['./course-form.component.css'],
             }]
-    }], function () { return [{ type: _shared_course_service__WEBPACK_IMPORTED_MODULE_1__["CourseService"] }, { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_2__["ToastrService"] }]; }, null); })();
+    }], function () { return [{ type: _shared_course_service__WEBPACK_IMPORTED_MODULE_2__["CourseService"] }, { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_3__["ToastrService"] }]; }, null); })();
 
 
 /***/ }),
@@ -997,8 +1081,8 @@ CourseFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefi
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "CourseService", function() { return CourseService; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var _course_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./course.model */ "vQy0");
-/* harmony import */ var _shared_Constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../shared/Constants */ "z9QB");
+/* harmony import */ var _shared_Constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../shared/Constants */ "z9QB");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "qCKp");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
 /* harmony import */ var _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./splash-screen-state.service */ "C8wY");
 
@@ -1011,28 +1095,40 @@ class CourseService {
     constructor(http, splashScreenStateService) {
         this.http = http;
         this.splashScreenStateService = splashScreenStateService;
-        this.formData = new _course_model__WEBPACK_IMPORTED_MODULE_1__["Course"]();
+        this.listDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.formDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.resetFormDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.sourceList$ = this.listDataUpdatedSource.asObservable();
+        this.formData$ = this.formDataUpdatedSource.asObservable();
+        this.resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
         this.refreshList();
         setTimeout(() => {
             this.splashScreenStateService.stop();
         }, 1);
     }
-    resetFormData() {
-        this.formData = new _course_model__WEBPACK_IMPORTED_MODULE_1__["Course"]();
+    notifyListUpdate() {
+        this.listDataUpdatedSource.next(this.courseList);
     }
-    postCourse() {
-        return this.http.post(_shared_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].coursesBase, this.formData);
+    populateForm(formData) {
+        this.formDataUpdatedSource.next(formData);
     }
-    putCourse() {
-        return this.http.put(_shared_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].coursesBase + '/' + this.formData.Id, this.formData);
+    resetFormData(id) {
+        this.resetFormDataUpdatedSource.next(id);
+    }
+    postCourse(formData) {
+        return this.http.post(_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].coursesBase, formData);
+    }
+    putCourse(formData) {
+        return this.http.put(_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].coursesBase + '/' + formData.Id, formData);
     }
     deleteCourse(id) {
-        return this.http.delete(_shared_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].coursesBase + '/' + id);
+        return this.http.delete(_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].coursesBase + '/' + id);
     }
     refreshList() {
-        this.http.get(_shared_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].coursesBase)
+        this.http.get(_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].coursesBase)
             .toPromise()
-            .then(res => this.courseList = res);
+            .then(res => this.courseList = res)
+            .then(res => this.notifyListUpdate());
     }
     getList() {
         return this.courseList;
@@ -1439,8 +1535,8 @@ AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCompo
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StudentService", function() { return StudentService; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var _student_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./student.model */ "mj4c");
-/* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Constants */ "z9QB");
+/* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Constants */ "z9QB");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "qCKp");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
 /* harmony import */ var _course_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./course.service */ "Pv0z");
 /* harmony import */ var _subject_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./subject.service */ "lLrn");
@@ -1459,66 +1555,40 @@ class StudentService {
         this.courseService = courseService;
         this.subjectService = subjectService;
         this.splashScreenStateService = splashScreenStateService;
-        this.courseDropDownDefaultValue = 'Select Course';
-        this.genderDropDownDefaultValue = 'Select Gender';
-        this.genderOptions = ['Male', 'Female', 'Other'];
-        this.SubjectsSelcetValidationMesage = '';
-        this.CourseSelcetValidationMesage = '';
-        this.selectedCourseByStudent = this.courseDropDownDefaultValue;
-        this.formData = new _student_model__WEBPACK_IMPORTED_MODULE_1__["Student"]();
+        this.listDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.formDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.resetFormDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.sourceList$ = this.listDataUpdatedSource.asObservable();
+        this.formData$ = this.formDataUpdatedSource.asObservable();
+        this.resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
         this.refreshList();
         setTimeout(() => {
             this.splashScreenStateService.stop();
         }, 1);
     }
-    resetFormData() {
-        this.formData = new _student_model__WEBPACK_IMPORTED_MODULE_1__["Student"]();
-        this.selectedCourseByStudent = this.courseDropDownDefaultValue;
-        this.selectedSubjectsByStudent = null;
-        this.subjectsInselcetedCourse = null;
-        this.SubjectsSelcetValidationMesage = '';
+    notifyListUpdate() {
+        this.listDataUpdatedSource.next(this.studentsList);
     }
-    onSelectCourse(course) {
-        var _a, _b;
-        if ((course === null || course === void 0 ? void 0 : course.Id) != ((_b = (_a = this.formData) === null || _a === void 0 ? void 0 : _a.Course) === null || _b === void 0 ? void 0 : _b.Id)) {
-            this.selectedCourseByStudent = course.Name;
-            this.formData.Course = course;
-            this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => { var _a; return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == (course === null || course === void 0 ? void 0 : course.Id); });
-            this.selectedSubjectsByStudent = [];
-            this.SubjectsSelcetValidationMesage = course.TotalCreditHours + ' Credit Hours Left';
-            this.CourseSelcetValidationMesage = '';
-        }
+    populateForm(formData) {
+        this.formDataUpdatedSource.next(formData);
     }
-    populateForm(student) {
-        this.selectedCourseByStudent = student.Course.Name;
-        this.formData = Object.assign({}, student);
-        this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => { var _a, _b; return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = student.Course) === null || _b === void 0 ? void 0 : _b.Id); });
-        this.selectedSubjectsByStudent = this.getSelctedSubjectListWithAllDetails();
+    resetFormData(id) {
+        this.resetFormDataUpdatedSource.next(id);
     }
-    getSelctedSubjectListWithAllDetails() {
-        let list = [];
-        let form = this.formData;
-        this.subjectsInselcetedCourse.filter(function (x) {
-            var _a;
-            if ((_a = form === null || form === void 0 ? void 0 : form.Subjects) === null || _a === void 0 ? void 0 : _a.includes(x.Id)) {
-                list.push(x);
-            }
-        });
-        return list;
+    postStudent(formData) {
+        return this.http.post(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].studentsBase, formData);
     }
-    postStudent() {
-        return this.http.post(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].studentsBase, this.formData);
-    }
-    putStudent() {
-        return this.http.put(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].studentsBase + '/' + this.formData.Id, this.formData);
+    putStudent(formData) {
+        return this.http.put(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].studentsBase + '/' + formData.Id, formData);
     }
     deleteStudent(id) {
-        return this.http.delete(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].studentsBase + '/' + id);
+        return this.http.delete(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].studentsBase + '/' + id);
     }
     refreshList() {
-        this.http.get(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].studentsBase)
+        this.http.get(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].studentsBase)
             .toPromise()
-            .then(res => this.studentsList = res);
+            .then(res => this.studentsList = res)
+            .then(res => this.notifyListUpdate());
     }
     getList() {
         return this.studentsList;
@@ -1894,7 +1964,13 @@ class StudentComponent {
         this.resultService.refreshList();
     }
     ngOnInit() {
-        window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].studentComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
+        window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].studentComponentReference] =
+            {
+                component: this,
+                zone: this.ngZone,
+                syncData: () => this.service.refreshList()
+            };
+        this.service.sourceList$.subscribe(list => { this.studentsList = list; });
     }
     updateStudent(record) {
         this.service.populateForm(record);
@@ -1907,9 +1983,7 @@ class StudentComponent {
             console.log(error);
             this.toaster.error('An error occured, while deleting student', 'Error', { closeButton: true });
         });
-        if (record.Id == this.service.formData.Id) {
-            this.service.resetFormData();
-        }
+        this.service.resetFormData(record.Id);
     }
     getSubjectName(subjectId, stdId) {
         var _a, _b, _c;
@@ -2109,11 +2183,17 @@ class CourseComponent {
     }
     ngOnInit() {
         this.service.refreshList();
-        window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].courseComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
+        window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].courseComponentReference] =
+            {
+                component: this,
+                zone: this.ngZone,
+                syncData: () => this.service.refreshList()
+            };
+        this.service.sourceList$.subscribe(list => { this.courseList = list; });
     }
     populateForm(course) {
         this.toastr.info('Data populated to form', 'Info', { closeButton: true });
-        this.service.formData = Object.assign({}, course);
+        this.service.populateForm(Object.assign({}, course));
     }
     getAverageGrade(course) {
         var _a, _b;
@@ -2141,6 +2221,7 @@ class CourseComponent {
             this.toastr.error('An error occured, while deleting course', 'Error', { closeButton: true });
             console.log(error);
         });
+        this.service.resetFormData(course.Id);
     }
     isDeleteable(course) {
         var _a, _b, _c;
@@ -2207,7 +2288,7 @@ CourseComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCo
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](30);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.service.courseList);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.courseList);
     } }, directives: [_course_form_course_form_component__WEBPACK_IMPORTED_MODULE_6__["CourseFormComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_7__["NgForOf"]], encapsulation: 2 });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](CourseComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
@@ -2341,51 +2422,20 @@ class TeacherComponent {
     }
     ngOnInit() {
         this.service.refreshList();
-        window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].teacherComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
+        window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].teacherComponentReference] =
+            {
+                component: this,
+                zone: this.ngZone,
+                syncData: () => this.service.refreshList()
+            };
+        this.service.sourceList$.subscribe(list => { this.teacherList = list; });
     }
     getSubjectName(subjectId) {
         var _a, _b;
         return (_b = (_a = this.subjectService.getList()) === null || _a === void 0 ? void 0 : _a.find(x => x.Id == subjectId)) === null || _b === void 0 ? void 0 : _b.Name;
     }
     populateForm(record) {
-        this.service.formData = Object.assign({}, record);
-        this.service.selectedSubjects = this.getSelctedSubjectListWithAllDetails();
-        this.service.selectedCourses = this.getSelctedCourseListWithAllDetails();
-        this.service.subjectsForSelectedCourses = this.getSubjectsForSelectedCourses();
-        this.toaster.info('Data populated to form', 'Info', { closeButton: true });
-    }
-    getSubjectsForSelectedCourses() {
-        let list = [];
-        var subjects = this.service.subjectService.getList();
-        var selectedCourses = this.service.selectedCourses;
-        subjects === null || subjects === void 0 ? void 0 : subjects.filter(function (x) {
-            if (selectedCourses.filter(y => y.Id == x.Course.Id).length > 0) {
-                list.push(x);
-            }
-        });
-        return list;
-    }
-    getSelctedSubjectListWithAllDetails() {
-        let list = [];
-        let form = this.service.formData;
-        this.service.subjectService.getList().filter(function (x) {
-            var _a;
-            if ((_a = form === null || form === void 0 ? void 0 : form.Subjects) === null || _a === void 0 ? void 0 : _a.includes(x.Id)) {
-                list.push(x);
-            }
-        });
-        return list;
-    }
-    getSelctedCourseListWithAllDetails() {
-        let list = [];
-        let form = this.service.formData;
-        this.courseService.getList().filter(function (x) {
-            var _a;
-            if ((_a = form === null || form === void 0 ? void 0 : form.Courses) === null || _a === void 0 ? void 0 : _a.includes(x.Id)) {
-                list.push(x);
-            }
-        });
-        return list;
+        this.service.populateForm(record);
     }
     deleteTeacher(record) {
         this.service.deleteTeacher(record.Id).subscribe(result => {
@@ -2394,9 +2444,7 @@ class TeacherComponent {
             this.toaster.error('An error occured, while deleting teacher', 'Error', { closeButton: true });
             console.log(error);
         });
-        if (record.Id == this.service.formData.Id) {
-            this.service.resetFormData();
-        }
+        this.service.resetFormDataPostDataDeletion(record.Id);
     }
     isDeleteable(record) {
         var _a;
@@ -2454,7 +2502,7 @@ TeacherComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineC
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](26);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.service.teacherList);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.teacherList);
     } }, directives: [_teacher_form_teacher_form_component__WEBPACK_IMPORTED_MODULE_6__["TeacherFormComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_7__["NgForOf"]], styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJ0ZWFjaGVyLmNvbXBvbmVudC5jc3MifQ== */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](TeacherComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
@@ -2479,8 +2527,8 @@ TeacherComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineC
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SubjectService", function() { return SubjectService; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var _subject_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./subject.model */ "f3Tx");
-/* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Constants */ "z9QB");
+/* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Constants */ "z9QB");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "qCKp");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
 /* harmony import */ var _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./splash-screen-state.service */ "C8wY");
 
@@ -2493,42 +2541,41 @@ class SubjectService {
     constructor(http, splashScreenStateService) {
         this.http = http;
         this.splashScreenStateService = splashScreenStateService;
-        this.formData = new _subject_model__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
         this.subjectList = null;
-        this.courseDropDownCelectedValue = 'Select Course';
-        this.CourseSelcetValidationMesage = ': Required';
+        this.listDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.formDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.resetFormDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.sourceList$ = this.listDataUpdatedSource.asObservable();
+        this.formData$ = this.formDataUpdatedSource.asObservable();
+        this.resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
         this.refreshList();
         setTimeout(() => {
             this.splashScreenStateService.stop();
         }, 1);
     }
-    resetFormData() {
-        this.formData = new _subject_model__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
-        this.courseDropDownCelectedValue = 'Select Course';
-        this.CourseSelcetValidationMesage = '';
+    notifyListUpdate() {
+        this.listDataUpdatedSource.next(this.subjectList);
     }
-    selectCourse(course) {
-        this.courseDropDownCelectedValue = course.Name;
-        this.formData.Course = course;
-        this.CourseSelcetValidationMesage = '';
+    populateForm(formData) {
+        this.formDataUpdatedSource.next(formData);
     }
-    populateForm(subject) {
-        this.courseDropDownCelectedValue = subject.Course.Name;
-        this.formData = Object.assign({}, subject);
+    resetFormDataPostDataDeletion(id) {
+        this.resetFormDataUpdatedSource.next(id);
     }
-    postSubject() {
-        return this.http.post(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].subjectsBase, this.formData);
+    postSubject(formData) {
+        return this.http.post(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].subjectsBase, formData);
     }
-    putSubject() {
-        return this.http.put(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].subjectsBase + '/' + this.formData.Id, this.formData);
+    putSubject(formData) {
+        return this.http.put(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].subjectsBase + '/' + formData.Id, formData);
     }
     deleteSubject(id) {
-        return this.http.delete(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].subjectsBase + '/' + id);
+        return this.http.delete(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].subjectsBase + '/' + id);
     }
     refreshList() {
-        this.http.get(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].subjectsBase)
+        this.http.get(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].subjectsBase)
             .toPromise()
-            .then(res => this.subjectList = res);
+            .then(res => this.subjectList = res)
+            .then(res => this.notifyListUpdate());
     }
     getList() {
         return this.subjectList;
@@ -2580,11 +2627,13 @@ class Student {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SubjectFormComponent", function() { return SubjectFormComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var _shared_subject_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/subject.service */ "lLrn");
-/* harmony import */ var src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/shared/course.service */ "Pv0z");
-/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ngx-toastr */ "EApP");
-/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/common */ "ofXK");
+/* harmony import */ var src_app_shared_subject_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/shared/subject.model */ "f3Tx");
+/* harmony import */ var _shared_subject_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/subject.service */ "lLrn");
+/* harmony import */ var src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/shared/course.service */ "Pv0z");
+/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ngx-toastr */ "EApP");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/common */ "ofXK");
+
 
 
 
@@ -2595,7 +2644,7 @@ __webpack_require__.r(__webpack_exports__);
 function SubjectFormComponent_button_15_Template(rf, ctx) { if (rf & 1) {
     const _r8 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "button", 22);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function SubjectFormComponent_button_15_Template_button_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r8); const course_r6 = ctx.$implicit; const ctx_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r7.service.selectCourse(course_r6); })("click", function SubjectFormComponent_button_15_Template_button_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r8); const course_r6 = ctx.$implicit; _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); const _r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](14); return _r1.value = course_r6; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function SubjectFormComponent_button_15_Template_button_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r8); const course_r6 = ctx.$implicit; const ctx_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r7.selectCourse(course_r6); })("click", function SubjectFormComponent_button_15_Template_button_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r8); const course_r6 = ctx.$implicit; _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); const _r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](14); return _r1.value = course_r6; });
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
@@ -2608,16 +2657,29 @@ class SubjectFormComponent {
         this.service = service;
         this.courseService = courseService;
         this.toaster = toaster;
+        this.formData = new src_app_shared_subject_model__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.courseDropDownCelectedValue = 'Select Course';
+        this.CourseSelcetValidationMesage = ': Required';
+    }
+    selectCourse(course) {
+        this.courseDropDownCelectedValue = course.Name;
+        this.formData.Course = course;
+        this.CourseSelcetValidationMesage = '';
+    }
+    populateForm(subject) {
+        this.courseDropDownCelectedValue = subject.Course.Name;
+        this.formData = Object.assign({}, subject);
     }
     ngOnInit() {
         this.resetFormData();
+        this.service.formData$.subscribe(formData => { this.populateForm(formData); });
     }
     onSubmit(form) {
         if (this.isFormInvalid()) {
             this.setValidationMessages();
         }
         else {
-            if (this.service.formData.Id == 0) {
+            if (this.formData.Id == 0) {
                 this.inserRecord(form);
             }
             else {
@@ -2626,17 +2688,17 @@ class SubjectFormComponent {
         }
     }
     isFormInvalid() {
-        return this.service.formData.Course == null
+        return this.formData.Course == null
             || this.isDuplicateRecord();
     }
     isDuplicateRecord() {
         var _a;
         return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => {
             var _a, _b;
-            return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = this.service.formData.Course) === null || _b === void 0 ? void 0 : _b.Id)
-                && x.Code == this.service.formData.Code
-                && x.CreditHours == this.service.formData.CreditHours
-                && this.service.formData.Id == 0;
+            return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = this.formData.Course) === null || _b === void 0 ? void 0 : _b.Id)
+                && x.Code == this.formData.Code
+                && x.CreditHours == this.formData.CreditHours
+                && this.formData.Id == 0;
         }).length) > 0;
     }
     setValidationMessages() {
@@ -2644,11 +2706,11 @@ class SubjectFormComponent {
             this.toaster.error("Subject already exists", "Error", { closeButton: true });
         }
         else {
-            this.service.CourseSelcetValidationMesage = ": Required";
+            this.CourseSelcetValidationMesage = ": Required";
         }
     }
     inserRecord(form) {
-        this.service.postSubject().subscribe(result => {
+        this.service.postSubject(this.formData).subscribe(result => {
             this.toaster.success('Subject added successfully', 'Success', { closeButton: true });
             this.resetForm(form);
             this.service.refreshList();
@@ -2658,7 +2720,7 @@ class SubjectFormComponent {
         });
     }
     updateRecord(form) {
-        this.service.putSubject().subscribe(result => {
+        this.service.putSubject(this.formData).subscribe(result => {
             this.toaster.success('Subject updated successfully', 'Success', { closeButton: true });
             this.resetForm(form);
             this.service.refreshList();
@@ -2672,10 +2734,12 @@ class SubjectFormComponent {
         this.resetFormData();
     }
     resetFormData() {
-        this.service.resetFormData();
+        this.formData = new src_app_shared_subject_model__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
+        this.courseDropDownCelectedValue = 'Select Course';
+        this.CourseSelcetValidationMesage = '';
     }
 }
-SubjectFormComponent.ɵfac = function SubjectFormComponent_Factory(t) { return new (t || SubjectFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_subject_service__WEBPACK_IMPORTED_MODULE_1__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_2__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_3__["ToastrService"])); };
+SubjectFormComponent.ɵfac = function SubjectFormComponent_Factory(t) { return new (t || SubjectFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_subject_service__WEBPACK_IMPORTED_MODULE_2__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_4__["ToastrService"])); };
 SubjectFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: SubjectFormComponent, selectors: [["app-subject-form"]], decls: 44, vars: 8, consts: [["ngNativeValidate", "", 3, "submit"], ["form", "ngForm"], ["type", "hidden", "name", "id", 3, "value"], [1, "label", "label-default"], [1, "lbl-required"], [1, "label", "label-default", "text-danger"], [1, "form-group"], [1, "dropdown"], ["id", "dropdownMenuButton", "data-toggle", "dropdown", "aria-haspopup", "true", "aria-expanded", "true", "required", "", 1, "btn", "btn-secondary", "dropdown-toggle", "drp-dwn"], ["aria-labelledby", "dropdownMenuButton", 1, "dropdown-menu"], ["courseSelected", ""], ["type", "button", "class", "dropdown-item", "required", "", 3, "click", 4, "ngFor", "ngForOf"], ["placeholder", "Subject Name", "name", "name", "required", "", "maxlength", "100", 1, "form-control", "form-control-lg", 3, "ngModel", "ngModelChange"], ["subjectName", "ngModel"], ["placeholder", "Subject Code", "name", "code", "required", "", "maxlength", "100", 1, "form-control", "form-control-lg", 3, "ngModel", "ngModelChange"], ["subjectCode", "ngModel"], ["placeholder", "Credit Hours", "name", "creditHours", "required", "", "type", "number", "max", "3", "min", "1", 1, "form-control", "form-control-lg", 3, "ngModel", "ngModelChange"], ["creditHours", "ngModel"], [1, "row"], [1, "form-group", "col-md-6"], ["type", "button", 1, "btn", "btn-info", "btn-lg", "btn-block", 3, "click"], ["type", "submit", 1, "btn", "btn-info", "btn-lg", "btn-block"], ["type", "button", "required", "", 1, "dropdown-item", 3, "click"]], template: function SubjectFormComponent_Template(rf, ctx) { if (rf & 1) {
         const _r10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "form", 0, 1);
@@ -2708,7 +2772,7 @@ SubjectFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](20, "*");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](21, "input", 12, 13);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function SubjectFormComponent_Template_input_ngModelChange_21_listener($event) { return ctx.service.formData.Name = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function SubjectFormComponent_Template_input_ngModelChange_21_listener($event) { return ctx.formData.Name = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](23, "div", 6);
@@ -2719,7 +2783,7 @@ SubjectFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](27, "*");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](28, "input", 14, 15);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function SubjectFormComponent_Template_input_ngModelChange_28_listener($event) { return ctx.service.formData.Code = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function SubjectFormComponent_Template_input_ngModelChange_28_listener($event) { return ctx.formData.Code = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](30, "div", 6);
@@ -2730,7 +2794,7 @@ SubjectFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](34, "*");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](35, "input", 16, 17);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function SubjectFormComponent_Template_input_ngModelChange_35_listener($event) { return ctx.service.formData.CreditHours = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function SubjectFormComponent_Template_input_ngModelChange_35_listener($event) { return ctx.formData.CreditHours = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](37, "div", 18);
@@ -2749,22 +2813,22 @@ SubjectFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.service.formData.Id);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formData.Id);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.service.CourseSelcetValidationMesage);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.CourseSelcetValidationMesage);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.service.courseDropDownCelectedValue, " ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.courseDropDownCelectedValue, " ");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.courseService.courseList);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.service.getList());
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.service.formData.Name);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.Name);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.service.formData.Code);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.Code);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.service.formData.CreditHours);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.CreditHours);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](8);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.service.formData.Id != 0 ? "Update" : "Add", " ");
-    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgForm"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgForOf"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["RequiredValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["MaxLengthValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NgModel"], _angular_forms__WEBPACK_IMPORTED_MODULE_4__["NumberValueAccessor"]], styles: [".drp-dwn[_ngcontent-%COMP%] {\n  width: 260px;\n  max-width: 100%;\n  height: 48px;\n    max-height: 100%;\n}\n.lbl-required[_ngcontent-%COMP%] {\n  color: red;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN1YmplY3QtZm9ybS5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsWUFBWTtFQUNaLGVBQWU7RUFDZixZQUFZO0lBQ1YsZ0JBQWdCO0FBQ3BCO0FBQ0E7RUFDRSxVQUFVO0FBQ1oiLCJmaWxlIjoic3ViamVjdC1mb3JtLmNvbXBvbmVudC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuZHJwLWR3biB7XG4gIHdpZHRoOiAyNjBweDtcbiAgbWF4LXdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDQ4cHg7XG4gICAgbWF4LWhlaWdodDogMTAwJTtcbn1cbi5sYmwtcmVxdWlyZWQge1xuICBjb2xvcjogcmVkO1xufSJdfQ== */"] });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.formData.Id != 0 ? "Update" : "Add", " ");
+    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_5__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_5__["NgForm"], _angular_common__WEBPACK_IMPORTED_MODULE_6__["NgForOf"], _angular_forms__WEBPACK_IMPORTED_MODULE_5__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_5__["RequiredValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_5__["MaxLengthValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_5__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_5__["NgModel"], _angular_forms__WEBPACK_IMPORTED_MODULE_5__["NumberValueAccessor"]], styles: [".drp-dwn[_ngcontent-%COMP%] {\n  width: 260px;\n  max-width: 100%;\n  height: 48px;\n    max-height: 100%;\n}\n.lbl-required[_ngcontent-%COMP%] {\n  color: red;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN1YmplY3QtZm9ybS5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsWUFBWTtFQUNaLGVBQWU7RUFDZixZQUFZO0lBQ1YsZ0JBQWdCO0FBQ3BCO0FBQ0E7RUFDRSxVQUFVO0FBQ1oiLCJmaWxlIjoic3ViamVjdC1mb3JtLmNvbXBvbmVudC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuZHJwLWR3biB7XG4gIHdpZHRoOiAyNjBweDtcbiAgbWF4LXdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDQ4cHg7XG4gICAgbWF4LWhlaWdodDogMTAwJTtcbn1cbi5sYmwtcmVxdWlyZWQge1xuICBjb2xvcjogcmVkO1xufSJdfQ== */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](SubjectFormComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -2773,7 +2837,7 @@ SubjectFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
                 styleUrls: ['./subject-form.component.css'],
                 styles: []
             }]
-    }], function () { return [{ type: _shared_subject_service__WEBPACK_IMPORTED_MODULE_1__["SubjectService"] }, { type: src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_2__["CourseService"] }, { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_3__["ToastrService"] }]; }, null); })();
+    }], function () { return [{ type: _shared_subject_service__WEBPACK_IMPORTED_MODULE_2__["SubjectService"] }, { type: src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__["CourseService"] }, { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_4__["ToastrService"] }]; }, null); })();
 
 
 /***/ }),
@@ -2860,8 +2924,13 @@ class GradeComponent {
     }
     ngOnInit() {
         this.service.refreshList();
-        window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].gradeComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
-        this.service.sourceList$.subscribe(grades => { this.gradesList = grades; });
+        window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].gradeComponentReference] =
+            {
+                component: this,
+                zone: this.ngZone,
+                syncData: () => this.service.refreshList()
+            };
+        this.service.sourceList$.subscribe(list => { this.gradesList = list; });
     }
     populateForm(grade) {
         this.toastr.info('Data populated to form', 'Info', { closeButton: true });
@@ -3028,10 +3097,11 @@ class ResultComponent {
     ngOnInit() {
         this.service.refreshList();
         window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].resultComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
+        this.service.sourceList$.subscribe(list => { this.resultsList = list; });
     }
     updateResult(record) {
         this.toaster.info('Data populated to form', 'Info', { closeButton: true });
-        this.service.populateForm(record);
+        this.service.populateForm(Object.assign({}, record));
     }
     deleteResult(record) {
         this.service.deleteResult(record.Id).subscribe(result => {
@@ -3040,9 +3110,7 @@ class ResultComponent {
             this.toaster.error('An error occured, while deleting result', 'Error', { closeButton: true });
             console.log(error);
         });
-        if (record.Id == this.service.formData.Id) {
-            this.service.resetFormData();
-        }
+        this.service.resetFormData(record.Id);
     }
 }
 ResultComponent.ɵfac = function ResultComponent_Factory(t) { return new (t || ResultComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_result_service__WEBPACK_IMPORTED_MODULE_2__["ResultService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_subject_service__WEBPACK_IMPORTED_MODULE_3__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_core__WEBPACK_IMPORTED_MODULE_0__["NgZone"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_4__["ToastrService"])); };
@@ -3093,7 +3161,7 @@ ResultComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCo
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](26);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.service.resultsList);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.resultsList);
     } }, directives: [_result_form_result_form_component__WEBPACK_IMPORTED_MODULE_5__["ResultFormComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_6__["NgForOf"]], styles: ["\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IiIsImZpbGUiOiJyZXN1bHQuY29tcG9uZW50LmNzcyJ9 */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ResultComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
@@ -3118,8 +3186,8 @@ ResultComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCo
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TeacherService", function() { return TeacherService; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var _teacher_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./teacher.model */ "kVKu");
-/* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Constants */ "z9QB");
+/* harmony import */ var _Constants__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Constants */ "z9QB");
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "qCKp");
 /* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
 /* harmony import */ var _subject_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./subject.service */ "lLrn");
 /* harmony import */ var _splash_screen_state_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./splash-screen-state.service */ "C8wY");
@@ -3135,62 +3203,41 @@ class TeacherService {
         this.http = http;
         this.subjectService = subjectService;
         this.splashScreenStateService = splashScreenStateService;
-        this.formData = new _teacher_model__WEBPACK_IMPORTED_MODULE_1__["Teacher"]();
         this.teacherList = [];
-        this.genderOptions = ['Male', 'Female', 'Other'];
-        this.selectedCourses = [];
-        this.selectedSubjects = [];
-        this.subjectsForSelectedCourses = [];
+        this.listDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.formDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.resetFormDataUpdatedSource = new rxjs__WEBPACK_IMPORTED_MODULE_2__["Subject"]();
+        this.sourceList$ = this.listDataUpdatedSource.asObservable();
+        this.formData$ = this.formDataUpdatedSource.asObservable();
+        this.resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
         subjectService.refreshList();
         setTimeout(() => {
             this.splashScreenStateService.stop();
         }, 1);
     }
-    resetFormData() {
-        this.formData = new _teacher_model__WEBPACK_IMPORTED_MODULE_1__["Teacher"]();
-        this.selectedSubjects = [];
-        this.selectedCourses = [];
-        this.subjectsForSelectedCourses = [];
+    notifyListUpdate() {
+        this.listDataUpdatedSource.next(this.teacherList);
     }
-    onCourseSelect(item) {
-        var list = this.subjectService.getList().filter(x => x.Course.Id == item.Id);
-        this.subjectsForSelectedCourses = this.subjectsForSelectedCourses.concat(list);
+    populateForm(formData) {
+        this.formDataUpdatedSource.next(formData);
     }
-    onCourseDeselect(course) {
-        var _a, _b;
-        let subjectsInSelectedCourse = this.subjectService.getList().filter(x => x.Course.Id == course.Id);
-        this.selectedSubjects = (_a = this.selectedSubjects) === null || _a === void 0 ? void 0 : _a.filter(function (x) {
-            var shouldInclude = true;
-            subjectsInSelectedCourse.forEach(element => {
-                if (element.Id == x.Id) {
-                    shouldInclude = false;
-                }
-            });
-            return shouldInclude;
-        });
-        this.subjectsForSelectedCourses = (_b = this.subjectsForSelectedCourses) === null || _b === void 0 ? void 0 : _b.filter(function (x) {
-            var shouldInclude = true;
-            subjectsInSelectedCourse.forEach(element => {
-                if (element.Id == x.Id) {
-                    shouldInclude = false;
-                }
-            });
-            return shouldInclude;
-        });
+    resetFormDataPostDataDeletion(id) {
+        this.resetFormDataUpdatedSource.next(id);
     }
-    postTeacher() {
-        return this.http.post(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].teachersBase, this.formData);
+    postTeacher(formData) {
+        return this.http.post(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].teachersBase, formData);
     }
-    putTeacher() {
-        return this.http.put(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].teachersBase + '/' + this.formData.Id, this.formData);
+    putTeacher(formData) {
+        return this.http.put(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].teachersBase + '/' + formData.Id, formData);
     }
     deleteTeacher(id) {
-        return this.http.delete(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].teachersBase + '/' + id);
+        return this.http.delete(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].teachersBase + '/' + id);
     }
     refreshList() {
-        this.http.get(_Constants__WEBPACK_IMPORTED_MODULE_2__["Constants"].teachersBase)
+        this.http.get(_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].teachersBase)
             .toPromise()
-            .then(res => this.teacherList = res);
+            .then(res => this.teacherList = res)
+            .then(res => this.notifyListUpdate());
     }
     getList() {
         return this.teacherList;
@@ -3219,11 +3266,17 @@ TeacherService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineIn
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "StudentFormComponent", function() { return StudentFormComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var _shared_student_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../shared/student.service */ "VVDR");
-/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ngx-toastr */ "EApP");
-/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/common */ "ofXK");
-/* harmony import */ var ng_multiselect_dropdown__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ng-multiselect-dropdown */ "Egam");
+/* harmony import */ var src_app_shared_student_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/shared/student.model */ "mj4c");
+/* harmony import */ var _shared_student_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../shared/student.service */ "VVDR");
+/* harmony import */ var src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/shared/course.service */ "Pv0z");
+/* harmony import */ var src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/shared/subject.service */ "lLrn");
+/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ngx-toastr */ "EApP");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/common */ "ofXK");
+/* harmony import */ var ng_multiselect_dropdown__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ng-multiselect-dropdown */ "Egam");
+
+
+
 
 
 
@@ -3234,7 +3287,7 @@ __webpack_require__.r(__webpack_exports__);
 function StudentFormComponent_button_31_Template(rf, ctx) { if (rf & 1) {
     const _r7 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "button", 21);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function StudentFormComponent_button_31_Template_button_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r7); const course_r5 = ctx.$implicit; const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r6.service.onSelectCourse(course_r5); })("click", function StudentFormComponent_button_31_Template_button_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r7); const course_r5 = ctx.$implicit; _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); const _r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](30); return _r3.value = course_r5; });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function StudentFormComponent_button_31_Template_button_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r7); const course_r5 = ctx.$implicit; const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r6.onSelectCourse(course_r5); })("click", function StudentFormComponent_button_31_Template_button_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r7); const course_r5 = ctx.$implicit; _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); const _r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](30); return _r3.value = course_r5; });
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
@@ -3243,13 +3296,22 @@ function StudentFormComponent_button_31_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", course_r5.Name + " " + course_r5.Code, " ");
 } }
 class StudentFormComponent {
-    constructor(service, toaster) {
+    constructor(service, courseService, subjectService, toaster) {
         this.service = service;
+        this.courseService = courseService;
+        this.subjectService = subjectService;
         this.toaster = toaster;
         this.subjectsDropdownSettings = {};
         this.isFormValid = true;
         this.subjectsSelectionClass = 'text-success';
         this.courseSelectionClass = 'text-success';
+        this.courseDropDownDefaultValue = 'Select Course';
+        this.genderDropDownDefaultValue = 'Select Gender';
+        this.genderOptions = ['Male', 'Female', 'Other'];
+        this.SubjectsSelcetValidationMesage = '';
+        this.CourseSelcetValidationMesage = '';
+        this.selectedCourseByStudent = this.courseDropDownDefaultValue;
+        this.formData = new src_app_shared_student_model__WEBPACK_IMPORTED_MODULE_1__["Student"]();
         this.subjectsDropdownSettings = {
             singleSelection: false,
             idField: 'Id',
@@ -3264,19 +3326,57 @@ class StudentFormComponent {
     }
     ngOnInit() {
         this.resetFormData();
+        this.service.formData$.subscribe(data => {
+            this.formData = data;
+        });
+    }
+    resetFormData() {
+        this.formData = new src_app_shared_student_model__WEBPACK_IMPORTED_MODULE_1__["Student"]();
+        this.selectedCourseByStudent = this.courseDropDownDefaultValue;
+        this.selectedSubjectsByStudent = null;
+        this.subjectsInselcetedCourse = null;
+        this.SubjectsSelcetValidationMesage = '';
+    }
+    onSelectCourse(course) {
+        var _a, _b;
+        if ((course === null || course === void 0 ? void 0 : course.Id) != ((_b = (_a = this.formData) === null || _a === void 0 ? void 0 : _a.Course) === null || _b === void 0 ? void 0 : _b.Id)) {
+            this.selectedCourseByStudent = course.Name;
+            this.formData.Course = course;
+            this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => { var _a; return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == (course === null || course === void 0 ? void 0 : course.Id); });
+            this.selectedSubjectsByStudent = [];
+            this.SubjectsSelcetValidationMesage = course.TotalCreditHours + ' Credit Hours Left';
+            this.CourseSelcetValidationMesage = '';
+        }
+    }
+    populateForm(student) {
+        this.selectedCourseByStudent = student.Course.Name;
+        this.formData = Object.assign({}, student);
+        this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => { var _a, _b; return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = student.Course) === null || _b === void 0 ? void 0 : _b.Id); });
+        this.selectedSubjectsByStudent = this.getSelctedSubjectListWithAllDetails();
+    }
+    getSelctedSubjectListWithAllDetails() {
+        let list = [];
+        let form = this.formData;
+        this.subjectsInselcetedCourse.filter(function (x) {
+            var _a;
+            if ((_a = form === null || form === void 0 ? void 0 : form.Subjects) === null || _a === void 0 ? void 0 : _a.includes(x.Id)) {
+                list.push(x);
+            }
+        });
+        return list;
     }
     onSubmit(form) {
         if (this.isCourseSelectionValid()) {
             this.courseSelectionClass = 'text-danger';
-            this.service.CourseSelcetValidationMesage = ' :Required';
+            this.CourseSelcetValidationMesage = ' :Required';
         }
         else if (this.isFormValid) {
             if (this.isDuplicateRecord()) {
                 this.toaster.error("Student already exists", "Error", { closeButton: true });
             }
             else {
-                this.service.formData.Subjects = this.service.selectedSubjectsByStudent.map(a => a.Id);
-                if (this.service.formData.Id == 0) {
+                this.formData.Subjects = this.selectedSubjectsByStudent.map(a => a.Id);
+                if (this.formData.Id == 0) {
                     this.inserRecord(form);
                 }
                 else {
@@ -3287,12 +3387,12 @@ class StudentFormComponent {
     }
     isDuplicateRecord() {
         var _a;
-        return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => x.Birthday == this.service.formData.Birthday
-            && x.Name == this.service.formData.Name
-            && this.service.formData.Id == 0).length) > 0;
+        return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => x.Birthday == this.formData.Birthday
+            && x.Name == this.formData.Name
+            && this.formData.Id == 0).length) > 0;
     }
     inserRecord(form) {
-        this.service.postStudent().subscribe(result => {
+        this.service.postStudent(this.formData).subscribe(result => {
             this.toaster.success('Student added successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
@@ -3301,7 +3401,7 @@ class StudentFormComponent {
         });
     }
     updateRecord(form) {
-        this.service.putStudent().subscribe(result => {
+        this.service.putStudent(this.formData).subscribe(result => {
             this.toaster.success('Student updated successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
@@ -3312,9 +3412,6 @@ class StudentFormComponent {
     resetForm(form) {
         form.form.reset();
         this.resetFormData();
-    }
-    resetFormData() {
-        this.service.resetFormData();
     }
     onSubjectSelect(item) {
         this.validateSubjectSelection();
@@ -3327,11 +3424,11 @@ class StudentFormComponent {
     }
     validateSubjectSelection() {
         var _a, _b;
-        let allowed = (_a = this.service.formData.Course) === null || _a === void 0 ? void 0 : _a.TotalCreditHours;
+        let allowed = (_a = this.formData.Course) === null || _a === void 0 ? void 0 : _a.TotalCreditHours;
         let availed = 0;
-        (_b = this.service.subjectsInselcetedCourse) === null || _b === void 0 ? void 0 : _b.forEach(course => {
+        (_b = this.subjectsInselcetedCourse) === null || _b === void 0 ? void 0 : _b.forEach(course => {
             var _a;
-            if (((_a = this.service.selectedSubjectsByStudent) === null || _a === void 0 ? void 0 : _a.find(x => x.Id == course.Id)) != undefined) {
+            if (((_a = this.selectedSubjectsByStudent) === null || _a === void 0 ? void 0 : _a.find(x => x.Id == course.Id)) != undefined) {
                 availed += course.CreditHours;
             }
         });
@@ -3339,24 +3436,24 @@ class StudentFormComponent {
         if (availed < allowed) {
             this.subjectsSelectionClass = 'text-info';
             this.isFormValid = true;
-            this.service.SubjectsSelcetValidationMesage = ': ' + difference + ' Credit hour(s) left';
+            this.SubjectsSelcetValidationMesage = ': ' + difference + ' Credit hour(s) left';
         }
         else if (availed > allowed) {
             this.subjectsSelectionClass = 'text-danger';
             this.isFormValid = false;
-            this.service.SubjectsSelcetValidationMesage = +(availed - allowed) + ' Extra credit hour(s), remove subject(s)';
+            this.SubjectsSelcetValidationMesage = +(availed - allowed) + ' Extra credit hour(s), remove subject(s)';
         }
         else if (availed == allowed) {
             this.subjectsSelectionClass = 'text-info';
-            this.service.SubjectsSelcetValidationMesage = ' : All credit hours availed';
+            this.SubjectsSelcetValidationMesage = ' : All credit hours availed';
             this.isFormValid = true;
         }
     }
     isCourseSelectionValid() {
-        return this.service.selectedCourseByStudent == this.service.courseDropDownDefaultValue;
+        return this.selectedCourseByStudent == this.courseDropDownDefaultValue;
     }
 }
-StudentFormComponent.ɵfac = function StudentFormComponent_Factory(t) { return new (t || StudentFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_student_service__WEBPACK_IMPORTED_MODULE_1__["StudentService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_2__["ToastrService"])); };
+StudentFormComponent.ɵfac = function StudentFormComponent_Factory(t) { return new (t || StudentFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_shared_student_service__WEBPACK_IMPORTED_MODULE_2__["StudentService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_5__["ToastrService"])); };
 StudentFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: StudentFormComponent, selectors: [["app-student-form"]], decls: 45, vars: 18, consts: [[1, "row"], ["ngNativeValidate", "", 3, "submit"], ["form", "ngForm"], [1, "col", "col-lg-12"], ["type", "hidden", "name", "id", 3, "value"], [1, "form-group"], [1, "label", "label-default"], [1, "lbl-required"], ["placeholder", "Name", "name", "name", "required", "", 1, "form-control", "form-control-lg", 3, "ngModel", "ngModelChange"], ["Name", "ngModel"], ["type", "date", "placeholder", "Pick Date Of Birth", "name", "dob", "max", "2010-12-31", "required", "", 1, "form-control", "form-control-lg", 3, "ngModel", "ngModelChange"], ["dob", "ngModel"], [1, "dropdown"], ["id", "dropdownMenuButton", "data-toggle", "dropdown", "aria-haspopup", "true", "aria-expanded", "true", 1, "btn", "btn-secondary", "dropdown-toggle", "drp-dwn"], ["aria-labelledby", "dropdownMenuButton", 1, "dropdown-menu"], ["courseSelected", ""], ["type", "button", "class", "dropdown-item", 3, "click", 4, "ngFor", "ngForOf"], ["name", "subjectSelect", 3, "placeholder", "settings", "data", "ngModel", "ngModelChange", "onSelect", "onSelectAll", "onDeSelect"], [1, "form-group", "col-md-6"], ["type", "button", 1, "btn", "btn-info", "btn-lg", "btn-block", 3, "click"], ["type", "submit", 1, "btn", "btn-info", "btn-lg", "btn-block"], ["type", "button", 1, "dropdown-item", 3, "click"]], template: function StudentFormComponent_Template(rf, ctx) { if (rf & 1) {
         const _r9 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
@@ -3372,7 +3469,7 @@ StudentFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](9, "*");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "input", 8, 9);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function StudentFormComponent_Template_input_ngModelChange_10_listener($event) { return ctx.service.formData.Name = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function StudentFormComponent_Template_input_ngModelChange_10_listener($event) { return ctx.formData.Name = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "div", 5);
@@ -3383,7 +3480,7 @@ StudentFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16, "*");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "input", 10, 11);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function StudentFormComponent_Template_input_ngModelChange_17_listener($event) { return ctx.service.formData.Birthday = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function StudentFormComponent_Template_input_ngModelChange_17_listener($event) { return ctx.formData.Birthday = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "div", 5);
@@ -3413,7 +3510,7 @@ StudentFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](36);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](37, "ng-multiselect-dropdown", 17);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function StudentFormComponent_Template_ng_multiselect_dropdown_ngModelChange_37_listener($event) { return ctx.service.selectedSubjectsByStudent = $event; })("onSelect", function StudentFormComponent_Template_ng_multiselect_dropdown_onSelect_37_listener($event) { return ctx.onSubjectSelect($event); })("onSelectAll", function StudentFormComponent_Template_ng_multiselect_dropdown_onSelectAll_37_listener($event) { return ctx.onSelectAllSubjects($event); })("onDeSelect", function StudentFormComponent_Template_ng_multiselect_dropdown_onDeSelect_37_listener($event) { return ctx.onSubjectDeselect($event); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("ngModelChange", function StudentFormComponent_Template_ng_multiselect_dropdown_ngModelChange_37_listener($event) { return ctx.selectedSubjectsByStudent = $event; })("onSelect", function StudentFormComponent_Template_ng_multiselect_dropdown_onSelect_37_listener($event) { return ctx.onSubjectSelect($event); })("onSelectAll", function StudentFormComponent_Template_ng_multiselect_dropdown_onSelectAll_37_listener($event) { return ctx.onSelectAllSubjects($event); })("onDeSelect", function StudentFormComponent_Template_ng_multiselect_dropdown_onDeSelect_37_listener($event) { return ctx.onSubjectDeselect($event); });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](38, "div", 0);
@@ -3434,28 +3531,28 @@ StudentFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.service.formData.Id);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formData.Id);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.service.formData.Name);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.Name);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.service.formData.Birthday);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.Birthday);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassMapInterpolate1"]("label label-default ", ctx.courseSelectionClass, "");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.service.CourseSelcetValidationMesage);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.CourseSelcetValidationMesage);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.service.selectedCourseByStudent, " ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.selectedCourseByStudent, " ");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.service.courseService.courseList);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.courseService.getList());
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassMapInterpolate1"]("label label-default ", ctx.subjectsSelectionClass, "");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.service.SubjectsSelcetValidationMesage);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.SubjectsSelcetValidationMesage);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("placeholder", "Select Subject(s)")("settings", ctx.subjectsDropdownSettings)("data", ctx.service.subjectsInselcetedCourse)("ngModel", ctx.service.selectedSubjectsByStudent);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("placeholder", "Select Subject(s)")("settings", ctx.subjectsDropdownSettings)("data", ctx.subjectsInselcetedCourse)("ngModel", ctx.selectedSubjectsByStudent);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.service.formData.Id != 0 ? "Update" : "Add", " ");
-    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_3__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_3__["NgForm"], _angular_forms__WEBPACK_IMPORTED_MODULE_3__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_3__["RequiredValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_3__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_3__["NgModel"], _angular_common__WEBPACK_IMPORTED_MODULE_4__["NgForOf"], ng_multiselect_dropdown__WEBPACK_IMPORTED_MODULE_5__["MultiSelectComponent"]], styles: [".drp-dwn[_ngcontent-%COMP%] {\r\n    width: 260px;\r\n    max-width: 100%;\r\n    height: 48px;\r\n    max-height: 100%;\r\n}\r\n.lbl-required[_ngcontent-%COMP%]{\r\n    color: red;\r\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN0dWRlbnQtZm9ybS5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0lBQ0ksWUFBWTtJQUNaLGVBQWU7SUFDZixZQUFZO0lBQ1osZ0JBQWdCO0FBQ3BCO0FBQ0E7SUFDSSxVQUFVO0FBQ2QiLCJmaWxlIjoic3R1ZGVudC1mb3JtLmNvbXBvbmVudC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuZHJwLWR3biB7XHJcbiAgICB3aWR0aDogMjYwcHg7XHJcbiAgICBtYXgtd2lkdGg6IDEwMCU7XHJcbiAgICBoZWlnaHQ6IDQ4cHg7XHJcbiAgICBtYXgtaGVpZ2h0OiAxMDAlO1xyXG59XHJcbi5sYmwtcmVxdWlyZWR7XHJcbiAgICBjb2xvcjogcmVkO1xyXG59Il19 */"] });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.formData.Id != 0 ? "Update" : "Add", " ");
+    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_6__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_6__["NgForm"], _angular_forms__WEBPACK_IMPORTED_MODULE_6__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_6__["RequiredValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_6__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_6__["NgModel"], _angular_common__WEBPACK_IMPORTED_MODULE_7__["NgForOf"], ng_multiselect_dropdown__WEBPACK_IMPORTED_MODULE_8__["MultiSelectComponent"]], styles: [".drp-dwn[_ngcontent-%COMP%] {\r\n    width: 260px;\r\n    max-width: 100%;\r\n    height: 48px;\r\n    max-height: 100%;\r\n}\r\n.lbl-required[_ngcontent-%COMP%]{\r\n    color: red;\r\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInN0dWRlbnQtZm9ybS5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0lBQ0ksWUFBWTtJQUNaLGVBQWU7SUFDZixZQUFZO0lBQ1osZ0JBQWdCO0FBQ3BCO0FBQ0E7SUFDSSxVQUFVO0FBQ2QiLCJmaWxlIjoic3R1ZGVudC1mb3JtLmNvbXBvbmVudC5jc3MiLCJzb3VyY2VzQ29udGVudCI6WyIuZHJwLWR3biB7XHJcbiAgICB3aWR0aDogMjYwcHg7XHJcbiAgICBtYXgtd2lkdGg6IDEwMCU7XHJcbiAgICBoZWlnaHQ6IDQ4cHg7XHJcbiAgICBtYXgtaGVpZ2h0OiAxMDAlO1xyXG59XHJcbi5sYmwtcmVxdWlyZWR7XHJcbiAgICBjb2xvcjogcmVkO1xyXG59Il19 */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](StudentFormComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -3464,7 +3561,7 @@ StudentFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdef
                 styleUrls: ['./student-form.component.css'],
                 styles: [],
             }]
-    }], function () { return [{ type: _shared_student_service__WEBPACK_IMPORTED_MODULE_1__["StudentService"] }, { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_2__["ToastrService"] }]; }, null); })();
+    }], function () { return [{ type: _shared_student_service__WEBPACK_IMPORTED_MODULE_2__["StudentService"] }, { type: src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_3__["CourseService"] }, { type: src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"] }, { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_5__["ToastrService"] }]; }, null); })();
 
 
 /***/ }),
@@ -3504,14 +3601,16 @@ class Result {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ResultFormComponent", function() { return ResultFormComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var src_app_shared_result_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/shared/result.service */ "CLH5");
-/* harmony import */ var src_app_shared_student_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/shared/student.service */ "VVDR");
-/* harmony import */ var src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/shared/subject.service */ "lLrn");
-/* harmony import */ var src_app_shared_grade_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/shared/grade.service */ "uab5");
-/* harmony import */ var src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/shared/course.service */ "Pv0z");
-/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ngx-toastr */ "EApP");
-/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/common */ "ofXK");
+/* harmony import */ var src_app_shared_result_model__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/shared/result.model */ "u9X8");
+/* harmony import */ var src_app_shared_result_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/shared/result.service */ "CLH5");
+/* harmony import */ var src_app_shared_student_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/shared/student.service */ "VVDR");
+/* harmony import */ var src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/shared/subject.service */ "lLrn");
+/* harmony import */ var src_app_shared_grade_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/shared/grade.service */ "uab5");
+/* harmony import */ var src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! src/app/shared/course.service */ "Pv0z");
+/* harmony import */ var ngx_toastr__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ngx-toastr */ "EApP");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! @angular/common */ "ofXK");
+
 
 
 
@@ -3566,19 +3665,29 @@ class ResultFormComponent {
         this.toaster = toaster;
         this.gradeLabelText = 'Enter obtained marks to calculate grade';
         this.gradeLabelTextClass = "text-info";
+        this.formData = new src_app_shared_result_model__WEBPACK_IMPORTED_MODULE_1__["Result"]();
+        this.SubjectSelcetValidationMesage = '';
+        this.CourseSelcetValidationMesage = '';
+        this.StudentSelcetValidationMesage = '';
         this.studentService.refreshList();
         this.subjectService.refreshList();
         this.gradeService.refreshList();
         this.courseService.refreshList();
     }
     ngOnInit() {
+        this.service.formData$.subscribe(data => {
+            this.formData = data;
+        });
+        this.service.resetFormData$.subscribe(data => {
+            this.resetDataOnDeleteItem(data);
+        });
     }
     onSubmit(form) {
-        if (this.service.isFormInvalid()) {
-            this.service.setValidationMessages();
+        if (this.isFormInvalid()) {
+            this.setValidationMessages();
         }
         else {
-            if (this.service.formData.Id == 0) {
+            if (this.formData.Id == 0) {
                 this.inserRecord(form);
             }
             else {
@@ -3586,10 +3695,38 @@ class ResultFormComponent {
             }
         }
     }
+    isFormInvalid() {
+        return this.formData.Course == null
+            || this.formData.Student == null
+            || this.formData.Subject == null
+            || this.formData.Grade == null
+            || this.isDuplicateRecord();
+    }
+    isDuplicateRecord() {
+        var _a;
+        return ((_a = this.service.getList()) === null || _a === void 0 ? void 0 : _a.filter(x => {
+            var _a, _b, _c, _d, _e, _f;
+            return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == ((_b = this.formData.Course) === null || _b === void 0 ? void 0 : _b.Id)
+                && ((_c = x.Student) === null || _c === void 0 ? void 0 : _c.Id) == ((_d = this.formData.Student) === null || _d === void 0 ? void 0 : _d.Id)
+                && ((_e = x.Subject) === null || _e === void 0 ? void 0 : _e.Id) == ((_f = this.formData.Subject) === null || _f === void 0 ? void 0 : _f.Id)
+                && this.formData.Id == 0;
+        }).length) > 0;
+    }
+    setValidationMessages() {
+        this.SubjectSelcetValidationMesage = this.formData.Subject == null ? ": Required" : '';
+        this.CourseSelcetValidationMesage = this.formData.Course == null ? ": Required" : '';
+        this.StudentSelcetValidationMesage = this.formData.Student == null ? ": Required" : '';
+        if (this.isDuplicateRecord()) {
+            this.toaster.error("Result already exists", "Error", { closeButton: true });
+        }
+    }
+    populateForm(student) {
+        this.formData = Object.assign({}, student);
+    }
     calculateGrade() {
         var _a;
-        let obMarks = this.service.formData.ObtainedMarks;
-        let course = this.service.formData.Course;
+        let obMarks = this.formData.ObtainedMarks;
+        let course = this.formData.Course;
         if (course == null) {
             this.gradeLabelText = "Select a Course, and a subject first";
             this.gradeLabelTextClass = "text-danger";
@@ -3607,30 +3744,30 @@ class ResultFormComponent {
             this.gradeLabelTextClass = "text-info";
             return;
         }
-        this.service.formData.Grade = grade;
+        this.formData.Grade = grade;
         this.gradeLabelText = grade === null || grade === void 0 ? void 0 : grade.Title;
     }
     onCourseSelect(course) {
         var _a, _b;
-        this.service.formData.Course = course;
+        this.formData.Course = course;
         this.subjectsInSelectedCourse = (_a = this.subjectService.subjectList) === null || _a === void 0 ? void 0 : _a.filter(x => x.Course.Id == course.Id);
         this.gradesInSelectedCourse = (_b = this.gradeService.getList()) === null || _b === void 0 ? void 0 : _b.filter(x => { var _a; return ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id) == course.Id; });
-        this.service.formData.Student = null;
-        this.service.formData.Subject = null;
+        this.formData.Student = null;
+        this.formData.Subject = null;
         this.selectedSubject.value = '';
-        this.service.CourseSelcetValidationMesage = '';
+        this.CourseSelcetValidationMesage = '';
     }
     onStudentSelect(student) {
-        this.service.formData.Student = student;
-        this.service.StudentSelcetValidationMesage = '';
+        this.formData.Student = student;
+        this.StudentSelcetValidationMesage = '';
     }
     onSubjectSelect(subject) {
-        this.service.formData.Subject = subject;
+        this.formData.Subject = subject;
         this.studentsInSelectedSubject = this.studentService.studentsList.filter(x => x.Subjects.includes(subject.Id));
-        this.service.SubjectSelcetValidationMesage = '';
+        this.SubjectSelcetValidationMesage = '';
     }
     inserRecord(form) {
-        this.service.postResult().subscribe(result => {
+        this.service.postResult(this.formData).subscribe(result => {
             this.toaster.success('Result added successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
@@ -3639,7 +3776,7 @@ class ResultFormComponent {
         });
     }
     updateRecord(form) {
-        this.service.putResult().subscribe(result => {
+        this.service.putResult(this.formData).subscribe(result => {
             this.toaster.success('Result updated successfully', 'Success', { closeButton: true });
             this.resetForm(form);
         }, error => {
@@ -3649,12 +3786,23 @@ class ResultFormComponent {
     }
     resetForm(form) {
         form.form.reset();
-        this.service.resetFormData();
+        this.resetFormData();
         this.gradeLabelText = 'Enter obtained marks to calculate grade';
         this.gradeLabelTextClass = "text-info";
     }
+    resetFormData() {
+        this.formData = new src_app_shared_result_model__WEBPACK_IMPORTED_MODULE_1__["Result"]();
+        this.SubjectSelcetValidationMesage = '';
+        this.CourseSelcetValidationMesage = '';
+        this.StudentSelcetValidationMesage = '';
+    }
+    resetDataOnDeleteItem(id) {
+        if (id == this.formData.Id) {
+            this.resetFormData();
+        }
+    }
 }
-ResultFormComponent.ɵfac = function ResultFormComponent_Factory(t) { return new (t || ResultFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_result_service__WEBPACK_IMPORTED_MODULE_1__["ResultService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_student_service__WEBPACK_IMPORTED_MODULE_2__["StudentService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_3__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_grade_service__WEBPACK_IMPORTED_MODULE_4__["GradeService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_5__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_6__["ToastrService"])); };
+ResultFormComponent.ɵfac = function ResultFormComponent_Factory(t) { return new (t || ResultFormComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_result_service__WEBPACK_IMPORTED_MODULE_2__["ResultService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_student_service__WEBPACK_IMPORTED_MODULE_3__["StudentService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_grade_service__WEBPACK_IMPORTED_MODULE_5__["GradeService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_6__["CourseService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](ngx_toastr__WEBPACK_IMPORTED_MODULE_7__["ToastrService"])); };
 ResultFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: ResultFormComponent, selectors: [["app-result-form"]], viewQuery: function ResultFormComponent_Query(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c0, true);
     } if (rf & 2) {
@@ -3730,7 +3878,7 @@ ResultFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefi
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](46, "div", 3);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](47, "input", 15, 16);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("change", function ResultFormComponent_Template_input_change_47_listener() { return ctx.calculateGrade(); })("ngModelChange", function ResultFormComponent_Template_input_ngModelChange_47_listener($event) { return ctx.service.formData.ObtainedMarks = $event; });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("change", function ResultFormComponent_Template_input_change_47_listener() { return ctx.calculateGrade(); })("ngModelChange", function ResultFormComponent_Template_input_ngModelChange_47_listener($event) { return ctx.formData.ObtainedMarks = $event; });
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](49, "div", 3);
@@ -3758,34 +3906,34 @@ ResultFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefi
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.service.formData.Id);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("value", ctx.formData.Id);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.service.CourseSelcetValidationMesage);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.CourseSelcetValidationMesage);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", (ctx.service.formData == null ? null : ctx.service.formData.Course == null ? null : ctx.service.formData.Course.Name) ? ctx.service.formData == null ? null : ctx.service.formData.Course == null ? null : ctx.service.formData.Course.Name : "Select Course", " ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", (ctx.formData == null ? null : ctx.formData.Course == null ? null : ctx.formData.Course.Name) ? ctx.formData == null ? null : ctx.formData.Course == null ? null : ctx.formData.Course.Name : "Select Course", " ");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.courseService.courseList);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.courseService.getList());
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.service.SubjectSelcetValidationMesage);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.SubjectSelcetValidationMesage);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", (ctx.service.formData == null ? null : ctx.service.formData.Subject == null ? null : ctx.service.formData.Subject.Name) ? ctx.service.formData == null ? null : ctx.service.formData.Subject == null ? null : ctx.service.formData.Subject.Name : "Select Subject", " ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", (ctx.formData == null ? null : ctx.formData.Subject == null ? null : ctx.formData.Subject.Name) ? ctx.formData == null ? null : ctx.formData.Subject == null ? null : ctx.formData.Subject.Name : "Select Subject", " ");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.subjectsInSelectedCourse);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.service.StudentSelcetValidationMesage);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](ctx.StudentSelcetValidationMesage);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", (ctx.service.formData == null ? null : ctx.service.formData.Student == null ? null : ctx.service.formData.Student.Name) ? ctx.service.formData == null ? null : ctx.service.formData.Student == null ? null : ctx.service.formData.Student.Name : "Select Student", " ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", (ctx.formData == null ? null : ctx.formData.Student == null ? null : ctx.formData.Student.Name) ? ctx.formData == null ? null : ctx.formData.Student == null ? null : ctx.formData.Student.Name : "Select Student", " ");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.studentsInSelectedSubject);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.service.formData.ObtainedMarks);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngModel", ctx.formData.ObtainedMarks);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵclassMapInterpolate1"]("label label-default ", ctx.gradeLabelTextClass, "");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("(", ctx.gradeLabelText, ")");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.service.formData.Id != 0 ? "Update" : "Add", " ");
-    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_7__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_7__["NgForm"], _angular_common__WEBPACK_IMPORTED_MODULE_8__["NgForOf"], _angular_forms__WEBPACK_IMPORTED_MODULE_7__["NumberValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_7__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_7__["RequiredValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_7__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_7__["NgModel"]], styles: [".drp-dwn[_ngcontent-%COMP%] {\r\n    width: 260px;\r\n    max-width: 100%;\r\n    height: 48px;\r\n    max-height: 100%;\r\n}\r\n.lbl-required[_ngcontent-%COMP%] {\r\n    color: red;\r\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInJlc3VsdC1mb3JtLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7SUFDSSxZQUFZO0lBQ1osZUFBZTtJQUNmLFlBQVk7SUFDWixnQkFBZ0I7QUFDcEI7QUFDQTtJQUNJLFVBQVU7QUFDZCIsImZpbGUiOiJyZXN1bHQtZm9ybS5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmRycC1kd24ge1xyXG4gICAgd2lkdGg6IDI2MHB4O1xyXG4gICAgbWF4LXdpZHRoOiAxMDAlO1xyXG4gICAgaGVpZ2h0OiA0OHB4O1xyXG4gICAgbWF4LWhlaWdodDogMTAwJTtcclxufVxyXG4ubGJsLXJlcXVpcmVkIHtcclxuICAgIGNvbG9yOiByZWQ7XHJcbn0iXX0= */"] });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.formData.Id != 0 ? "Update" : "Add", " ");
+    } }, directives: [_angular_forms__WEBPACK_IMPORTED_MODULE_8__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_8__["NgForm"], _angular_common__WEBPACK_IMPORTED_MODULE_9__["NgForOf"], _angular_forms__WEBPACK_IMPORTED_MODULE_8__["NumberValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_8__["DefaultValueAccessor"], _angular_forms__WEBPACK_IMPORTED_MODULE_8__["RequiredValidator"], _angular_forms__WEBPACK_IMPORTED_MODULE_8__["NgControlStatus"], _angular_forms__WEBPACK_IMPORTED_MODULE_8__["NgModel"]], styles: [".drp-dwn[_ngcontent-%COMP%] {\r\n    width: 260px;\r\n    max-width: 100%;\r\n    height: 48px;\r\n    max-height: 100%;\r\n}\r\n.lbl-required[_ngcontent-%COMP%] {\r\n    color: red;\r\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInJlc3VsdC1mb3JtLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUE7SUFDSSxZQUFZO0lBQ1osZUFBZTtJQUNmLFlBQVk7SUFDWixnQkFBZ0I7QUFDcEI7QUFDQTtJQUNJLFVBQVU7QUFDZCIsImZpbGUiOiJyZXN1bHQtZm9ybS5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmRycC1kd24ge1xyXG4gICAgd2lkdGg6IDI2MHB4O1xyXG4gICAgbWF4LXdpZHRoOiAxMDAlO1xyXG4gICAgaGVpZ2h0OiA0OHB4O1xyXG4gICAgbWF4LWhlaWdodDogMTAwJTtcclxufVxyXG4ubGJsLXJlcXVpcmVkIHtcclxuICAgIGNvbG9yOiByZWQ7XHJcbn0iXX0= */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ResultFormComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -3793,7 +3941,7 @@ ResultFormComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefi
                 templateUrl: './result-form.component.html',
                 styleUrls: ['./result-form.component.css']
             }]
-    }], function () { return [{ type: src_app_shared_result_service__WEBPACK_IMPORTED_MODULE_1__["ResultService"] }, { type: src_app_shared_student_service__WEBPACK_IMPORTED_MODULE_2__["StudentService"] }, { type: src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_3__["SubjectService"] }, { type: src_app_shared_grade_service__WEBPACK_IMPORTED_MODULE_4__["GradeService"] }, { type: src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_5__["CourseService"] }, { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_6__["ToastrService"] }]; }, { selectedSubject: [{
+    }], function () { return [{ type: src_app_shared_result_service__WEBPACK_IMPORTED_MODULE_2__["ResultService"] }, { type: src_app_shared_student_service__WEBPACK_IMPORTED_MODULE_3__["StudentService"] }, { type: src_app_shared_subject_service__WEBPACK_IMPORTED_MODULE_4__["SubjectService"] }, { type: src_app_shared_grade_service__WEBPACK_IMPORTED_MODULE_5__["GradeService"] }, { type: src_app_shared_course_service__WEBPACK_IMPORTED_MODULE_6__["CourseService"] }, { type: ngx_toastr__WEBPACK_IMPORTED_MODULE_7__["ToastrService"] }]; }, { selectedSubject: [{
             type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["ViewChild"],
             args: ['selectedSubject']
         }] }); })();
