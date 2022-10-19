@@ -10,8 +10,9 @@ A college management system, providing  basic functionality for these modules:
 
 All modules have CRUD fucntionalites avaialble. 
 
-# Technologies
+# Technologies and Frameworks
 
+* .Net Standard
 * ASP.Net MVC 5
 * Angular Js 
 * Type Script
