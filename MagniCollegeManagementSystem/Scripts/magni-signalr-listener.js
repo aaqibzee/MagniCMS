@@ -33,7 +33,7 @@ $(function () {
         });
     };
 
-    client.gardesUpdated = function () {
+    client.gradesUpdated = function () {
         window.gradeComponentReference.zone.run(() => {
             window.gradeComponentReference.syncData();
         });
