@@ -110,7 +110,7 @@ export class StudentFormComponent implements OnInit {
 
     else if (this.isFormValid) {
       if (this.isDuplicateRecord()) {
-        this.toaster.error("Student already exists", "Error", { closeButton: true });
+        this.toaster.error("Student already exists. Use update option", "Error", { closeButton: true });
       }
       else {
         this.formData.Subjects = this.selectedSubjectsByStudent.map(a => a.Id);

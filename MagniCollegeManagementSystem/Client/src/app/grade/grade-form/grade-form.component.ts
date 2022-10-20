@@ -71,7 +71,7 @@ export class GradeFormComponent implements OnInit {
   setValidationMessages() {
 
     if (this.isDuplicateRecord()) {
-      this.toaster.error("Grade already exists", "Error", { closeButton: true });
+      this.toaster.error("Grade already exists. Use update option", "Error", { closeButton: true });
     }
     else {
       this.CourseSelcetValidationMesage = ": Required"

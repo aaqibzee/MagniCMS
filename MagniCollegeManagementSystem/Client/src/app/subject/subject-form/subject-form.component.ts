@@ -77,7 +77,7 @@ export class SubjectFormComponent implements OnInit {
 
   setValidationMessages() {
     if (this.isDuplicateRecord()) {
-      this.toaster.error("Subject already exists", "Error", { closeButton: true });
+      this.toaster.error("Subject already exists. Use update option", "Error", { closeButton: true });
     }
     else {
       this.CourseSelcetValidationMesage = ": Required"

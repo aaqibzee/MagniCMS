@@ -1495,7 +1495,6 @@ class AppComponent {
     constructor(splashScreenStateService) {
         this.splashScreenStateService = splashScreenStateService;
         this.title = 'Client';
-        this.modalId = "";
     }
     ngOnInit() {
         setTimeout(() => {

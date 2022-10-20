@@ -37,7 +37,7 @@ export class CourseFormComponent implements OnInit {
   onSubmit(form: NgForm) {
     if (this.isDuplicateRecord()) {
       this.toastr
-        .error("Course already exists", "Error", { closeButton: true });
+        .error("Course already exists. Use update option", "Error", { closeButton: true });
     }
     else if (this.formData.Id == 0) {
       this.insertCourse(form);

@@ -25,12 +25,19 @@ export class ResultService {
   private listDataUpdatedSource = new Subject<Result[]>();
   private formDataUpdatedSource = new Subject<Result>();
   private resetFormDataUpdatedSource = new Subject<number>();
+  private closeModalUpdatedSource = new Subject<boolean>();
+
   sourceList$ = this.listDataUpdatedSource.asObservable();
   formData$ = this.formDataUpdatedSource.asObservable();
   resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
+  closeModal$ = this.closeModalUpdatedSource.asObservable();
 
   notifyListUpdate() {
     this.listDataUpdatedSource.next(this.resultsList);
+  }
+
+  closeModal() {
+    this.closeModalUpdatedSource.next(true);
   }
 
   populateForm(formData: Result) {

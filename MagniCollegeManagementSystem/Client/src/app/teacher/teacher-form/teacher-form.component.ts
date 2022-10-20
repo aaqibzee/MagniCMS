@@ -68,7 +68,7 @@ export class TeacherFormComponent implements OnInit {
 
   onSubmit(form: NgForm) {
     if (this.isDuplicateRecord()) {
-      this.toaster.error("Teacher already exists", "Error", { closeButton: true });
+      this.toaster.error("Teacher already exists. Use update option", "Error", { closeButton: true });
     }
     else {
       this.formData.Subjects = this.selectedSubjects.map(x => x.Id);
