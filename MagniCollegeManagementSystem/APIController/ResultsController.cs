@@ -92,7 +92,7 @@ namespace MagniCollegeManagementSystem.APIController
                 }
 
                 await manager.Update(Result);
-                magniSyncHub.Clients.All.ResultsUpdated();
+                magniSyncHub.Clients.All.resultsUpdated();
                 logger.Info("PutResult call completed successfully");
                 return StatusCode(HttpStatusCode.NoContent);
             }
@@ -118,7 +118,7 @@ namespace MagniCollegeManagementSystem.APIController
                 }
 
                 await manager.Add(request);
-                magniSyncHub.Clients.All.ResultsUpdated();
+                magniSyncHub.Clients.All.resultsUpdated();
                 logger.Info("PostResult call completed successfully");
                 return CreatedAtRoute("DefaultApi", new { id = request.Id }, request);
             }
@@ -145,7 +145,7 @@ namespace MagniCollegeManagementSystem.APIController
                 }
 
                 await manager.Delete(id);
-                magniSyncHub.Clients.All.ResultsUpdated();
+                magniSyncHub.Clients.All.resultsUpdated();
                 logger.Info("DeleteResult call completed successfully for entity" + JsonSerializer.Serialize(dbEntity));
                 return Ok();
             }
