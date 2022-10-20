@@ -1,4 +1,6 @@
+<div class="row">
 <form ngNativeValidate #form="ngForm" (submit)="onSubmit(form)">
+    <div class="col-lg-12">
     <input type="hidden" name="id" [value]="formData.Id" />
 
     <div class="form-group">
@@ -51,4 +53,6 @@
                 0 ? 'Update' : 'Add' }} </button>
         </div>
     </div>
+    </div>
 </form>
+</div>

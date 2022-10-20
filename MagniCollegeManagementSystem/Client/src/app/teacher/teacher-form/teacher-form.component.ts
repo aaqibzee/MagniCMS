@@ -53,6 +53,7 @@ export class TeacherFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.resetFormData();
+
     this.service.formData$.subscribe(
       data => {
         this.populateForm(data);
@@ -134,7 +135,7 @@ export class TeacherFormComponent implements OnInit {
     var subjects = this.service.subjectService.getList();
 
     subjects?.filter(function (x) {
-      if (this.selectedCourses?.filter(y => y.Id == x.Course.Id).length > 0) {
+      if (this.selectedCourses?.filter(y => y.Id == x.Course?.Id).length > 0) {
         list.push(x);
       }
     });
@@ -171,12 +172,12 @@ export class TeacherFormComponent implements OnInit {
   }
 
   onCourseSelect(item: Course) {
-    var list = this.subjectService.getList()?.filter(x => x.Course.Id == item.Id);
+    var list = this.subjectService.getList()?.filter(x => x.Course?.Id == item.Id);
     this.subjectsForSelectedCourses = this.subjectsForSelectedCourses.concat(list);
   }
 
   onCourseDeselect(course: Course) {
-    let subjectsInSelectedCourse = this.subjectService.getList()?.filter(x => x.Course.Id == course.Id);
+    let subjectsInSelectedCourse = this.subjectService.getList()?.filter(x => x.Course?.Id == course.Id);
     this.selectedSubjects = this.selectedSubjects?.filter(function (x) {
       var shouldInclude = true;
       subjectsInSelectedCourse.forEach(element => {

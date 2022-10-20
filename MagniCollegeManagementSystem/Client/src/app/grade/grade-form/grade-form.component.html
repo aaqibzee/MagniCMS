@@ -1,4 +1,6 @@
+<div class="row">
 <form ngNativeValidate #form="ngForm" (submit)="onSubmit(form)">
+    <div class="col col-lg-12">
     <input type="hidden" name="id" [value]="formData.Id" />
     <label class="label label-default">Title</label>
     <label class="lbl-required">*</label>
@@ -45,4 +47,6 @@
             <button class="btn btn-info btn-lg btn-block" type="submit"> {{ formData.Id != 0 ? 'Update' : 'Add' }} </button>
         </div>
     </div>
+</div>
 </form>
+</div>
