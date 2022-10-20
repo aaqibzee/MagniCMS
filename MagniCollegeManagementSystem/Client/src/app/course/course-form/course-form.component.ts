@@ -60,6 +60,7 @@ export class CourseFormComponent implements OnInit {
       result => {
         this.toastr.success('Course added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
+        this.service.closeModal();
       }, error => {
         this.toastr.error('An error occured while adding the new course', 'Error', { closeButton: true });
         console.log(error);
@@ -72,6 +73,7 @@ export class CourseFormComponent implements OnInit {
       result => {
         this.toastr.success('Course updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
+        this.service.closeModal();
       }, error => {
         this.toastr.error('An error occured while updating the new course', 'Error', { closeButton: true });
         console.log(error);
@@ -89,7 +91,7 @@ export class CourseFormComponent implements OnInit {
   }
 
   resetFormDataOnDelete(id: number) {
-    if (id == this.formData.Id) {
+    if (id == this.formData.Id || id == -1) {
       this.resetFormData();
     }
   }

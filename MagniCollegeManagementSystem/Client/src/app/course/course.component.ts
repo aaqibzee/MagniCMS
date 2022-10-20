@@ -9,8 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-course',
   templateUrl: './course.component.html',
-  styles: [
-  ]
+  styleUrls: ['./course.component.css'],
 })
 export class CourseComponent implements OnInit {
   constructor(
@@ -39,10 +38,16 @@ export class CourseComponent implements OnInit {
     this.service.sourceList$.subscribe(
       list => { this.courseList = list; }
     );
+
+    this.service.closeModal$.subscribe(
+      data => {
+        this.closeModal();
+      }
+    );
   }
 
   populateForm(course: Course) {
-    this.toastr.info('Data populated to form', 'Info', { closeButton: true });
+    this.openModal(false);
     this.service.populateForm(Object.assign({}, course));
   }
 
@@ -91,5 +96,16 @@ export class CourseComponent implements OnInit {
 
   getTooltipForDeleteButton(course: Course) {
     return this.isDeleteable(course) ? "" : "Delete Students, Teachers and Subjects associated to this Course first";
+  }
+
+  openModal(clearForm: boolean) {
+    if (clearForm)
+      this.service.resetFormData(-1);
+
+    document.getElementById("openModalButton").click();
+  }
+
+  closeModal() {
+    document.getElementById("closeModalButton").click();
   }
 }
