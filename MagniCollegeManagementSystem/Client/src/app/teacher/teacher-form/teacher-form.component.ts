@@ -61,7 +61,7 @@ export class TeacherFormComponent implements OnInit {
 
     this.service.resetFormData$.subscribe(
       data => {
-        this.resetFormDataOnDelete(data);
+        this.resetFormDataListener(data);
       }
     );
   }
@@ -198,7 +198,7 @@ export class TeacherFormComponent implements OnInit {
     });
   }
 
-  resetFormDataOnDelete(id: number) {
+  resetFormDataListener(id: number) {
     if (id == this.formData.Id || id == -1) {
       this.resetFormData();
     }

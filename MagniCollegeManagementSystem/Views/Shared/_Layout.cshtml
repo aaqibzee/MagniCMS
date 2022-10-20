@@ -11,13 +11,15 @@
     @Scripts.Render(Constants.ScriptBundleKeys.Jquery)
 </head>
 <body>
-    
-        @RenderBody()
+@RenderBody()
         <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Magni Colleges</p>
-        </footer>
-   
+<footer>
+    <div class="row">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-11"> <p>&copy; @DateTime.Now.Year - Magni Colleges</p> </div>
+    </div>
+</footer>
+   x
     @RenderSection("scripts", required: false)
     @Scripts.Render(Constants.ScriptBundleKeys.Angular)
     @Scripts.Render(Constants.ScriptBundleKeys.Bootstrap)

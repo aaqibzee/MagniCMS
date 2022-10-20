@@ -11,7 +11,7 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class StudentService {
-  studentsList: Student[];
+
 
   constructor(
     private http: HttpClient,
@@ -25,6 +25,7 @@ export class StudentService {
     }, 1);
   }
 
+  public studentsList: Student[];
   private listDataUpdatedSource = new Subject<Student[]>();
   private formDataUpdatedSource = new Subject<Student>();
   private resetFormDataUpdatedSource = new Subject<number>();

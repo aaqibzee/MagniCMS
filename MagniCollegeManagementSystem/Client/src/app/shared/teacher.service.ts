@@ -14,15 +14,15 @@ export class TeacherService {
   constructor(
     private http: HttpClient,
     public subjectService: SubjectService,
-    private splashScreenStateService: SplashScreenStateService,) {
+    private splashScreenStateService: SplashScreenStateService
+  ) {
     subjectService.refreshList();
     setTimeout(() => {
       this.splashScreenStateService.stop();
     }, 1);
   }
 
-  teacherList: Teacher[] = [];
-
+  public teacherList: Teacher[];
   private listDataUpdatedSource = new SubjectObserveable<Teacher[]>();
   private formDataUpdatedSource = new SubjectObserveable<Teacher>();
   private resetFormDataUpdatedSource = new SubjectObserveable<number>();

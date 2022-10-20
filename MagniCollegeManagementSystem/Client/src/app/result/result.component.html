@@ -1,7 +1,7 @@
 <div class="jumbotron py-3">
     <h5 class="display-4 text-center"> Results</h5>
 </div>
-<div class="container body-content">
+<div class=" body-content">
 <div class="row">
     <div class="col-md-12">
         <div class="table-wrapper">
@@ -49,7 +49,6 @@
 </div>
 
 <button id="openModalButton" [hidden]="true" data-toggle="modal" data-target="#resultModal">Open Modal</button>
-<button id="closeModalButton" [hidden]="true" data-toggle="modal" data-target="#resultModal" data-dismiss="modal">Close Modal</button>
 
 <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="resultModalLabel"
     aria-hidden="true">
@@ -58,7 +57,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="resultModalLabel">Add/Update Result</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                 (click)="closeModal()"> <span aria-hidden="true">&times;</span>
+                 id="closeModalButton"  data-target="#resultModal" > <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">

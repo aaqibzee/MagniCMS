@@ -44,7 +44,7 @@ export class SubjectFormComponent implements OnInit {
   }
 
   populateForm(subject: Subject) {
-    this.courseDropDownCelectedValue = subject.Course.Name;
+    this.courseDropDownCelectedValue = subject.Course?.Name;
     this.formData = Object.assign({}, subject);
   }
 
