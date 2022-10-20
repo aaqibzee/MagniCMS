@@ -9,8 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-subject',
   templateUrl: './subject.component.html',
-  styles: [
-  ]
+  styleUrls: ['./subject.component.css'],
 })
 export class SubjectComponent implements OnInit {
 
@@ -35,10 +34,16 @@ export class SubjectComponent implements OnInit {
     this.service.sourceList$.subscribe(
       list => { this.subjectList = list; }
     );
+
+    this.service.closeModal$.subscribe(
+      data => {
+        this.closeModal();
+      }
+    );
   }
 
   updateSubject(record: Subject) {
-    this.toaster.info('Data populated to form', 'Info', { closeButton: true });
+    this.openModal(false);
     this.service.populateForm(record);
   }
 
@@ -86,5 +91,16 @@ export class SubjectComponent implements OnInit {
       return 'N/A';
     }
     return grade?.Title;
+  }
+
+  openModal(clearForm: boolean) {
+    if (clearForm)
+      this.service.resetFormData(-1);
+
+    document.getElementById("openModalButton").click();
+  }
+
+  closeModal() {
+    document.getElementById("closeModalButton").click();
   }
 }
