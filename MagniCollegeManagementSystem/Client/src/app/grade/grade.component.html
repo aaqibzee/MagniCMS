@@ -3,11 +3,8 @@
 </div>
 <div class="container body-content">
 <div class="row">
-    <div class="col-md-3">
-        <app-grade-form></app-grade-form>
-    </div>
-
-    <div class="col-md-9">
+    <div class="col-lg-12">
+        <div class="table-wrapper">
         <table class="table">
             <thead class="thead-light">
                 <tr>
@@ -26,9 +23,6 @@
                     <th>
                         Course
                     </th>
-                    <!-- <th>
-                        Subject
-                    </th> -->
                     <th>Action</th>
                     <th>Action</th>
                 </tr>
@@ -40,8 +34,6 @@
                     <td>{{grade.StartingMarks}}</td>
                     <td>{{grade.EndingMarks}}</td>
                     <td>{{grade.Course?.Name}}</td>
-                     <!-- <td>{{grade.Subject?.Name}}</td> -->
-                    
                     <td (click)="populateForm(grade)"> <button type="button" class="btn btn-info">Update</button>
                     <td (click)="deleteGrade(grade)"> <button type="button" class="btn btn-danger" [disabled]="!isDeleteable(grade)"
                             data-toggle="tooltip" title={{this.getTooltipForDeleteButton(grade)}}>Delete</button>
@@ -49,6 +41,32 @@
                 </tr>
             </tbody>
         </table>
+        </div>
+        <br>
+        <br>
+        <button type="button" class="btn btn-lg btn-info" (click)="openModal(true)"> Add New Grade </button>
     </div>
 </div>
+</div>
+
+<button id="openModalButton" [hidden]="true" data-toggle="modal" data-target="#gradeModal">Open Modal</button>
+<button id="closeModalButton" [hidden]="true" data-toggle="modal" data-target="#gradeModal" data-dismiss="modal">Close
+    Modal</button>
+
+<div class="modal fade" id="gradeModal" tabindex="-1" role="dialog" aria-labelledby="gradeModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="gradeModalLabel">Add/Update Grade</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="closeModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <app-grade-form></app-grade-form>
+            </div>
+
+        </div>
+    </div>
 </div>

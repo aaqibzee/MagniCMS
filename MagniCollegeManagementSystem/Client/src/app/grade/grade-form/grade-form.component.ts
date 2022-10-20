@@ -89,6 +89,7 @@ export class GradeFormComponent implements OnInit {
       result => {
         this.toaster.success('Grade added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
+        this.service.closeModal();
       }, error => {
         this.toaster.error('An error occured while adding the new grade', 'Error', { closeButton: true });
         console.log(error);
@@ -101,6 +102,7 @@ export class GradeFormComponent implements OnInit {
       result => {
         this.toaster.success('Grade updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
+        this.service.closeModal();
       }, error => {
         this.toaster.error('An error occured while updating the new grade', 'Error', { closeButton: true });
         console.log(error);
@@ -119,7 +121,7 @@ export class GradeFormComponent implements OnInit {
   }
 
   resetFormDataOnDelete(id: number) {
-    if (id == this.formData.Id)
+    if (id == this.formData.Id || id == -1)
       this.resetFormData();
   }
 }

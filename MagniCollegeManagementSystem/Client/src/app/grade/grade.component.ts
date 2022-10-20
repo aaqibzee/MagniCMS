@@ -8,8 +8,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-grade',
   templateUrl: './grade.component.html',
-  styles: [
-  ]
+  styleUrls: ['./grade.component.css'],
 })
 export class GradeComponent implements OnInit {
 
@@ -34,10 +33,16 @@ export class GradeComponent implements OnInit {
     this.service.sourceList$.subscribe(
       list => { this.gradesList = list; }
     );
+
+    this.service.closeModal$.subscribe(
+      data => {
+        this.closeModal();
+      }
+    );
   }
 
   populateForm(grade: Grade) {
-    this.toastr.info('Data populated to form', 'Info', { closeButton: true });
+    this.openModal(false);
     this.service.sendFormData(Object.assign({}, grade));
   }
 
@@ -63,5 +68,16 @@ export class GradeComponent implements OnInit {
   getgradesList() {
     console.log("Grades List Retunring");
     return this.gradesList;
+  }
+
+  openModal(clearForm: boolean) {
+    if (clearForm)
+      this.service.resetFormData(-1);
+
+    document.getElementById("openModalButton").click();
+  }
+
+  closeModal() {
+    document.getElementById("closeModalButton").click();
   }
 }
