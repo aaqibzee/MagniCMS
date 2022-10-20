@@ -23,9 +23,16 @@ export class SubjectService {
   private listDataUpdatedSource = new SubjectObs<Subject[]>();
   private formDataUpdatedSource = new SubjectObs<Subject>();
   private resetFormDataUpdatedSource = new SubjectObs<number>();
-  sourceList$ = this.listDataUpdatedSource.asObservable();
-  formData$ = this.formDataUpdatedSource.asObservable();
-  resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
+  private closeModalUpdatedSource = new SubjectObs<boolean>();
+
+  public sourceList$ = this.listDataUpdatedSource.asObservable();
+  public formData$ = this.formDataUpdatedSource.asObservable();
+  public resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
+  public closeModal$ = this.closeModalUpdatedSource.asObservable();
+
+  closeModal() {
+    this.closeModalUpdatedSource.next(true);
+  }
 
   notifyListUpdate() {
     this.listDataUpdatedSource.next(this.subjectList);

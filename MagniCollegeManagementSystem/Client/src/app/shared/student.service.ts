@@ -28,9 +28,17 @@ export class StudentService {
   private listDataUpdatedSource = new Subject<Student[]>();
   private formDataUpdatedSource = new Subject<Student>();
   private resetFormDataUpdatedSource = new Subject<number>();
+  private closeModalUpdatedSource = new Subject<boolean>();
+
   public sourceList$ = this.listDataUpdatedSource.asObservable();
   public formData$ = this.formDataUpdatedSource.asObservable();
   public resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
+  public closeModal$ = this.closeModalUpdatedSource.asObservable();
+
+  closeModal() {
+    this.closeModalUpdatedSource.next(true);
+  }
+
 
   notifyListUpdate() {
     this.listDataUpdatedSource.next(this.studentsList);

@@ -22,9 +22,16 @@ export class GradeService {
   private gradeDataUpdatedSource = new Subject<Grade[]>();
   private formDataUpdatedSource = new Subject<Grade>();
   private resetFormDataUpdatedSource = new Subject<number>();
+  private closeModalUpdatedSource = new Subject<boolean>();
+
   public sourceList$ = this.gradeDataUpdatedSource.asObservable();
   public formData$ = this.formDataUpdatedSource.asObservable();
   public resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
+  public closeModal$ = this.closeModalUpdatedSource.asObservable();
+
+  closeModal() {
+    this.closeModalUpdatedSource.next(true);
+  }
 
   notifyListUpdate() {
     this.gradeDataUpdatedSource.next(this.gradesList);
