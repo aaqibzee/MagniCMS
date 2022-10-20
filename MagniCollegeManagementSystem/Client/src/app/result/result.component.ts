@@ -13,6 +13,8 @@ import { ToastrService } from 'ngx-toastr';
 
 export class ResultComponent implements OnInit {
   resultsList: Result[];
+  public readonly modalId: string = "resultModal";
+  public readonly modalSelector: string = this.modalId;
   constructor(
     public service: ResultService,
     public subjectService: SubjectService,
@@ -25,10 +27,16 @@ export class ResultComponent implements OnInit {
     this.service.sourceList$.subscribe(
       list => { this.resultsList = list; }
     );
+
+    this.service.closeModal$.subscribe(
+      data => {
+        this.closeModal();
+      }
+    );
   }
 
   updateResult(record: Result) {
-    this.toaster.info('Data populated to form', 'Info', { closeButton: true });
+    this.openModal();
     this.service.populateForm(Object.assign({}, record));
   }
 
@@ -41,6 +49,15 @@ export class ResultComponent implements OnInit {
         console.log(error);
       });
     this.service.resetFormData(record.Id);
+  }
+
+  openModal() {
+    this.service.resetFormData(-1);
+    document.getElementById("openModalButton").click();
+  }
+
+  closeModal() {
+    document.getElementById("closeModalButton").click();
   }
 }
 

@@ -95,7 +95,7 @@ export class ResultFormComponent implements OnInit {
     this.CourseSelcetValidationMesage = this.formData.Course == null ? ": Required" : '';
     this.StudentSelcetValidationMesage = this.formData.Student == null ? ": Required" : '';
     if (this.isDuplicateRecord()) {
-      this.toaster.error("Result already exists", "Error", { closeButton: true });
+      this.toaster.error("Result already exists. Use update option", "Error", { closeButton: true });
     }
   }
 
@@ -156,6 +156,7 @@ export class ResultFormComponent implements OnInit {
       result => {
         this.toaster.success('Result added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
+        this.service.closeModal();
       }, error => {
         this.toaster.error('An error occured while adding the new result', 'Error', { closeButton: true });
         console.log(error);
@@ -167,6 +168,7 @@ export class ResultFormComponent implements OnInit {
     this.service.putResult(this.formData).subscribe(
       result => {
         this.toaster.success('Result updated successfully', 'Success', { closeButton: true });
+        this.service.closeModal();
         this.resetForm(form);
       }, error => {
         this.toaster.error('An error occured while updating the new result', 'Error', { closeButton: true });
@@ -178,11 +180,12 @@ export class ResultFormComponent implements OnInit {
   resetForm(form: NgForm) {
     form.form.reset();
     this.resetFormData();
-    this.gradeLabelText = 'Enter obtained marks to calculate grade';
-    this.gradeLabelTextClass = "text-info";
+
   }
 
   resetFormData() {
+    this.gradeLabelText = 'Enter obtained marks to calculate grade';
+    this.gradeLabelTextClass = "text-info";
     this.formData = new Result();
     this.SubjectSelcetValidationMesage = '';
     this.CourseSelcetValidationMesage = '';
@@ -190,7 +193,7 @@ export class ResultFormComponent implements OnInit {
   }
 
   resetDataOnDelete(id: number) {
-    if (id == this.formData.Id) {
+    if (id == this.formData.Id || id == -1) {
       this.resetFormData();
     }
   }
