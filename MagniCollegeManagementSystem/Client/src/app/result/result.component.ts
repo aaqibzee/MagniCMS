@@ -36,7 +36,7 @@ export class ResultComponent implements OnInit {
   }
 
   updateResult(record: Result) {
-    this.openModal();
+    this.openModal(false);
     this.service.populateForm(Object.assign({}, record));
   }
 
@@ -51,8 +51,10 @@ export class ResultComponent implements OnInit {
     this.service.resetFormData(record.Id);
   }
 
-  openModal() {
-    this.service.resetFormData(-1);
+  openModal(clearForm: boolean) {
+    if (clearForm)
+      this.service.resetFormData(-1);
+
     document.getElementById("openModalButton").click();
   }
 

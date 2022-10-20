@@ -3,8 +3,8 @@
 </div>
 <div class="container body-content">
 <div class="row">
-    
     <div class="col-md-12">
+        <div class="table-wrapper">
         <table class="table">
             <thead class="thead-light">
                 <tr>
@@ -41,10 +41,12 @@
                 </tr>
             </tbody>
         </table>
-        
+        </div>
+        <br>
+        <br>
+        <button type="button" class="btn btn-lg btn-info" (click)="openModal(true)"> Add New Result </button>
     </div>
 </div>
-<button type="button" class="btn btn-lg btn-info" (click)="openModal()"> Add New Result </button>
 
 <button id="openModalButton" [hidden]="true" data-toggle="modal" data-target="#resultModal">Open Modal</button>
 <button id="closeModalButton" [hidden]="true" data-toggle="modal" data-target="#resultModal" data-dismiss="modal">Close Modal</button>
@@ -62,7 +64,6 @@
             <div class="modal-body">
                 <app-result-form></app-result-form>
             </div>
-           
         </div>
     </div>
 </div>
