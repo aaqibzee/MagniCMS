@@ -9,8 +9,7 @@ import { SplashScreenStateService } from '../shared/splash-screen-state.service'
 @Component({
   selector: 'app-student',
   templateUrl: './student.component.html',
-  styles: [
-  ]
+  styleUrls: ['./student.component.css'],
 })
 export class StudentComponent implements OnInit {
 
@@ -38,10 +37,16 @@ export class StudentComponent implements OnInit {
     this.service.sourceList$.subscribe(
       list => { this.studentsList = list; }
     );
+
+    this.service.closeModal$.subscribe(
+      data => {
+        this.closeModal();
+      }
+    );
   }
   updateStudent(record: Student) {
     this.service.populateForm(record);
-    this.toaster.info('Data populated to form', 'Info', { closeButton: true });
+    this.openModal(false);
   }
 
   deleteStudent(record: Student) {
@@ -82,5 +87,16 @@ export class StudentComponent implements OnInit {
 
   getTooltipForDeleteButton(std: Student) {
     return this.isDeleteable(std) ? "" : "Delete Results associated to this Student first";
+  }
+
+  openModal(clearForm: boolean) {
+    if (clearForm)
+      this.service.resetFormData(-1);
+
+    document.getElementById("openModalButton").click();
+  }
+
+  closeModal() {
+    document.getElementById("closeModalButton").click();
   }
 }

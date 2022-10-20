@@ -87,7 +87,7 @@ export class StudentFormComponent implements OnInit {
   populateForm(student: Student) {
     this.formData = Object.assign({}, student);
     this.selectedCourseByStudent = student.Course?.Name;
-    this.subjectsInselcetedCourse = this.subjectService.getList().filter(x => x.Course?.Id == student.Course?.Id);
+    this.subjectsInselcetedCourse = this.subjectService.getList()?.filter(x => x.Course?.Id == student.Course?.Id);
     this.selectedSubjectsByStudent = this.getSelctedSubjectListWithAllDetails();
   }
 
@@ -136,6 +136,7 @@ export class StudentFormComponent implements OnInit {
       result => {
         this.toaster.success('Student added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
+        this.service.closeModal();
       }, error => {
         this.toaster.error('An error occured while adding the new student', 'Error', { closeButton: true });
         console.log(error);
@@ -148,6 +149,7 @@ export class StudentFormComponent implements OnInit {
       result => {
         this.toaster.success('Student updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
+        this.service.closeModal();
       }, error => {
         this.toaster.error('An error occured while updating the new student', 'Error', { closeButton: true });
         console.log(error);
@@ -203,7 +205,8 @@ export class StudentFormComponent implements OnInit {
   }
 
   resetFormDataOnDelete(id: number) {
-    if (id == this.formData.Id)
+    if (id == this.formData.Id || id == -1) {
       this.resetFormData();
+    }
   }
 }
