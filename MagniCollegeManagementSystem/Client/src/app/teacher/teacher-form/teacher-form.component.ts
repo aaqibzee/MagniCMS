@@ -95,6 +95,7 @@ export class TeacherFormComponent implements OnInit {
       result => {
         this.toaster.success('Teacher added successfully', 'Success', { closeButton: true });
         this.resetForm(form);
+        this.service.closeModal();
       }, error => {
         this.toaster.error('An error occured while adding the new teacher', 'Error', { closeButton: true });
         console.log(error);
@@ -107,6 +108,7 @@ export class TeacherFormComponent implements OnInit {
       result => {
         this.toaster.success('Teacher updated successfully', 'Success', { closeButton: true });
         this.resetForm(form);
+        this.service.closeModal();
       }, error => {
         this.toaster.error('An error occured while updating the new teacher', 'Error', { closeButton: true });
         console.log(error);
@@ -197,7 +199,8 @@ export class TeacherFormComponent implements OnInit {
   }
 
   resetFormDataOnDelete(id: number) {
-    if (id == this.formData.Id)
+    if (id == this.formData.Id || id == -1) {
       this.resetFormData();
+    }
   }
 }

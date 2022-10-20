@@ -1,8 +1,6 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { Constants } from '../shared/Constants';
-import { Course } from '../shared/course.model';
 import { CourseService } from '../shared/course.service';
-import { Subject } from '../shared/subject.model';
 import { SubjectService } from '../shared/subject.service';
 import { Teacher } from '../shared/teacher.model';
 import { TeacherService } from '../shared/teacher.service'
@@ -38,8 +36,13 @@ export class TeacherComponent implements OnInit {
     this.service.sourceList$.subscribe(
       list => { this.teacherList = list; }
     );
-  }
 
+    this.service.closeModal$.subscribe(
+      data => {
+        this.closeModal();
+      }
+    );
+  }
 
   getSubjectName(subjectId: number) {
     return this.subjectService.getList()?.find(x => x.Id == subjectId)?.Name;
@@ -47,6 +50,7 @@ export class TeacherComponent implements OnInit {
 
   populateForm(record: Teacher) {
     this.service.populateForm(record);
+    this.openModal(false);
   }
 
   deleteTeacher(record: Teacher) {
@@ -57,7 +61,7 @@ export class TeacherComponent implements OnInit {
         this.toaster.error('An error occured, while deleting teacher', 'Error', { closeButton: true });
         console.log(error);
       });
-    this.service.restFormData(record.Id);
+    this.service.resetFormData(record.Id);
   }
   isDeleteable(record: Teacher) {
     return record.Subjects?.length <= 0;
@@ -65,5 +69,16 @@ export class TeacherComponent implements OnInit {
 
   getTooltipForDeleteButton(std: Teacher) {
     return this.isDeleteable(std) ? "" : "Delete Subjects associated to this Teacher first";
+  }
+
+  openModal(clearForm: boolean) {
+    if (clearForm)
+      this.service.resetFormData(-1);
+
+    document.getElementById("openModalButton").click();
+  }
+
+  closeModal() {
+    document.getElementById("closeModalButton").click();
   }
 }

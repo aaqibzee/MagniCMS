@@ -26,9 +26,16 @@ export class TeacherService {
   private listDataUpdatedSource = new SubjectObserveable<Teacher[]>();
   private formDataUpdatedSource = new SubjectObserveable<Teacher>();
   private resetFormDataUpdatedSource = new SubjectObserveable<number>();
-  sourceList$ = this.listDataUpdatedSource.asObservable();
-  formData$ = this.formDataUpdatedSource.asObservable();
-  resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
+  private closeModalUpdatedSource = new SubjectObserveable<boolean>();
+
+  public sourceList$ = this.listDataUpdatedSource.asObservable();
+  public formData$ = this.formDataUpdatedSource.asObservable();
+  public resetFormData$ = this.resetFormDataUpdatedSource.asObservable();
+  public closeModal$ = this.closeModalUpdatedSource.asObservable();
+
+  closeModal() {
+    this.closeModalUpdatedSource.next(true);
+  }
 
   notifyListUpdate() {
     this.listDataUpdatedSource.next(this.teacherList);
@@ -38,7 +45,7 @@ export class TeacherService {
     this.formDataUpdatedSource.next(formData);
   }
 
-  restFormData(id: number) {
+  resetFormData(id: number) {
     this.resetFormDataUpdatedSource.next(id);
   }
 
