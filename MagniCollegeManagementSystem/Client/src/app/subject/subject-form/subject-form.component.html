@@ -10,7 +10,7 @@
             <button class="btn btn-secondary dropdown-toggle drp-dwn" id="dropdownMenuButton" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="true" required> {{courseDropDownCelectedValue}} </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" #courseSelected>
-                <button type="button" class="dropdown-item" *ngFor="let course of service.getList()"
+                <button type="button" class="dropdown-item" *ngFor="let course of this.courseService.getList()"
                     (click)="selectCourse(course);" on-click="courseSelected.value=course" required>{{course.Name +' '+
                     course.Code }}</button>
             </div>
