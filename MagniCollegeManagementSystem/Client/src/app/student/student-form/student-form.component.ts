@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { StudentService } from "../../shared/student.service";
 import { Course } from 'src/app/shared/course.model';
@@ -8,6 +8,7 @@ import { Subject } from 'src/app/shared/subject.model';
 import { Student } from 'src/app/shared/student.model';
 import { SubjectService } from 'src/app/shared/subject.service';
 import { CourseService } from 'src/app/shared/course.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-student-form',
@@ -15,7 +16,7 @@ import { CourseService } from 'src/app/shared/course.service';
   styleUrls: ['./student-form.component.css'],
   styles: [],
 })
-export class StudentFormComponent implements OnInit {
+export class StudentFormComponent implements OnInit, OnDestroy {
   constructor(
     public service: StudentService,
     public courseService: CourseService,
@@ -49,20 +50,28 @@ export class StudentFormComponent implements OnInit {
   selectedCourseByStudent: string = this.courseDropDownDefaultValue;
   studentsList: Student[];
   formData: Student = new Student();
+  subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     this.resetFormData();
-    this.service.formData$.subscribe(
-      data => {
-        this.populateForm(data);
-      }
-    );
+    this.subscriptions.push(
 
-    this.service.resetFormData$.subscribe(
-      data => {
-        this.resetFormDataOnDelete(data);
-      }
+      this.service.formData$.subscribe(
+        data => {
+          this.populateForm(data);
+        }
+      ),
+
+      this.service.resetFormData$.subscribe(
+        data => {
+          this.resetFormDataOnDelete(data);
+        }
+      )
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subsription => subsription.unsubscribe());
   }
 
   resetFormData() {

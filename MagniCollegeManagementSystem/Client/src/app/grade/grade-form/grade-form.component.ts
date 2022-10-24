@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Course } from 'src/app/shared/course.model';
 import { CourseService } from 'src/app/shared/course.service';
@@ -6,6 +6,7 @@ import { Subject } from 'src/app/shared/subject.model';
 import { GradeService } from "../../shared/grade.service";
 import { ToastrService } from 'ngx-toastr';
 import { Grade } from 'src/app/shared/grade.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-grade-form',
@@ -14,7 +15,7 @@ import { Grade } from 'src/app/shared/grade.model';
   styles: [
   ]
 })
-export class GradeFormComponent implements OnInit {
+export class GradeFormComponent implements OnInit, OnDestroy {
 
   constructor(
     public service: GradeService,
@@ -25,6 +26,7 @@ export class GradeFormComponent implements OnInit {
   subjectsInSelectedCourse: Subject[];
   CourseSelcetValidationMesage: string = '';
   formData: Grade = new Grade();
+  private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     this.resetFormData();
@@ -33,12 +35,17 @@ export class GradeFormComponent implements OnInit {
         this.formData = data;
       }
     );
-
-    this.service.resetFormData$.subscribe(
-      data => {
-        this.resetFormDataOnDelete(data);
-      }
+    this.subscriptions.push(
+      this.service.resetFormData$.subscribe(
+        data => {
+          this.resetFormDataOnDelete(data);
+        }
+      )
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subsription => subsription.unsubscribe());
   }
 
   onSubmit(form: NgForm) {

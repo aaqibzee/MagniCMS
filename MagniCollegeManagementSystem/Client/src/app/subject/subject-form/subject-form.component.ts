@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { CourseService } from 'src/app/shared/course.service';
 import { SubjectService } from "../../shared/subject.service";
 import { ToastrService } from 'ngx-toastr';
 import { Subject } from 'src/app/shared/subject.model';
 import { Course } from 'src/app/shared/course.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-subject-form',
@@ -13,7 +14,7 @@ import { Course } from 'src/app/shared/course.model';
   styles: [
   ]
 })
-export class SubjectFormComponent implements OnInit {
+export class SubjectFormComponent implements OnInit, OnDestroy {
 
   constructor(
     public service: SubjectService,
@@ -23,18 +24,26 @@ export class SubjectFormComponent implements OnInit {
   formData: Subject = new Subject();
   courseDropDownCelectedValue: string = 'Select Course';
   CourseSelcetValidationMesage: string = ': Required';
+  private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     this.resetFormData();
-    this.service.formData$.subscribe(
-      formData => { this.populateForm(formData); }
-    );
 
-    this.service.resetFormData$.subscribe(
-      data => {
-        this.resetFormDataOnDelete(data);
-      }
-    );
+    this.subscriptions.push(
+
+      this.service.formData$.subscribe(
+        formData => { this.populateForm(formData); }
+      ),
+
+      this.service.resetFormData$.subscribe(
+        data => {
+          this.resetFormDataOnDelete(data);
+        }
+      ));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subsription => subsription.unsubscribe());
   }
 
   selectCourse(course: Course) {

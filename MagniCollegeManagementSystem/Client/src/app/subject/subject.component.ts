@@ -1,17 +1,18 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Constants } from '../shared/Constants';
 import { GradeService } from '../shared/grade.service';
 import { ResultService } from '../shared/result.service';
 import { Subject } from '../shared/subject.model';
 import { SubjectService } from '../shared/subject.service'
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-subject',
   templateUrl: './subject.component.html',
   styleUrls: ['./subject.component.css'],
 })
-export class SubjectComponent implements OnInit {
+export class SubjectComponent implements OnInit, OnDestroy {
 
   constructor(
     public service: SubjectService,
@@ -20,6 +21,7 @@ export class SubjectComponent implements OnInit {
     private ngZone: NgZone,
     private toaster: ToastrService) { }
   public subjectList: Subject[] = null;
+  private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     this.service.refreshList();
@@ -31,15 +33,22 @@ export class SubjectComponent implements OnInit {
       syncData: () => this.service.refreshList()
     };
 
-    this.service.sourceList$.subscribe(
-      list => { this.subjectList = list; }
-    );
+    this.subscriptions.push(
 
-    this.service.closeModal$.subscribe(
-      data => {
-        this.closeModal();
-      }
+      this.service.sourceList$.subscribe(
+        list => { this.subjectList = list; }
+      ),
+
+      this.service.closeModal$.subscribe(
+        data => {
+          this.closeModal();
+        }
+      )
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subsription => subsription.unsubscribe());
   }
 
   updateSubject(record: Subject) {

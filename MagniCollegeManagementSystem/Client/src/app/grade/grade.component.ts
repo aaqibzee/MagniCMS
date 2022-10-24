@@ -1,16 +1,17 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Constants } from '../shared/Constants';
 import { Grade } from '../shared/grade.model';
 import { GradeService } from '../shared/grade.service'
 import { ResultService } from '../shared/result.service';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-grade',
   templateUrl: './grade.component.html',
   styleUrls: ['./grade.component.css'],
 })
-export class GradeComponent implements OnInit {
+export class GradeComponent implements OnInit, OnDestroy {
 
   constructor(
     private service: GradeService,
@@ -19,6 +20,7 @@ export class GradeComponent implements OnInit {
     private toastr: ToastrService) {
   }
   public gradesList: Grade[];
+  private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     this.service.refreshList();
@@ -30,15 +32,22 @@ export class GradeComponent implements OnInit {
       syncData: () => this.service.refreshList()
     };
 
-    this.service.sourceList$.subscribe(
-      list => { this.gradesList = list; }
-    );
+    this.subscriptions.push(
 
-    this.service.closeModal$.subscribe(
-      data => {
-        this.closeModal();
-      }
+      this.service.sourceList$.subscribe(
+        list => { this.gradesList = list; }
+      ),
+
+      this.service.closeModal$.subscribe(
+        data => {
+          this.closeModal();
+        }
+      )
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subsription => subsription.unsubscribe());
   }
 
   populateForm(grade: Grade) {

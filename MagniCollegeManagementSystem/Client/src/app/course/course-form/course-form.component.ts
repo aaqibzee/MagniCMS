@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { CourseService } from "../../shared/course.service";
 import { ToastrService } from 'ngx-toastr';
 import { Course } from 'src/app/shared/course.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-course-form',
   templateUrl: './course-form.component.html',
   styleUrls: ['./course-form.component.css'],
 })
-export class CourseFormComponent implements OnInit {
+export class CourseFormComponent implements OnInit, OnDestroy {
 
   constructor
     (
@@ -18,20 +19,28 @@ export class CourseFormComponent implements OnInit {
     ) { }
 
   public formData: Course = new Course();
+  private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     this.resetFormData();
-    this.service.formData$.subscribe(
-      data => {
-        this.formData = data;
-      }
-    );
+    this.subscriptions.push(
 
-    this.service.resetFormData$.subscribe(
-      id => {
-        this.resetFormDataOnDelete(id)
-      }
+      this.service.formData$.subscribe(
+        data => {
+          this.formData = data;
+        }
+      ),
+
+      this.service.resetFormData$.subscribe(
+        id => {
+          this.resetFormDataOnDelete(id)
+        }
+      )
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subsription => subsription.unsubscribe());
   }
 
   onSubmit(form: NgForm) {

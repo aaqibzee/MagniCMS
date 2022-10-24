@@ -432,6 +432,7 @@ class SubjectComponent {
         this.ngZone = ngZone;
         this.toaster = toaster;
         this.subjectList = null;
+        this.subscriptions = [];
     }
     ngOnInit() {
         this.service.refreshList();
@@ -441,10 +442,12 @@ class SubjectComponent {
                 zone: this.ngZone,
                 syncData: () => this.service.refreshList()
             };
-        this.service.sourceList$.subscribe(list => { this.subjectList = list; });
-        this.service.closeModal$.subscribe(data => {
+        this.subscriptions.push(this.service.sourceList$.subscribe(list => { this.subjectList = list; }), this.service.closeModal$.subscribe(data => {
             this.closeModal();
-        });
+        }));
+    }
+    ngOnDestroy() {
+        this.subscriptions.forEach(subsription => subsription.unsubscribe());
     }
     updateSubject(record) {
         this.openModal(false);
@@ -641,15 +644,19 @@ class GradeFormComponent {
         this.toaster = toaster;
         this.CourseSelcetValidationMesage = '';
         this.formData = new src_app_shared_grade_model__WEBPACK_IMPORTED_MODULE_1__["Grade"]();
+        this.subscriptions = [];
     }
     ngOnInit() {
         this.resetFormData();
         this.service.formData$.subscribe(data => {
             this.formData = data;
         });
-        this.service.resetFormData$.subscribe(data => {
+        this.subscriptions.push(this.service.resetFormData$.subscribe(data => {
             this.resetFormDataOnDelete(data);
-        });
+        }));
+    }
+    ngOnDestroy() {
+        this.subscriptions.forEach(subsription => subsription.unsubscribe());
     }
     onSubmit(form) {
         if (this.isFormInvalid()) {
@@ -1007,15 +1014,18 @@ class CourseFormComponent {
         this.service = service;
         this.toastr = toastr;
         this.formData = new src_app_shared_course_model__WEBPACK_IMPORTED_MODULE_1__["Course"]();
+        this.subscriptions = [];
     }
     ngOnInit() {
         this.resetFormData();
-        this.service.formData$.subscribe(data => {
+        this.subscriptions.push(this.service.formData$.subscribe(data => {
             this.formData = data;
-        });
-        this.service.resetFormData$.subscribe(id => {
+        }), this.service.resetFormData$.subscribe(id => {
             this.resetFormDataOnDelete(id);
-        });
+        }));
+    }
+    ngOnDestroy() {
+        this.subscriptions.forEach(subsription => subsription.unsubscribe());
     }
     onSubmit(form) {
         if (this.isDuplicateRecord()) {
@@ -2064,6 +2074,7 @@ class StudentComponent {
         this.toaster = toaster;
         this.deleteButtonToolTip = '';
         this.selectedItem = '';
+        this.subscriptions = [];
         this.service.refreshList();
         this.resultService.refreshList();
     }
@@ -2074,10 +2085,12 @@ class StudentComponent {
                 zone: this.ngZone,
                 syncData: () => this.service.refreshList()
             };
-        this.service.sourceList$.subscribe(list => { this.studentsList = list; });
-        this.service.closeModal$.subscribe(data => {
+        this.subscriptions.push(this.service.sourceList$.subscribe(list => { this.studentsList = list; }), this.service.closeModal$.subscribe(data => {
             this.closeModal();
-        });
+        }));
+    }
+    ngOnDestroy() {
+        this.subscriptions.forEach(subsription => subsription.unsubscribe());
     }
     updateStudent(record) {
         this.service.populateForm(record);
@@ -2322,6 +2335,7 @@ class CourseComponent {
         this.resultService = resultService;
         this.gradeService = gradeService;
         this.toastr = toastr;
+        this.subscriptions = [];
         gradeService.refreshList();
         resultService.refreshList();
     }
@@ -2333,10 +2347,12 @@ class CourseComponent {
                 zone: this.ngZone,
                 syncData: () => this.service.refreshList()
             };
-        this.service.sourceList$.subscribe(list => { this.courseList = list; });
-        this.service.closeModal$.subscribe(data => {
+        this.subscriptions.push(this.service.sourceList$.subscribe(list => { this.courseList = list; }), this.service.closeModal$.subscribe(data => {
             this.closeModal();
-        });
+        }));
+    }
+    ngOnDestroy() {
+        this.subscriptions.forEach(subsription => subsription.unsubscribe());
     }
     populateForm(course) {
         this.openModal(false);
@@ -2893,13 +2909,16 @@ class SubjectFormComponent {
         this.formData = new src_app_shared_subject_model__WEBPACK_IMPORTED_MODULE_1__["Subject"]();
         this.courseDropDownCelectedValue = 'Select Course';
         this.CourseSelcetValidationMesage = ': Required';
+        this.subscriptions = [];
     }
     ngOnInit() {
         this.resetFormData();
-        this.service.formData$.subscribe(formData => { this.populateForm(formData); });
-        this.service.resetFormData$.subscribe(data => {
+        this.subscriptions.push(this.service.formData$.subscribe(formData => { this.populateForm(formData); }), this.service.resetFormData$.subscribe(data => {
             this.resetFormDataOnDelete(data);
-        });
+        }));
+    }
+    ngOnDestroy() {
+        this.subscriptions.forEach(subsription => subsription.unsubscribe());
     }
     selectCourse(course) {
         this.courseDropDownCelectedValue = course.Name;
@@ -3169,6 +3188,7 @@ class GradeComponent {
         this.resultService = resultService;
         this.ngZone = ngZone;
         this.toastr = toastr;
+        this.subscriptions = [];
     }
     ngOnInit() {
         this.service.refreshList();
@@ -3178,10 +3198,12 @@ class GradeComponent {
                 zone: this.ngZone,
                 syncData: () => this.service.refreshList()
             };
-        this.service.sourceList$.subscribe(list => { this.gradesList = list; });
-        this.service.closeModal$.subscribe(data => {
+        this.subscriptions.push(this.service.sourceList$.subscribe(list => { this.gradesList = list; }), this.service.closeModal$.subscribe(data => {
             this.closeModal();
-        });
+        }));
+    }
+    ngOnDestroy() {
+        this.subscriptions.forEach(subsription => subsription.unsubscribe());
     }
     populateForm(grade) {
         this.openModal(false);
@@ -3386,14 +3408,17 @@ class ResultComponent {
         this.toaster = toaster;
         this.modalId = "resultModal";
         this.modalSelector = this.modalId;
+        this.subscriptions = [];
     }
     ngOnInit() {
         this.service.refreshList();
         window[_shared_Constants__WEBPACK_IMPORTED_MODULE_1__["Constants"].resultComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
-        this.service.sourceList$.subscribe(list => { this.resultsList = list; });
-        this.service.closeModal$.subscribe(data => {
+        this.subscriptions.push(this.service.sourceList$.subscribe(list => { this.resultsList = list; }), this.service.closeModal$.subscribe(data => {
             this.closeModal();
-        });
+        }));
+    }
+    ngOnDestroy() {
+        this.subscriptions.forEach(subsription => subsription.unsubscribe());
     }
     updateResult(record) {
         this.openModal(false);
@@ -3649,6 +3674,7 @@ class StudentFormComponent {
         this.CourseSelcetValidationMesage = '';
         this.selectedCourseByStudent = this.courseDropDownDefaultValue;
         this.formData = new src_app_shared_student_model__WEBPACK_IMPORTED_MODULE_1__["Student"]();
+        this.subscriptions = [];
         this.subjectsDropdownSettings = {
             singleSelection: false,
             idField: 'Id',
@@ -3663,12 +3689,14 @@ class StudentFormComponent {
     }
     ngOnInit() {
         this.resetFormData();
-        this.service.formData$.subscribe(data => {
+        this.subscriptions.push(this.service.formData$.subscribe(data => {
             this.populateForm(data);
-        });
-        this.service.resetFormData$.subscribe(data => {
+        }), this.service.resetFormData$.subscribe(data => {
             this.resetFormDataOnDelete(data);
-        });
+        }));
+    }
+    ngOnDestroy() {
+        this.subscriptions.forEach(subsription => subsription.unsubscribe());
     }
     resetFormData() {
         this.formData = new src_app_shared_student_model__WEBPACK_IMPORTED_MODULE_1__["Student"]();
@@ -4017,18 +4045,21 @@ class ResultFormComponent {
         this.SubjectSelcetValidationMesage = '';
         this.CourseSelcetValidationMesage = '';
         this.StudentSelcetValidationMesage = '';
+        this.subscriptions = [];
         this.studentService.refreshList();
         this.subjectService.refreshList();
         this.gradeService.refreshList();
         this.courseService.refreshList();
     }
     ngOnInit() {
-        this.service.formData$.subscribe(data => {
+        this.subscriptions.push(this.service.formData$.subscribe(data => {
             this.formData = data;
-        });
-        this.service.resetFormData$.subscribe(data => {
+        }), this.service.resetFormData$.subscribe(data => {
             this.resetDataOnDelete(data);
-        });
+        }));
+    }
+    ngOnDestroy() {
+        this.subscriptions.forEach(subsription => subsription.unsubscribe());
     }
     onSubmit(form) {
         if (this.isFormInvalid()) {

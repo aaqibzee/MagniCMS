@@ -1,17 +1,18 @@
-import { Component, OnInit, Input, NgZone } from '@angular/core';
+import { Component, OnInit, Input, NgZone, OnDestroy } from '@angular/core';
 import { Student } from '../shared/student.model';
 import { StudentService } from '../shared/student.service';
 import { Constants } from '../shared/Constants';
 import { ResultService } from '../shared/result.service';
 import { ToastrService } from 'ngx-toastr';
 import { SplashScreenStateService } from '../shared/splash-screen-state.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-student',
   templateUrl: './student.component.html',
   styleUrls: ['./student.component.css'],
 })
-export class StudentComponent implements OnInit {
+export class StudentComponent implements OnInit, OnDestroy {
 
   constructor(
     private ngZone: NgZone,
@@ -25,6 +26,7 @@ export class StudentComponent implements OnInit {
   deleteButtonToolTip: string = '';
   @Input() selectedItem: string = '';
   studentsList: Student[];
+  subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     window[Constants.studentComponentReference] =
@@ -34,16 +36,23 @@ export class StudentComponent implements OnInit {
       syncData: () => this.service.refreshList()
     };
 
-    this.service.sourceList$.subscribe(
-      list => { this.studentsList = list; }
-    );
+    this.subscriptions.push(
 
-    this.service.closeModal$.subscribe(
-      data => {
-        this.closeModal();
-      }
-    );
+      this.service.sourceList$.subscribe(
+        list => { this.studentsList = list; }
+      ),
+
+      this.service.closeModal$.subscribe(
+        data => {
+          this.closeModal();
+        }
+      ));
   }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subsription => subsription.unsubscribe());
+  }
+
   updateStudent(record: Student) {
     this.service.populateForm(record);
     this.openModal(false);

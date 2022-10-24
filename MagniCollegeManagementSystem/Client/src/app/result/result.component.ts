@@ -1,9 +1,10 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Constants } from '../shared/Constants';
 import { Result } from '../shared/result.model';
 import { ResultService } from '../shared/result.service';
 import { SubjectService } from '../shared/subject.service';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-result',
@@ -11,7 +12,7 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./result.component.css']
 })
 
-export class ResultComponent implements OnInit {
+export class ResultComponent implements OnInit, OnDestroy {
   resultsList: Result[];
   public readonly modalId: string = "resultModal";
   public readonly modalSelector: string = this.modalId;
@@ -20,19 +21,28 @@ export class ResultComponent implements OnInit {
     public subjectService: SubjectService,
     private ngZone: NgZone,
     private toaster: ToastrService) { }
+  private subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     this.service.refreshList();
     window[Constants.resultComponentReference] = { component: this, zone: this.ngZone, syncData: () => this.service.refreshList() };
-    this.service.sourceList$.subscribe(
-      list => { this.resultsList = list; }
-    );
 
-    this.service.closeModal$.subscribe(
-      data => {
-        this.closeModal();
-      }
+    this.subscriptions.push(
+
+      this.service.sourceList$.subscribe(
+        list => { this.resultsList = list; }
+      ),
+
+      this.service.closeModal$.subscribe(
+        data => {
+          this.closeModal();
+        }
+      )
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subsription => subsription.unsubscribe());
   }
 
   updateResult(record: Result) {

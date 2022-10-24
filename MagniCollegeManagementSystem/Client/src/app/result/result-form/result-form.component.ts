@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Course } from 'src/app/shared/course.model';
 import { CourseService } from 'src/app/shared/course.service';
@@ -11,13 +11,14 @@ import { Subject } from 'src/app/shared/subject.model';
 import { SubjectService } from 'src/app/shared/subject.service';
 import { ToastrService } from 'ngx-toastr';
 import { Result } from 'src/app/shared/result.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-result-form',
   templateUrl: './result-form.component.html',
   styleUrls: ['./result-form.component.css']
 })
-export class ResultFormComponent implements OnInit {
+export class ResultFormComponent implements OnInit, OnDestroy {
 
   private gradesInSelectedCourse: Grade[];
 
@@ -29,6 +30,7 @@ export class ResultFormComponent implements OnInit {
   public SubjectSelcetValidationMesage: string = '';
   public CourseSelcetValidationMesage: string = '';
   public StudentSelcetValidationMesage: string = '';
+  private subscriptions: Subscription[] = [];
 
   @ViewChild('selectedSubject') selectedSubject;
   constructor
@@ -47,17 +49,24 @@ export class ResultFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.service.formData$.subscribe(
-      data => {
-        this.formData = data;
-      }
-    );
+    this.subscriptions.push(
 
-    this.service.resetFormData$.subscribe(
-      data => {
-        this.resetDataOnDelete(data);
-      }
+      this.service.formData$.subscribe(
+        data => {
+          this.formData = data;
+        }
+      ),
+
+      this.service.resetFormData$.subscribe(
+        data => {
+          this.resetDataOnDelete(data);
+        }
+      )
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subsription => subsription.unsubscribe());
   }
 
   onSubmit(form: NgForm) {
