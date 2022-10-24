@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { IDropdownSettings } from 'ng-multiselect-dropdown';
 import { Course } from 'src/app/shared/course.model';
@@ -8,13 +8,14 @@ import { ToastrService } from 'ngx-toastr';
 import { Teacher } from 'src/app/shared/teacher.model';
 import { Subject } from 'src/app/shared/subject.model';
 import { SubjectService } from 'src/app/shared/subject.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-teacher-form',
   templateUrl: './teacher-form.component.html',
   styleUrls: ['./teacher-form.component.css'],
 })
-export class TeacherFormComponent implements OnInit {
+export class TeacherFormComponent implements OnInit, OnDestroy {
   courses: Course[] = [];
 
   constructor(
@@ -43,6 +44,7 @@ export class TeacherFormComponent implements OnInit {
     courseService.refreshList();
     this.courses = courseService.getList();
   }
+
   subjectsDropdownSettings: IDropdownSettings = {};
   coursesDropdownSettings: IDropdownSettings = {};
   formData: Teacher = new Teacher();
@@ -50,21 +52,27 @@ export class TeacherFormComponent implements OnInit {
   selectedCourses: Course[] = [];
   selectedSubjects: Subject[] = [];
   subjectsForSelectedCourses: Subject[] = [];
+  subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     this.resetFormData();
 
-    this.service.formData$.subscribe(
-      data => {
-        this.populateForm(data);
-      }
-    );
+    this.subscriptions.push(
 
-    this.service.resetFormData$.subscribe(
-      data => {
-        this.resetFormDataListener(data);
-      }
+      this.service.formData$.subscribe(
+        formData => { this.populateForm(formData); }
+      ),
+
+      this.service.resetFormData$.subscribe(
+        data => {
+          this.resetFormDataListener(data);
+        })
+
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subsription => subsription.unsubscribe());
   }
 
   onSubmit(form: NgForm) {
@@ -126,16 +134,15 @@ export class TeacherFormComponent implements OnInit {
     this.formData = Object.assign({}, record);
     this.selectedSubjects = this.getSelctedSubjectListWithAllDetails();
     this.selectedCourses = this.getSelctedCourseListWithAllDetails();
-    this.subjectsForSelectedCourses = this.getSubjectsForSelectedCourses();
-    this.toaster.info('Data populated to form', 'Info', { closeButton: true });
+    this.subjectsForSelectedCourses = this.getSubjectsForSelectedCourses(this.selectedCourses);
   }
 
-  getSubjectsForSelectedCourses() {
+  getSubjectsForSelectedCourses(courses: Course[]) {
     let list: Subject[] = [];
     var subjects = this.service.subjectService.getList();
 
     subjects?.filter(function (x) {
-      if (this.selectedCourses?.filter(y => y.Id == x.Course?.Id).length > 0) {
+      if (courses?.filter(y => y.Id == x.Course?.Id).length > 0) {
         list.push(x);
       }
     });

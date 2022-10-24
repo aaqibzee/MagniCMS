@@ -5,6 +5,7 @@ import { SubjectService } from '../shared/subject.service';
 import { Teacher } from '../shared/teacher.model';
 import { TeacherService } from '../shared/teacher.service'
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-teacher',
@@ -22,6 +23,7 @@ export class TeacherComponent implements OnInit {
       private toaster: ToastrService
     ) { }
   public teacherList: Teacher[];
+  subscriptions: Subscription[] = [];
 
   ngOnInit(): void {
     this.service.refreshList();
@@ -33,15 +35,22 @@ export class TeacherComponent implements OnInit {
       syncData: () => this.service.refreshList()
     };
 
-    this.service.sourceList$.subscribe(
-      list => { this.teacherList = list; }
-    );
+    this.subscriptions.push(
 
-    this.service.closeModal$.subscribe(
-      data => {
-        this.closeModal();
-      }
+      this.service.sourceList$.subscribe(
+        list => { this.teacherList = list; }
+      ),
+
+      this.service.closeModal$.subscribe(
+        data => {
+          this.closeModal();
+        }
+      )
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(subsription => subsription.unsubscribe());
   }
 
   getSubjectName(subjectId: number) {

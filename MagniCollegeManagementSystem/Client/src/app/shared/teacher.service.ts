@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { SubjectService } from './subject.service';
 import { Constants } from './Constants';
 import { SplashScreenStateService } from './splash-screen-state.service';
-import { Subject as SubjectObserveable } from 'rxjs'
+import { Subject as SubjectObs } from 'rxjs'
 
 @Injectable({
   providedIn: 'root'
@@ -23,10 +23,10 @@ export class TeacherService {
   }
 
   public teacherList: Teacher[];
-  private listDataUpdatedSource = new SubjectObserveable<Teacher[]>();
-  private formDataUpdatedSource = new SubjectObserveable<Teacher>();
-  private resetFormDataUpdatedSource = new SubjectObserveable<number>();
-  private closeModalUpdatedSource = new SubjectObserveable<boolean>();
+  private listDataUpdatedSource = new SubjectObs<Teacher[]>();
+  private formDataUpdatedSource = new SubjectObs<Teacher>();
+  private resetFormDataUpdatedSource = new SubjectObs<number>();
+  private closeModalUpdatedSource = new SubjectObs<boolean>();
 
   public sourceList$ = this.listDataUpdatedSource.asObservable();
   public formData$ = this.formDataUpdatedSource.asObservable();

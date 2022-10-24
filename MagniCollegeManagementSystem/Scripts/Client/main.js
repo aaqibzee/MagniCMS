@@ -41,6 +41,7 @@ class TeacherFormComponent {
         this.selectedCourses = [];
         this.selectedSubjects = [];
         this.subjectsForSelectedCourses = [];
+        this.subscriptions = [];
         this.subjectsDropdownSettings = {
             singleSelection: false,
             idField: 'Id',
@@ -63,12 +64,12 @@ class TeacherFormComponent {
     }
     ngOnInit() {
         this.resetFormData();
-        this.service.formData$.subscribe(data => {
-            this.populateForm(data);
-        });
-        this.service.resetFormData$.subscribe(data => {
+        this.subscriptions.push(this.service.formData$.subscribe(formData => { this.populateForm(formData); }), this.service.resetFormData$.subscribe(data => {
             this.resetFormDataListener(data);
-        });
+        }));
+    }
+    ngOnDestroy() {
+        this.subscriptions.forEach(subsription => subsription.unsubscribe());
     }
     onSubmit(form) {
         if (this.isDuplicateRecord()) {
@@ -120,15 +121,13 @@ class TeacherFormComponent {
         this.formData = Object.assign({}, record);
         this.selectedSubjects = this.getSelctedSubjectListWithAllDetails();
         this.selectedCourses = this.getSelctedCourseListWithAllDetails();
-        this.subjectsForSelectedCourses = this.getSubjectsForSelectedCourses();
-        this.toaster.info('Data populated to form', 'Info', { closeButton: true });
+        this.subjectsForSelectedCourses = this.getSubjectsForSelectedCourses(this.selectedCourses);
     }
-    getSubjectsForSelectedCourses() {
+    getSubjectsForSelectedCourses(courses) {
         let list = [];
         var subjects = this.service.subjectService.getList();
         subjects === null || subjects === void 0 ? void 0 : subjects.filter(function (x) {
-            var _a;
-            if (((_a = this.selectedCourses) === null || _a === void 0 ? void 0 : _a.filter(y => { var _a; return y.Id == ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id); }).length) > 0) {
+            if ((courses === null || courses === void 0 ? void 0 : courses.filter(y => { var _a; return y.Id == ((_a = x.Course) === null || _a === void 0 ? void 0 : _a.Id); }).length) > 0) {
                 list.push(x);
             }
         });
@@ -1555,6 +1554,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+;
 class AppComponent {
     constructor(splashScreenStateService) {
         this.splashScreenStateService = splashScreenStateService;
@@ -2603,6 +2603,7 @@ class TeacherComponent {
         this.courseService = courseService;
         this.ngZone = ngZone;
         this.toaster = toaster;
+        this.subscriptions = [];
     }
     ngOnInit() {
         this.service.refreshList();
@@ -2612,10 +2613,12 @@ class TeacherComponent {
                 zone: this.ngZone,
                 syncData: () => this.service.refreshList()
             };
-        this.service.sourceList$.subscribe(list => { this.teacherList = list; });
-        this.service.closeModal$.subscribe(data => {
+        this.subscriptions.push(this.service.sourceList$.subscribe(list => { this.teacherList = list; }), this.service.closeModal$.subscribe(data => {
             this.closeModal();
-        });
+        }));
+    }
+    ngOnDestroy() {
+        this.subscriptions.forEach(subsription => subsription.unsubscribe());
     }
     getSubjectName(subjectId) {
         var _a, _b;
