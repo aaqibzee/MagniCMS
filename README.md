@@ -15,7 +15,7 @@ All modules have CRUD fucntionalites avaialble.
 * .Net Standard
 * ASP.Net MVC 5
 * Angular Js 
-* Type Script
+* TypeScript
 * Java Script 
 * Signal R
 * Entity Framework 
@@ -56,8 +56,8 @@ Method 2 (On IIS):
     
 2) Open the project in Visual Studio (Must be opened as Administrator)
 3) Build the main solution and let the Nuget restore the packages
-4) Set "EnvironmentSetter" as startup project and run the solution
-5) The program will take care of setting up everything and it will launch applicatoin in the browser
+4) Set "EnvironmentSetter" as a startup project and run the solution
+5) The program will take care of setting up everything and it will launch application in the browser
 
 # Setup guidelines (To contribute as a developer):
 
@@ -71,9 +71,9 @@ Method 2 (On IIS):
 
 2) Open the project in Visual Studio
 3) Build the solution and let the NuGet restore the packages.
-4) Run npm instal command in  "MagniCollegeManagementSystem\Client"
+4) Run npm install command in  "MagniCollegeManagementSystem\Client"
 4) For .Net side development, explore the project "MagniCollegeManagementSystem" except the folder 'Client'
-5) For Angular side development, explore the folder 'Client' in "MagniCollegeManagementSystem" web project. This folder has all code related to Angular applciation
+5) For Angular side development, explore the folder 'Client' in the "MagniCollegeManagementSystem" web project. This folder has all the code related to the Angular application
 
 # Projects
 * <b>  BusinessLogic:</b>
@@ -82,34 +82,34 @@ Method 2 (On IIS):
 
 * <b>  UnitTests:</b>
 <br> Responsible for:
-<br> a: Containing unit tests for the proejcts
+<br> a: Containing unit tests for the projects
 
 * <b>  DataAccess:</b>
 <br> Responsible for:
 <br> a: Creating the DB at first run
 <br> b: Adding seed data
 <br> c: Performing DB operations
-<br> d: Providing abstration around DB operations
+<br> d: Providing abstraction around DB operations
 
 
  * <b> EnvironmentSetter:</b>
-<br> Responsible for setting environment to run application on IIS by
-<br> a: Activating windows features required for the IIS
+<br> Responsible for setting the environment to run applications on IIS by
+<br> a: Activating Windows features required for the IIS
 <br> b: Creating applicaiotn pool and applicaiton in IIS
 <br> c: Creating DB in SQL server and assigning  DB access rights to IIS pool login
 <br> d: Running application
 
 * <b>  MagniCollegeManagementSystem:</b>
-<br> Conatains web application including
+<br> Contains web applications including
 <br> a: Routing logic
 <br> b: Views
 <br> c: Angular code
 <br> d: ASP.NET code
 
-# How overall application works:
+# How the overall application works:
 The application makes use of ASP.NET MVC 5 and Angular architecture.
 
-When angular application is built, it's generated output files are placed inside "Script" folder in MVC project.
+When an angular application is built, its generated output files are placed inside the "Script" folder in the MVC project.
 
 When MVC project runs, it launches it's index view.  
 
