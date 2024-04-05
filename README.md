@@ -32,7 +32,7 @@ Link: https://www.microsoft.com/en-us/sql-server/sql-server-downloads
 * .Net (Standard) Framework  (Developer Pack) 4.7.2
 Link: https://dotnet.microsoft.com/en-us/download/dotnet-framework/net472 
 * Node JS v 16.17.0  Link:https://nodejs.org/en/download/releases/
-* Angular cli "~11.0.2" Command: npm install -g @angular/cli@11.0.2
+* Angular CLI "~11.0.2" Command: npm install -g @angular/cli@11.0.2
     
 # Setup guidelines (To only run the project):
 Method 1 (In Visual Studio):
